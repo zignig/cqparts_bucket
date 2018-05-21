@@ -11,7 +11,7 @@ from cqparts.constraint import Mate
 from cqparts.utils.geometry import CoordSystem
 
 import math
-import shaft
+from cqparts_motors import shaft
 
 from cqparts.catalogue import JSONCatalogue
 
@@ -144,3 +144,7 @@ class DCMotor(cqparts.Assembly):
             )
         ]
 
+if __name__ == "__main__":
+    from cqparts.display import render_props, display
+    dc = DCMotor()
+    display(dc)
