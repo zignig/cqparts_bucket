@@ -40,7 +40,7 @@ class Bucket(cqparts.Part):
         lowerRimCut = cq.Workplane("XY").circle(self.diambot-self.thickness).extrude(-self.rimHeight)
         lowerRim = lowerRim.cut(lowerRimCut)
         outer = outer.union(lowerRim)
-        outer.chamfer(0.1)
+        outer.chamfer(self.thickness/3)
         return  outer
 
 B = Bucket()
