@@ -107,5 +107,7 @@ class Rect(cqparts.Assembly):
 
 
 
-p = Rect()
-display(p)
+if __name__ == "__main__":
+    from cqparts.display import display
+    p = Rect()
+    display(p)

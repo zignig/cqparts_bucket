@@ -179,10 +179,11 @@ class Car(cqparts.Assembly):
         self.components['front_axle'].apply_cutout(chassis)
         self.components['rear_axle'].apply_cutout(chassis)
 
-car = Car()
 
-car.axle_diam = 5
-car.wheel_width = 9 
-car.axle_track = 54
-display(car)
-
+if __name__ == "__main__":
+    from cqparts.display import display
+    car = Car()
+    car.axle_diam = 5
+    car.wheel_width = 9 
+    car.axle_track = 54
+    display(car)

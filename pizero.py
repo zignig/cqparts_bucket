@@ -29,6 +29,10 @@ class Pizero(cqparts.Part):
                     ,forConstruction=True).vertices()
         return h
 
+    def mount_verts(self,offset):
+        h = self.mount_points(self,offset=offset)
+        return h.objects
+
     def make(self):
         wp = cq.Workplane("XY")
         board = wp.box(length=self.length,width=self.width,height=self.thickness)
@@ -37,6 +41,7 @@ class Pizero(cqparts.Part):
         board = board.cut(holes)
         return  board 
 
-p = Pizero()
-
-display(p)
+if __name__ == "__main__":
+    from cqparts.display import display
+    p = Pizero()
+    display(p)

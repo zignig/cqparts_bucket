@@ -43,6 +43,7 @@ class Bucket(cqparts.Part):
         outer.chamfer(self.thickness/3)
         return  outer
 
-B = Bucket()
-
-display(B)
+if __name__ == "__main__":
+    from cqparts.display import display
+    B = Bucket()
+    display(B)

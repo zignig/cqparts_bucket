@@ -293,5 +293,7 @@ class Case(cqparts.Assembly):
             ),
         ]
 
-p = Case(explode=0,width=20.0,length=30.0,height=18.8,screw=ThisScrew)#.find('middle')
-display(p)
+if __name__ == "__main__":
+    from cqparts.display import display
+    p = Case(explode=0,screw=ThisScrew)
+    display(p)
