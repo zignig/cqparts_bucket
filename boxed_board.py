@@ -13,8 +13,8 @@ from case import Case
 import os
 
 class BoxedBoard(cqparts.Assembly):
-    clearance = PositiveFloat(4)
-    case = Case(screw=case.ThisScrew)
+    clearance = PositiveFloat(8)
+    case = Case(thickness=3,height=30,screw=case.ThisScrew)
     board = Pizero()
 
     def initialize_parameters(self):
