@@ -16,7 +16,7 @@ class Wheel(cqparts.Part):
 
     def make(self):
         wheel = cadquery.Workplane('XY') \
-            .circle(self.diameter / 2).extrude(self.width)
+            .circle(self.diameter / 2).extrude(self.width).chamfer(1)
         hole = cadquery.Workplane('XY') \
             .circle(2).extrude(self.width/2).faces(">Z") \
             .circle(4).extrude(self.width/2)
@@ -178,6 +178,7 @@ class Car(cqparts.Assembly):
         chassis = self.components['chassis']
         self.components['front_axle'].apply_cutout(chassis)
         self.components['rear_axle'].apply_cutout(chassis)
+        chassis.local_obj.chamfer(1)
 
 
 if __name__ == "__main__":
