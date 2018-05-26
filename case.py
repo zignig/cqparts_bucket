@@ -295,5 +295,5 @@ class Case(cqparts.Assembly):
 
 if __name__ == "__main__":
     from cqparts.display import display
-    p = Case(explode=0,screw=ThisScrew)
+    p = Case(explode=0,height=60,thickness=4,screw=Screw)
     display(p)
