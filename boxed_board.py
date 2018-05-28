@@ -14,7 +14,7 @@ import os
 
 class BoxedBoard(cqparts.Assembly):
     clearance = PositiveFloat(8)
-    case = Case(thickness=3,height=30,screw=Screw)
+    case = Case(thickness=3,height=30,screw=case.ThisScrew)
     board = Pizero()
    # board = Arduino()
 

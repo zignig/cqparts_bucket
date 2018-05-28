@@ -65,7 +65,7 @@ class ThisScrew(Screw):
     length = PositiveFloat(8, doc="screw's length")
     tip_length = PositiveFloat(0, doc="length of taper on a pointed tip")
 
-# As simple fastener
+# A simple fastener
 class ThisFastener(Fastener):
     Evaluator = VectorEvaluator
 
