@@ -24,10 +24,9 @@ class GearStack(cqparts.Part):
         g2 = TestGear(tooth_count=6,effective_radius=30).make().translate((0,0,self.offset))
         post = post.union(g1)
         post = post.union(g2)
-        return post 
+        return post
 
 if __name__ == "__main__":
-
     from cqparts.display import display
-    g = GearStack() 
+    g = GearStack()
     display(g)
