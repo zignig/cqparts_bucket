@@ -181,6 +181,7 @@ class Bogie(cqparts.Assembly):
     height = PositiveFloat(6)
     wheel = PartRef(TrainWheel)
     wagon = PartRef()
+    coupling = PartRef(TrainCoupling)
     @classmethod
     def item_name(cls,index):
         return "wheel_%03i" % index
@@ -188,14 +189,13 @@ class Bogie(cqparts.Assembly):
     def make_components(self):
         comp = {
             'pan': TrainPan(length=self.length,width=self.width,height=self.height),
-            'front_coupling' : TrainCoupling(),
-            'back_coupling' : TrainCoupling(),
+            'front_coupling' : self.coupling(),
+            'back_coupling' : self.coupling(),
         }
         for i in range(4):
             comp[Bogie.item_name(i)] = self.wheel()
         if self.wagon != None:
             comp['wagon'] = self.wagon()
-        print self.wagon
         return comp
 
     def make_constraints(self):
@@ -226,8 +226,50 @@ class Bogie(cqparts.Assembly):
             ))
         return constr
 
+    def mate_end(self,direction):
+        coupling_extra = self.coupling().width
+        return Mate(self, CoordSystem(
+            origin=(direction*((self.length/2)+coupling_extra),0,self.height/2),
+            xDir=(1,0,0),
+            normal=(0,0,1)
+        ))
+
+class Train(cqparts.Assembly):
+    cars = []
+    loco = PartRef(Bogie)
+    @classmethod
+    def car_name(cls,index):
+        return "car_%03i" % index
+
+    def add_car(self,car):
+        self.cars.append(car)
+
+    def make_components(self):
+        comp = {
+            'loco': self.loco()
+        }
+        if len(self.cars)> 0 :
+            for i,j in enumerate(self.cars):
+                comp[Train.car_name(i)] = j
+        print "TRAIN",comp
+        return comp
+
+    def make_constraints(self):
+        constr = [
+            Fixed(self.components['loco'].mate_origin)
+        ]
+        for i,j in enumerate(self.cars):
+            constr.append(Coincident(
+                self.components[self.car_name(i)].mate_end(-1),
+                self.components['loco'].mate_end(1)
+            ))
+        return constr
+
 if __name__ == "__main__":
     from cqparts.display import display
     p = Bogie()
     #p = Bogie(wagon=Wagon)
+    p = Train()
+    p.add_car(Bogie(wagon=Tank))
+    p.add_car(Bogie(wagon=Wagon))
     display(p)
