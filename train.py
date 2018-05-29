@@ -132,6 +132,22 @@ class Tank(Wagon):
         tank = tank.translate((0,0,-self.width/5))
         return tank 
 
+class Loco(Wagon):
+    _render = render_props(template="red")
+    def make(self):
+        drop = 7
+        cab_scale = self.width * 0.9
+        wp = cq.Workplane("ZY")
+        tank = wp.workplane(offset=-self.length/2).circle(self.width/3).extrude(self.length*0.6).translate((0,0,self.width/3)).faces(">X").chamfer(0.5)
+        block = cq.Workplane("XY").box(self.length,self.width,self.width/drop,centered=(True,True,False))
+        tank = tank.cut(block)
+        tank = tank.translate((0,0,-self.width/drop))
+        cab = cq.Workplane("XY").rect(cab_scale,cab_scale).extrude(cab_scale)
+        cab = cab.faces(">Z").edges("|X").fillet(4)
+        cab = cab.translate((-self.width/2,0,0))
+        cab = cab.union(tank)
+        return cab 
+
 class TrainCouplingCover(cqparts.Part):
     diameter = PositiveFloat(8)
     width = PositiveFloat(4)
@@ -236,40 +252,49 @@ class Bogie(cqparts.Assembly):
 
 class Train(cqparts.Assembly):
     cars = []
-    loco = PartRef(Bogie)
+    loco = PartRef(Bogie(wagon=Loco))
     @classmethod
     def car_name(cls,index):
         return "car_%03i" % index
 
     def add_car(self,car):
-        self.cars.append(car)
+        self.cars.insert(0,car)
 
     def make_components(self):
-        comp = {
-            'loco': self.loco()
-        }
+        self.cars.append(self.loco)
+        comp = {}
         if len(self.cars)> 0 :
             for i,j in enumerate(self.cars):
                 comp[Train.car_name(i)] = j
-        print "TRAIN",comp
         return comp
 
     def make_constraints(self):
         constr = [
-            Fixed(self.components['loco'].mate_origin)
+            Fixed(self.components[Train.car_name(0)].mate_origin)
         ]
-        for i,j in enumerate(self.cars):
-            constr.append(Coincident(
-                self.components[self.car_name(i)].mate_end(-1),
-                self.components['loco'].mate_end(1)
-            ))
+#        for i,j in enumerate(self.cars):
+#            constr.append(Coincident(
+#                self.components[self.car_name(i)].mate_end(-1),
+#                self.components['loco'].mate_end(1)
+#            ))
+        for i in range(1,len(self.cars)):
+           print str(i-1) ,"-->",str(i)
+           last_car = self.components[Train.car_name(i-1)].mate_end(1)
+           this_car = self.components[Train.car_name(i)].mate_end(-1)
+           constr.append(Coincident(
+               this_car,
+               last_car
+           ))
         return constr
 
 if __name__ == "__main__":
     from cqparts.display import display
-    p = Bogie()
-    #p = Bogie(wagon=Wagon)
     p = Train()
     p.add_car(Bogie(wagon=Tank))
     p.add_car(Bogie(wagon=Wagon))
+    p.add_car(Bogie(wagon=Wagon))
+    #p.add_car(Bogie(wagon=Tank))
+    #p.add_car(Bogie(wagon=Tank))
+    #p.add_car(Bogie(wagon=Wagon))
+    #p = Loco()
     display(p)
