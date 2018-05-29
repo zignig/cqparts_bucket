@@ -127,7 +127,7 @@ class Wagon(cqparts.Part):
         return block
 
 class Tank(Wagon):
-    _render = render_props(template="green")
+    _render = render_props(template="tin")
     def make(self):
         wp = cq.Workplane("ZX")
         tank = wp.workplane(offset=-self.length/2).circle(self.width/2).extrude(self.length).translate((0,0,self.width/2)).chamfer(0.5)
@@ -137,7 +137,7 @@ class Tank(Wagon):
         return tank 
 
 class Loco(Wagon):
-    _render = render_props(template="red")
+    _render = render_props(template="steel")
     def make(self):
         drop = 6
         cab_scale = self.width * 0.8
@@ -161,11 +161,11 @@ class TrainCouplingCover(cqparts.Part):
     width = PositiveFloat(4)
     _render = render_props(template='steel')
     def initialize_parameters(self):
-        self.hub_diameter = self.diameter*0.9
+        self.hub_diameter = self.diameter*0.6
 
     def make(self):
         wp = cq.Workplane("XY")
-        wheel = wp.circle(self.diameter/2).extrude(self.width).faces(">Z").fillet(self.width/10)
+        wheel = wp.circle(self.diameter/2).extrude(self.width*0.8).faces(">Z").fillet(self.width/10)
         hub = wp.workplane(offset=self.width/2).circle(self.hub_diameter/2).extrude(self.width)
         wheel.cut(hub)
         return wheel
@@ -175,7 +175,7 @@ class TrainCouplingMagnet(cqparts.Part):
     diameter = PositiveFloat(8)
     _render = render_props(template='tin')
     def initialize_parameters(self):
-        self.hub_diameter = self.diameter*0.9
+        self.hub_diameter = self.diameter*0.6
 
     def make(self):
         wp = cq.Workplane("XY")
