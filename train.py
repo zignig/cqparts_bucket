@@ -7,7 +7,9 @@ from cqparts.constraint import Fixed, Coincident
 from cqparts.constraint import Mate
 from cqparts.utils.geometry import CoordSystem
 
-# a parameter for passing object down 
+from cqparts_toys.train.track import *
+
+# a parameter for passing object down
 class PartRef(Parameter):
     def type(self,value):
         return value
@@ -48,8 +50,8 @@ class TrainHub(cqparts.Part):
 
 
 class TrainWheel(cqparts.Assembly):
-    width = PositiveFloat(2)
-    diameter = PositiveFloat(8)
+    width = PositiveFloat(4)
+    diameter = PositiveFloat(10)
     axle = PositiveFloat(1)
 
     def make_components(self):
@@ -73,12 +75,12 @@ class TrainPan(cqparts.Part):
 
     def make(self):
         wp = cq.Workplane("XY")
-        pan = wp.box(self.length,self.width,self.height,centered=(True,True,False)).chamfer(0.2)
+        pan = wp.box(self.width,self.length,self.height,centered=(True,True,False)).chamfer(0.2)
         return pan
 
     def mate_lift(self,lift=0):
         return Mate(self, CoordSystem(
-            origin=(0,0,-lift),
+            origin=(0,0,-lift-2),
             xDir=(1,0,0),
             normal=(0,0,1)
         ))
@@ -93,10 +95,11 @@ class TrainPan(cqparts.Part):
 
     def mate_end(self,direction):
         return Mate(self, CoordSystem(
-            origin=(direction*self.length/2,0,self.height/2),
-            xDir=(0,0,1),
-            normal=(direction,0,0)
+            origin=(0,direction*self.length/2,self.height/2),
+            xDir=(1,0,1),
+            normal=(0,direction,0)
         ))
+
     #returns the mates for the wheels
     def wheel_points(self,inset=0):
         mps = []
@@ -105,29 +108,30 @@ class TrainPan(cqparts.Part):
             x = i[0]
             y = i[1]
             m = Mate(self,CoordSystem(
-                origin=(x*(self.length/2-inset),y*self.width/2,0),
-                xDir=(1,0,0),
-                normal=(0,y)
+                origin=(x*self.width/2,y*(self.length/2-inset),0),
+                xDir=(0,0,1),
+                normal=(x,0,0)
             ))
             mps.append(m)
         return mps
 
 class Wagon(cqparts.Part):
     length = PositiveFloat(25)
-    width = PositiveFloat(12)
+    width = PositiveFloat(10)
     height = PositiveFloat(6)
     _render = render_props(template="wood")
 
     def make(self):
         wp = cq.Workplane("XY")
-        block = wp.box(self.length,self.width,self.width,centered=(True,True,False)).chamfer(0.2)
+        block = wp.box(self.width,self.length,self.width,centered=(True,True,False)).chamfer(0.2)
         return block
 
 class Tank(Wagon):
+    _render = render_props(template="green")
     def make(self):
-        wp = cq.Workplane("ZY")
+        wp = cq.Workplane("ZX")
         tank = wp.workplane(offset=-self.length/2).circle(self.width/2).extrude(self.length).translate((0,0,self.width/2)).chamfer(0.5)
-        block = cq.Workplane("XY").box(self.length,self.width,self.width/5,centered=(True,True,False))
+        block = cq.Workplane("XY").box(self.width,self.length,self.width/5,centered=(True,True,False))
         tank = tank.cut(block)
         tank = tank.translate((0,0,-self.width/5))
         return tank 
@@ -135,17 +139,21 @@ class Tank(Wagon):
 class Loco(Wagon):
     _render = render_props(template="red")
     def make(self):
-        drop = 7
-        cab_scale = self.width * 0.9
-        wp = cq.Workplane("ZY")
+        drop = 6
+        cab_scale = self.width * 0.8
+        wp = cq.Workplane("ZX")
         tank = wp.workplane(offset=-self.length/2).circle(self.width/3).extrude(self.length*0.6).translate((0,0,self.width/3)).faces(">X").chamfer(0.5)
-        block = cq.Workplane("XY").box(self.length,self.width,self.width/drop,centered=(True,True,False))
+        block = cq.Workplane("XY").box(self.width,self.length,self.width/drop,centered=(True,True,False))
         tank = tank.cut(block)
         tank = tank.translate((0,0,-self.width/drop))
         cab = cq.Workplane("XY").rect(cab_scale,cab_scale).extrude(cab_scale)
-        cab = cab.faces(">Z").edges("|X").fillet(4)
-        cab = cab.translate((-self.width/2,0,0))
+        cab = cab.faces(">Z").edges("|Y").fillet(4)
+        cab = cab.translate((0,self.length/4,0))
+        cab = cab.faces(">Y").shell(-0.4)
         cab = cab.union(tank)
+        chimney = cq.Workplane("XY").circle(self.width/9.2).extrude(self.width*0.7).faces(">Z").chamfer(0.2)
+        chimney = chimney.translate((0,-self.length*0.35,0))
+        cab = cab.union(chimney)
         return cab 
 
 class TrainCouplingCover(cqparts.Part):
@@ -192,8 +200,8 @@ class TrainCoupling(cqparts.Assembly):
         ]
 
 class Bogie(cqparts.Assembly):
-    length = PositiveFloat(25)
-    width = PositiveFloat(12)
+    length = PositiveFloat(32)
+    width = PositiveFloat(16)
     height = PositiveFloat(6)
     wheel = PartRef(TrainWheel)
     wagon = PartRef()
@@ -211,13 +219,13 @@ class Bogie(cqparts.Assembly):
         for i in range(4):
             comp[Bogie.item_name(i)] = self.wheel()
         if self.wagon != None:
-            comp['wagon'] = self.wagon()
+            comp['wagon'] = self.wagon(width=self.width,length=self.length)
         return comp
 
     def make_constraints(self):
         pan= self.components['pan']
         lift = self.wheel().diameter/2
-        wheel_inset = (lift)*1.1
+        wheel_inset = (self.wheel().diameter/2)*1.2
         constr = [
             Fixed(self.components['pan'].mate_lift(lift=lift)),
             Coincident(
@@ -245,8 +253,8 @@ class Bogie(cqparts.Assembly):
     def mate_end(self,direction):
         coupling_extra = self.coupling().width
         return Mate(self, CoordSystem(
-            origin=(direction*((self.length/2)+coupling_extra),0,self.height/2),
-            xDir=(1,0,0),
+            origin=(0,direction*((self.length/2)+coupling_extra),self.height/2),
+            xDir=(-1,0,0),
             normal=(0,0,1)
         ))
 
@@ -272,29 +280,47 @@ class Train(cqparts.Assembly):
         constr = [
             Fixed(self.components[Train.car_name(0)].mate_origin)
         ]
-#        for i,j in enumerate(self.cars):
-#            constr.append(Coincident(
-#                self.components[self.car_name(i)].mate_end(-1),
-#                self.components['loco'].mate_end(1)
-#            ))
+        self.cars.reverse()
         for i in range(1,len(self.cars)):
            print str(i-1) ,"-->",str(i)
-           last_car = self.components[Train.car_name(i-1)].mate_end(1)
-           this_car = self.components[Train.car_name(i)].mate_end(-1)
+           last_car = self.components[Train.car_name(i-1)].mate_end(-1)
+           this_car = self.components[Train.car_name(i)].mate_end(1)
            constr.append(Coincident(
                this_car,
                last_car
            ))
         return constr
 
+class Display(cqparts.Assembly):
+    train = PartRef()
+    def make_components(self):
+        comp = {
+            'rail1': StraightTrack(),
+            'rail2': StraightTrack()
+        }
+        if self.train != None:
+            comp['train'] = self.train
+        return comp
+
+    def make_constraints(self):
+        constr = [
+            Fixed(self.components['rail1'].mate_origin),
+            Coincident(
+                self.components['rail2'].mate_end,
+                self.components['rail1'].mate_start
+            ),
+        ]
+        if self.train != None:
+            constr.append(Fixed(self.components['rail1'].mate_origin))
+        return constr
+
+
+
 if __name__ == "__main__":
     from cqparts.display import display
-    p = Train()
-    p.add_car(Bogie(wagon=Tank))
-    p.add_car(Bogie(wagon=Wagon))
-    p.add_car(Bogie(wagon=Wagon))
-    #p.add_car(Bogie(wagon=Tank))
-    #p.add_car(Bogie(wagon=Tank))
-    #p.add_car(Bogie(wagon=Wagon))
-    #p = Loco()
+    toottoot = Train()
+    toottoot.add_car(Bogie(wagon=Tank))
+    toottoot.add_car(Bogie(wagon=Wagon))
+    toottoot.add_car(Bogie())
+    p = Display(train=toottoot)
     display(p)
