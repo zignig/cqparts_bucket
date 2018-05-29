@@ -58,10 +58,12 @@ class TrainWheel(cqparts.Assembly):
             Fixed(self.components['hub'].mate_origin),
         ]
 
+
+
 class TrainPan(cqparts.Part):
-    length = PositiveFloat(12)
-    width = PositiveFloat(8)
-    height = PositiveFloat(6)
+    length = PositiveFloat(35)
+    width = PositiveFloat(12)
+    height = PositiveFloat(10)
     _render = render_props(template='steel')
 
     def make(self):
@@ -69,7 +71,61 @@ class TrainPan(cqparts.Part):
         pan = wp.box(self.length,self.width,self.height,centered=(True,True,False))
         return pan
 
+    def mate_fl(self):
+        return Mate(self, CoordSystem(
+            origin=(self.length/2, -self.width/2, 0),
+            xDir=(1, 0, 0),
+            normal=(0,-1,0)
+        ))
+
+    #returns mount points for the wheels
+    def wheel_points(self):
+        mps = []
+        pos = [(-1,-1),(-1,1),(1,1),(1,-1)]
+        for i in pos:
+            x = i[0]
+            y = i[1]
+            m = Mate(self,CoordSystem(
+                origin=(x*self.length/3,y*self.width/2,0),
+                xDir=(1,0,0),
+                normal=(0,y)
+            ))
+            mps.append(m)
+        return mps
+
+class Bogie(cqparts.Assembly):
+    length = PositiveFloat(35)
+    width = PositiveFloat(12)
+    height = PositiveFloat(10)
+
+    @classmethod
+    def item_name(cls,index):
+        return "wheel_%03i" % index
+
+    def make_components(self):
+        comp = {
+            'pan': TrainPan(length=self.length,width=self.width,height=self.height),
+        }
+        for i in range(4):
+            comp[Bogie.item_name(i)] = TrainWheel()
+        print comp
+        return comp
+
+    def make_constraints(self):
+        pan= self.components['pan']
+        constr = [
+            Fixed(self.components['pan'].mate_origin),
+        ]
+        for i,j in enumerate(pan.wheel_points()):
+            w = Coincident(
+                self.components[Bogie.item_name(i)].mate_origin,
+                j  
+            )
+            constr.append(w)
+
+        return constr
+
 if __name__ == "__main__":
     from cqparts.display import display
-    p = TrainPan()
+    p = Bogie()
     display(p)
