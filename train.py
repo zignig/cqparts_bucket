@@ -1,4 +1,18 @@
+
+# Model train and cars
+
+#TODO
+# convert the bogie to be printable
+#  - axle makes cutout ( paper clip or wooden skewer ) , get dims
+#  - wagons are unioned to bogie
+#  - define magnet at top level and union magnet holder with bogie
+#  - fix wheel for axel
+#  - make more wagon parts
+#
+#  pass axle and magnet down from top level
+
 import cadquery as cq
+
 import cqparts
 from cadquery import Solid
 from cqparts.params import *
