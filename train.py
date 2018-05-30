@@ -260,8 +260,6 @@ class Bogie(cqparts.Assembly):
         for i in range(len(pan.wheel_points())):
             comp[Bogie.item_name(i)] =\
                 self.wheel(axle=self.axle, width=self.width)
-        # if self.wagon is not None:
-        #    comp['wagon'] = self.wagon(width=self.width, length=self.length)
         return comp
 
     def make_constraints(self):
@@ -285,11 +283,6 @@ class Bogie(cqparts.Assembly):
                 j
             )
             constr.append(w)
-        # if self.wagon is not None:
-        #    constr.append(Coincident(
-        #        self.components['wagon'].mate_origin,
-        #        self.components['pan'].mate_top
-        #    ))
         return constr
 
     def make_alterations(self):
