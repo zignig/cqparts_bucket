@@ -3,7 +3,7 @@
 
 #TODO
 # convert the bogie to be printable
-#  - axle makes cutout ( paper clip or wooden skewer ) , get dims
+#  DONE - axle makes cutout ( paper clip or wooden skewer ) , get dims
 #  - wagons are unioned to bogie
 #  - define magnet at top level and union magnet holder with bogie
 #  - fix wheel for axel
@@ -72,6 +72,10 @@ class TrainAxle(cqparts.Part):
             normal=(0,1,0)
         ))
 
+    def get_cutout(self, clearance=0):
+        return cadquery.Workplane('ZX', origin=(0, -self.width/2 - clearance, 0)) \
+            .circle((self.axle/ 2) + clearance) \
+            .extrude(self.width+ (2 * clearance))
 
 class TrainWheels(cqparts.Assembly):
     width = PositiveFloat(20)
@@ -103,6 +107,13 @@ class TrainWheels(cqparts.Assembly):
             )
         ]
 
+    def apply_cutout(self, part):
+        # Cut wheel & axle from given part
+        axle = self.components['axle']
+        local_obj = part.local_obj
+        local_obj = local_obj \
+            .cut((axle.world_coords - part.world_coords) + axle.get_cutout(clearance=0.1))
+        part.local_obj = local_obj
 
 class TrainPan(cqparts.Part):
     length = PositiveFloat(35)
@@ -137,14 +148,13 @@ class TrainPan(cqparts.Part):
             normal=(0,direction,0)
         ))
 
-    #
     #returns the mates for the wheels
     def wheel_points(self,inset=0):
         mps = []
         pos = [1,-1]
         for i in pos:
             m = Mate(self,CoordSystem(
-                origin=(0,i*(self.length/2-inset),0),
+                origin=(0,i*(self.length/2-inset),1),
                 xDir=(0,0,1),
                 normal=(0,i,0)
             ))
@@ -219,7 +229,6 @@ class TrainCouplingMagnet(cqparts.Part):
         hub = hub.faces(">Z").fillet(self.hub_diameter/9)
         return hub
 
-
 class TrainCoupling(cqparts.Assembly):
     width = PositiveFloat(2)
     diameter = PositiveFloat(4)
@@ -286,6 +295,11 @@ class Bogie(cqparts.Assembly):
                 self.components['pan'].mate_top
             ))
         return constr
+
+    def make_alterations(self):
+        pan= self.components['pan']
+        for i in range(len(pan.wheel_points())):
+            self.components[Bogie.item_name(i)].apply_cutout(pan)
 
     def mate_end(self,direction):
         coupling_extra = self.coupling().width
@@ -356,8 +370,9 @@ class Display(cqparts.Assembly):
 if __name__ == "__main__":
     from cqparts.display import display
     toottoot = Train()
-    toottoot.add_car(Bogie(wagon=Tank))
-    toottoot.add_car(Bogie(wagon=Wagon))
-    toottoot.add_car(Bogie())
+    #toottoot.add_car(Bogie(wagon=Tank))
+    #toottoot.add_car(Bogie(wagon=Wagon))
+    #toottoot.add_car(Bogie())
     p = Display(train=toottoot)
+    #p = Bogie()
     display(p)
