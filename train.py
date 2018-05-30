@@ -39,46 +39,69 @@ class TrainTyre(cqparts.Part):
     def make(self):
         wp = cq.Workplane("XY")
         wheel = wp.circle(self.diameter/2).extrude(self.width).fillet(self.width/4)
-        hub = wp.workplane(offset=self.width/2).circle(self.hub_diameter/2).extrude(self.width)
         axle = wp.circle(self.axle/2).extrude(self.width)
-        hub = hub.union(axle)
-        wheel.cut(hub)
+        wheel.cut(axle)
         return wheel
 
 
-class TrainHub(cqparts.Part):
-    width = PositiveFloat(3)
-    diameter = PositiveFloat(8)
+class TrainAxle(cqparts.Part):
     axle = PositiveFloat(1)
-    _render = render_props(template='tin')
-    def initialize_parameters(self):
-        self.hub_diameter = self.diameter/2
+    width = PositiveFloat(20)
+    _render = render_props(template='wood')
 
     def make(self):
-        wp = cq.Workplane("XY")
-        hub = wp.workplane(offset=self.width/2).circle(self.hub_diameter/2).extrude(self.width/2)
-        hub = hub.faces(">Z").fillet(self.hub_diameter/5)
-        axle = wp.workplane(offset=-self.width/2).circle(self.axle/2).extrude(self.width)
-        hub = hub.union(axle)
-        return hub
+        wp = cq.Workplane("ZX")
+        ax_l = wp.circle(self.axle/2).extrude(-self.width/2)
+        ax_r = wp.circle(self.axle/2).extrude(self.width/2)
+        ax_l = ax_l.union(ax_r)
+        return ax_l
+
+    @property
+    def mate_left(self):
+        return Mate(self, CoordSystem(
+            origin=(0,self.width/2,0),
+            xDir=(1,0,0),
+            normal=(0,-1,0)
+        ))
+
+    @property
+    def mate_right(self):
+        return Mate(self, CoordSystem(
+            origin=(0,-self.width/2,0),
+            xDir=(1,0,0),
+            normal=(0,1,0)
+        ))
 
 
-class TrainWheel(cqparts.Assembly):
-    width = PositiveFloat(4)
+class TrainWheels(cqparts.Assembly):
+    width = PositiveFloat(20)
     diameter = PositiveFloat(10)
     axle = PositiveFloat(1)
+    wheel = PartRef(TrainTyre)
+
+    def initialize_parameters(self):
+        self.ww = self.wheel().width
+        self.aw = self.width + self.ww*2
 
     def make_components(self):
         return {
-            "tyre" : TrainTyre(width=self.width,diameter=self.diameter,axle=self.axle),
-            "hub" : TrainHub(width=self.width,diameter=self.diameter,axle=self.axle),
+            "axle" : TrainAxle(axle=self.axle,width=self.aw),
+            "lwheel": TrainTyre(axle=self.axle),
+            "rwheel": TrainTyre(axle=self.axle)
         }
+
     def make_constraints(self):
         return [
-            Fixed(self.components['tyre'].mate_origin),
-            Fixed(self.components['hub'].mate_origin),
+            Fixed(self.components['axle'].mate_origin),
+            Coincident(
+                self.components['lwheel'].mate_origin,
+                self.components['axle'].mate_left
+            ),
+            Coincident(
+                self.components['rwheel'].mate_origin,
+                self.components['axle'].mate_right
+            )
         ]
-
 
 
 class TrainPan(cqparts.Part):
@@ -114,17 +137,16 @@ class TrainPan(cqparts.Part):
             normal=(0,direction,0)
         ))
 
+    #
     #returns the mates for the wheels
     def wheel_points(self,inset=0):
         mps = []
-        pos = [(-1,-1),(-1,1),(1,1),(1,-1)]
+        pos = [1,-1]
         for i in pos:
-            x = i[0]
-            y = i[1]
             m = Mate(self,CoordSystem(
-                origin=(x*self.width/2,y*(self.length/2-inset),0),
+                origin=(0,i*(self.length/2-inset),0),
                 xDir=(0,0,1),
-                normal=(x,0,0)
+                normal=(0,i,0)
             ))
             mps.append(m)
         return mps
@@ -217,7 +239,7 @@ class Bogie(cqparts.Assembly):
     length = PositiveFloat(32)
     width = PositiveFloat(16)
     height = PositiveFloat(6)
-    wheel = PartRef(TrainWheel)
+    wheel = PartRef(TrainWheels)
     wagon = PartRef()
     coupling = PartRef(TrainCoupling)
     @classmethod
@@ -230,8 +252,9 @@ class Bogie(cqparts.Assembly):
             'front_coupling' : self.coupling(),
             'back_coupling' : self.coupling(),
         }
-        for i in range(4):
-            comp[Bogie.item_name(i)] = self.wheel()
+        pan = comp['pan']
+        for i in range(len(pan.wheel_points())):
+            comp[Bogie.item_name(i)] = self.wheel(width=self.width)
         if self.wagon != None:
             comp['wagon'] = self.wagon(width=self.width,length=self.length)
         return comp
