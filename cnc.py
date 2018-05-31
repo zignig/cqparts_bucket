@@ -8,7 +8,7 @@ Created on Wed May 30 16:23:59 2018
 import cadquery as cq
 
 import cqparts
-from cqparts.params import Parameter, PositiveFloat
+from cqparts.params import Parameter, PositiveFloat ,Float
 from cqparts.display import render_props
 from cqparts.constraint import Fixed, Coincident
 from cqparts.constraint import Mate
@@ -41,10 +41,11 @@ class EndBlock(cqparts.Part):
         ))
 
 
-class Carrige(cqparts.Part):
+class Carriage(cqparts.Part):
     height = PositiveFloat()
     width = PositiveFloat()
     length = PositiveFloat()
+    _render = render_props(template="green")
 
     def make(self):
         wp = cq.Workplane("XY")
@@ -53,7 +54,7 @@ class Carrige(cqparts.Part):
 
     def mate_pos(self, pos=0):
         return Mate(self, CoordSystem(
-            origin=(self.length/2, 0, 0),
+            origin=(pos, 0, 0),
             xDir=(1, 0, 0),
             normal=(0, 1, 0)
         ))
@@ -86,13 +87,6 @@ class Rails(cqparts.Part):
             normal=(0, 1, 0)
         ))
 
-
-class OtherRails(Rails):
-    def make(self):
-        wp = cq.Workplane("ZY")
-        tube = wp.circle(self.width/2).extrude(self.length)
-        tube = tube.translate((self.length/2, 0, 0))
-        return tube
 
 
 class DriveBlock(cqparts.Part):
@@ -131,15 +125,27 @@ class DriveBlock(cqparts.Part):
         ))
 
 
+class Platform(cqparts.Part):
+    height = PositiveFloat(5)
+    width = PositiveFloat(200)
+    length = PositiveFloat(200)
+    def make(self):
+        wp = cq.Workplane("XY")
+        box = wp.box(self.length, self.width, self.height)
+        return box
+        
 class Axis(cqparts.Assembly):
-    height = PositiveFloat()
-    width = PositiveFloat()
-    length = PositiveFloat()
-    axis_length = PositiveFloat()
+    height = PositiveFloat(40)
+    width = PositiveFloat(40)
+    length = PositiveFloat(40)
+    axis_length = PositiveFloat(150)
 
     Drive = PartRef(DriveBlock)
     Rails = PartRef(Rails)
     End = PartRef(EndBlock)
+    Carriage = PartRef(Carriage)
+    
+    pos = Float(0)
 
     def make_components(self):
         comp = {
@@ -151,7 +157,10 @@ class Axis(cqparts.Assembly):
                                 height=self.height/2),
             'endblock': self.End(length=self.length,
                                  width=self.width,
-                                 height=self.height)
+                                 height=self.height),
+            'carriage': self.Carriage(length=self.length,
+                                      width=self.width,
+                                      height=self.height)
         }
         return comp
 
@@ -160,13 +169,33 @@ class Axis(cqparts.Assembly):
             Fixed(self.components['driveblock'].mate_bottom),
             Coincident(self.components['rails'].mate_start,
                        self.components['driveblock'].mate_start),
+            Coincident(self.components['carriage'].mate_pos(self.pos),
+                       self.components['rails'].mate_origin),
             Coincident(self.components['endblock'].mate_start,
                        self.components['rails'].mate_end)
         ]
         return constr
 
 
+class OtherRails(Rails):
+    def make(self):
+        wp = cq.Workplane("ZY")
+        tube = wp.circle(self.width/2).extrude(self.length)
+        tube = tube.translate((self.length/2, 0, 0))
+        return tube
+
+
+class OtherDrive(DriveBlock):
+
+    _render = render_props(color=(50,50,50))
+
+    def make(self):
+        c = super(OtherDrive, self).make()
+        c = c.faces(">Z").shell(-7).fillet(2)
+        return c
+
 if __name__ == "__main__":
     from cqparts.display import display
-    e = Axis(height=40, width=40, length=40, axis_length=200, Rails=OtherRails)
+    e = Axis(pos=0)
+    #e = Platform()
     display(e)
