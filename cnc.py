@@ -140,25 +140,25 @@ class Axis(cqparts.Assembly):
     length = PositiveFloat(40)
     axis_length = PositiveFloat(150)
 
-    Drive = PartRef(DriveBlock)
-    Rails = PartRef(Rails)
-    End = PartRef(EndBlock)
-    Carriage = PartRef(Carriage)
+    drive = PartRef(DriveBlock)
+    rails = PartRef(Rails)
+    end = PartRef(EndBlock)
+    carriage = PartRef(Carriage)
     
     pos = Float(0)
 
     def make_components(self):
         comp = {
-            'driveblock': self.Drive(length=self.length,
+            'driveblock': self.drive(length=self.length,
                                      width=self.width,
                                      height=self.height),
-            'rails': self.Rails(length=self.axis_length,
+            'rails': self.rails(length=self.axis_length,
                                 width=self.width/2,
                                 height=self.height/2),
-            'endblock': self.End(length=self.length,
+            'endblock': self.end(length=self.length,
                                  width=self.width,
                                  height=self.height),
-            'carriage': self.Carriage(length=self.length,
+            'carriage': self.carriage(length=self.length,
                                       width=self.width,
                                       height=self.height)
         }
@@ -191,11 +191,11 @@ class OtherDrive(DriveBlock):
 
     def make(self):
         c = super(OtherDrive, self).make()
-        c = c.faces(">Z").shell(-7).fillet(2)
+        c = c.faces(">Z").shell(-7).chamfer(0.5)
         return c
 
 if __name__ == "__main__":
     from cqparts.display import display
-    e = Axis(pos=0)
+    e = Axis(pos=0,rails=OtherRails,drive=OtherDrive)
     #e = Platform()
     display(e)

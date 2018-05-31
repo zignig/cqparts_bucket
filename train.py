@@ -52,11 +52,12 @@ class TrainAxle(cqparts.Part):
     axle = PositiveFloat(3)
     width = PositiveFloat(20)
     _render = render_props(template='wood')
+    extra = PositiveFloat(0.5)
 
     def make(self):
         wp = cq.Workplane("ZX")
-        ax_l = wp.circle(self.axle/2).extrude(-self.width/2)
-        ax_r = wp.circle(self.axle/2).extrude(self.width/2)
+        ax_l = wp.circle(self.axle/2).extrude(-self.width/2-self.extra)
+        ax_r = wp.circle(self.axle/2).extrude(self.width/2+self.extra)
         ax_l = ax_l.union(ax_r)
         return ax_l
 
