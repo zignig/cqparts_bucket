@@ -401,7 +401,7 @@ class Train(cqparts.Assembly):
         return constr
 
 
-class Display(cqparts.Assembly):
+class Diorama(cqparts.Assembly):
     train = PartRef()
 
     def make_components(self):
@@ -431,7 +431,8 @@ if __name__ == "__main__":
     toottoot = Train(axle=2)
     toottoot.add_car(Bogie(wagon=Tank))
     toottoot.add_car(Bogie(wagon=Wagon))
-    # toottoot.add_car(Bogie())
-    p = Display(train=toottoot)
+    #for i in range(10):
+    #    toottoot.add_car(Bogie())
+    p = Diorama(train=toottoot)
     # p = Bogie()
     display(p)

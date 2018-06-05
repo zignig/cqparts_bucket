@@ -22,7 +22,7 @@ for i in steppers:
     s = catalogue.deserialize_item(i)
     stepper_list.append(s)
 
-class Arrange(cqparts.Assembly):
+class StepperCat(cqparts.Assembly):
 
     def initialize_parameters(self):
         self.coll = []
@@ -57,7 +57,7 @@ class Arrange(cqparts.Assembly):
         return constraints
 
 
-ar = Arrange()
+ar = StepperCat()
 for i in stepper_list:
     ar.add(i)
 
