@@ -9,9 +9,8 @@ from cqparts.utils.geometry import CoordSystem
 
 class Belt(cqparts.Part):
     # Parameters
-    rad1 = PositiveFloat(30)
-    rad2 = PositiveFloat(10)
-    spacing = PositiveFloat(100)
+    rad = PositiveFloat(10)
+    spacing = PositiveFloat(30)
 
     belt_width = PositiveFloat(10)
     belt_thickness = PositiveFloat(2)
@@ -20,9 +19,13 @@ class Belt(cqparts.Part):
     #_render = render_props(template='tin')
 
     def make(self):
-        pts = [(0,1),(1,4),(15,10)]
-        path = cq.Workplane("XZ").spline(pts)
-        outer = cq.Workplane("XY").rect(9,5).sweep(path,makeSolid=True).chamfer(0.1)
+        path = cq.Workplane("XY")\
+            .moveTo(0,self.rad)\
+            .lineTo(self.spacing,self.rad)\
+            .radiusArc((self.spacing,-self.rad),self.rad)
+#            .lineTo(0,-self.rad)
+#            .radiusArc((0,self.rad),self.rad)
+        outer = cq.Workplane("XZ").circle(1).sweep(path,makeSolid=True)
 	return outer
 
 if __name__ == "__main__":
