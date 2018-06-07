@@ -32,7 +32,7 @@ class PartRef(Parameter):
 
 class TrainTyre(cqparts.Part):
     width = PositiveFloat(3)
-    diameter = PositiveFloat(8)
+    diameter = PositiveFloat(10)
     axle = PositiveFloat(1)
     _render = render_props(template='yellow')
 
@@ -42,7 +42,7 @@ class TrainTyre(cqparts.Part):
     def make(self):
         wp = cq.Workplane("XY")
         wheel = wp.circle(self.diameter/2)\
-            .extrude(self.width).fillet(self.width/4)
+            .extrude(self.width).fillet(self.width/2.2)
         axle = wp.circle(self.axle/2).extrude(self.width)
         wheel.cut(axle)
         return wheel
@@ -53,18 +53,21 @@ class TrainAxle(cqparts.Part):
     width = PositiveFloat(20)
     _render = render_props(template='wood')
     extra = PositiveFloat(0.5)
+    gap = PositiveFloat(0.2)
 
     def make(self):
         wp = cq.Workplane("ZX")
         ax_l = wp.circle(self.axle/2).extrude(-self.width/2-self.extra)
+        ax_l = ax_l.faces(">X").chamfer(0.1)
         ax_r = wp.circle(self.axle/2).extrude(self.width/2+self.extra)
+        ax_r = ax_r.faces("<X").chamfer(0.1)
         ax_l = ax_l.union(ax_r)
         return ax_l
 
     @property
     def mate_left(self):
         return Mate(self, CoordSystem(
-            origin=(0, self.width/2, 0),
+            origin=(0, self.width/2+self.gap, 0),
             xDir=(1, 0, 0),
             normal=(0, -1, 0)
         ))
@@ -72,7 +75,7 @@ class TrainAxle(cqparts.Part):
     @property
     def mate_right(self):
         return Mate(self, CoordSystem(
-            origin=(0, -self.width/2, 0),
+            origin=(0, -self.width/2-self.gap, 0),
             xDir=(1, 0, 0),
             normal=(0, 1, 0)
         ))
@@ -147,7 +150,7 @@ class TrainPan(cqparts.Part):
 
     def mate_lift(self, lift=0):
         return Mate(self, CoordSystem(
-            origin=(0, 0, -lift-2),
+            origin=(0, 0, -lift),
             xDir=(1, 0, 0),
             normal=(0, 0, 1)
         ))
@@ -168,12 +171,12 @@ class TrainPan(cqparts.Part):
         ))
 
     # returns the mates for the wheels
-    def wheel_points(self, inset=0):
+    def wheel_points(self, inset=0,axle=0):
         mps = []
         pos = [1, -1]
         for i in pos:
             m = Mate(self, CoordSystem(
-                origin=(0, i*(self.length/2-inset), 1),
+                origin=(0, i*(self.length/2-inset), axle),
                 xDir=(0, 0, 1),
                 normal=(0, i, 0)
             ))
@@ -238,8 +241,8 @@ class TrainCoupling(cqparts.Assembly):
 class Bogie(cqparts.Assembly):
     length = PositiveFloat(32)
     width = PositiveFloat(16)
-    height = PositiveFloat(6)
-    axle = PositiveFloat(3)
+    height = PositiveFloat(8)
+    axle = PositiveFloat(2)
     wheel = PartRef(TrainWheels)
     wagon = PartRef()
     coupling = PartRef(TrainCoupling)
@@ -266,7 +269,7 @@ class Bogie(cqparts.Assembly):
     def make_constraints(self):
         pan = self.components['pan']
         lift = self.wheel().diameter/2
-        wheel_inset = (self.wheel().diameter/2)*1.2
+        wheel_inset = (self.wheel().diameter/2)*1.1
         constr = [
             Fixed(self.components['pan'].mate_lift(lift=lift)),
             Coincident(
@@ -278,7 +281,7 @@ class Bogie(cqparts.Assembly):
                 self.components['pan'].mate_end(-1)
             ),
         ]
-        for i, j in enumerate(pan.wheel_points(inset=wheel_inset)):
+        for i, j in enumerate(pan.wheel_points(inset=wheel_inset,axle=self.axle*0.9)):
             w = Coincident(
                 self.components[Bogie.item_name(i)].mate_origin,
                 j
@@ -429,10 +432,10 @@ class Diorama(cqparts.Assembly):
 if __name__ == "__main__":
     from cqparts.display import display
     toottoot = Train(axle=2)
-    toottoot.add_car(Bogie(wagon=Tank))
-    toottoot.add_car(Bogie(wagon=Wagon))
+    #toottoot.add_car(Bogie(wagon=Tank))
+    #toottoot.add_car(Bogie(wagon=Wagon))
     #for i in range(10):
     #    toottoot.add_car(Bogie())
     p = Diorama(train=toottoot)
-    # p = Bogie()
+    #p = Bogie()
     display(p)
