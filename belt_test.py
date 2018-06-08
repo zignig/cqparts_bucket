@@ -22,13 +22,12 @@ class Belt(cqparts.Part):
         return p
 
     def make(self):
-        p = self.profile()
-        outer = p.extrude(self.spacing)
-        p2 = self.profile().revolve(180,(2,self.rad),(1,self.rad))
+        outer = self.profile().extrude(self.spacing).translate((0,0,-self.rad))
+        p2 = self.profile().revolve(180,(2,self.rad),(1,self.rad)).translate((0,0,-self.rad))
         outer = outer.union(p2)
-        p3 = self.profile().extrude(self.spacing).translate((0,0,2*self.rad))
+        p3 = self.profile().extrude(self.spacing).translate((0,0,self.rad))
         outer = outer.union(p3)
-        p4 = self.profile().revolve(180,(-2,self.rad),(1,self.rad)).translate((0,-self.spacing,0))
+        p4 = self.profile().revolve(180,(-2,self.rad),(1,self.rad)).translate((0,-self.spacing,-self.rad))
         outer = outer.union(p4)
 	return outer
 
