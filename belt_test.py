@@ -16,7 +16,7 @@ class Belt(cqparts.Part):
     belt_thickness = PositiveFloat(1)
 
     # default appearance
-    #_render = render_props(template='tin')
+    _render = render_props(template='red')
     def profile(self):
         p = cq.Workplane("XZ").rect(self.belt_width,self.belt_thickness)
         return p
