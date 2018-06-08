@@ -7,7 +7,7 @@ from cqparts.constraint import Fixed, Coincident
 from cqparts.constraint import Mate
 from cqparts.utils.geometry import CoordSystem
 
-class pulley(cqparts.Part):
+class Pulley(cqparts.Part):
     # Parameters
     rad = PositiveFloat(5)
     thickness = PositiveFloat(5)
@@ -35,5 +35,5 @@ class pulley(cqparts.Part):
 
 if __name__ == "__main__":
     from cqparts.display import display
-    B = pulley()
+    B = Pulley()
     display(B)
