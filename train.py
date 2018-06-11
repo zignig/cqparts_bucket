@@ -432,8 +432,8 @@ class Diorama(cqparts.Assembly):
 if __name__ == "__main__":
     from cqparts.display import display
     toottoot = Train(axle=2)
-    #toottoot.add_car(Bogie(wagon=Tank))
-    #toottoot.add_car(Bogie(wagon=Wagon))
+    toottoot.add_car(Bogie(wagon=Tank))
+    toottoot.add_car(Bogie(wagon=Wagon))
     #for i in range(10):
     #    toottoot.add_car(Bogie())
     p = Diorama(train=toottoot)

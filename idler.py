@@ -7,10 +7,23 @@ from cqparts.constraint import Fixed, Coincident
 from cqparts.constraint import Mate
 from cqparts.utils.geometry import CoordSystem
 
+from cqparts_bearings.ball import BallBearing
+from cqparts_motors.shaft import Shaft
+
 class Idler(cqparts.Assembly):
-    pass
+
+    def make_components(self):
+        comps ={
+            'shaft' : Shaft()
+        }
+        return comps
+
+    def make_constraints(self):
+        return [
+            Fixed(self.components['shaft'].mate_origin)
+        ]
 
 if __name__ == "__main__":
     from cqparts.display import display
-    #B = Belt()
-    #display(B)
+    B = Idler()
+    display(B)

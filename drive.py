@@ -9,7 +9,7 @@ from cqparts.constraint import Mate
 from cqparts.utils.geometry import CoordSystem
 
 from pulley import Pulley
-from belt import Belt 
+from belt import Belt
 from cqparts_motors.stepper import Stepper
 from idler import Idler
 
@@ -21,14 +21,15 @@ class PartRef(Parameter):
 
 
 class BeltDrive(cqparts.Assembly):
-    spacing = PositiveFloat(100)
-    radius = PositiveFloat(42)
+    spacing = PositiveFloat(20)
+    pulley = PartRef(Pulley)
 
     def make_components(self):
+        pulley_rad  = self.pulley().rad
         comp = {
-            'p': Pulley(rad=self.radius),
-            'p2' : Pulley(rad=self.radius),
-            'belt' : Belt(spacing=self.spacing,rad=self.radius),
+            'p': self.pulley(),
+            'p2' : self.pulley(),
+            'belt' : Belt(spacing=self.spacing,rad=pulley_rad),
         }
         return comp
 
@@ -49,21 +50,25 @@ class BeltDrive(cqparts.Assembly):
 
     def pulley_B_mate(self,offset=0):
         return Mate(self,CoordSystem(
-            origin=(-offset,self.spacing,0),
-            xDir=(0,0,-1),
+            origin=(-offset,-self.spacing,0),
+            xDir=(0,0,1),
             normal=(1,0,0)
         ))
 
 class Drive(cqparts.Assembly):
     stepper = PartRef(Stepper)
     idler = PartRef(Idler)
-    spacing = PositiveFloat(200)
-    radius = PositiveFloat(10)
+    pulley = PartRef(Pulley)
+
+    height = PositiveFloat(300)
+    width = PositiveFloat(300)
+    length = PositiveFloat(300)
 
     def make_components(self):
         comp = {
             'stepper': self.stepper(),
-            'drive': BeltDrive(spacing=self.spacing,radius=self.radius)
+            'drive': BeltDrive(pulley=self.pulley,spacing=self.length),
+            'idler': self.idler(),
         }
         return comp
 
@@ -71,11 +76,36 @@ class Drive(cqparts.Assembly):
         constr = [
             Fixed(self.components['stepper'].mate_origin),
             Coincident(self.components['drive'].pulley_A_mate(offset=10),
-                       self.components['stepper'].mate_origin)
+                       self.components['stepper'].mate_origin),
+            Coincident(
+                       self.components['idler'].mate_origin,
+                       self.components['drive'].pulley_B_mate(offset=10),
+            )
         ]
         return constr
 
+
+    @property
+    def mate_start(self):
+        return Mate(self, CoordSystem(
+            origin=(0, 0, 0),
+            xDir=(1, 0, 0),
+            normal=(0, 1, 0)
+        ))
+
+    @property
+    def mate_end(self):
+        return Mate(self, CoordSystem(
+            origin=(0,-self.length,0),
+            xDir=(1, 0, 0),
+            normal=(0, 1, 0)
+        ))
+
+## test setup
+class MyPulley(Pulley):
+    rad = PositiveFloat(7)
+
 if __name__ == "__main__":
     from cqparts.display import display
-    p = Drive()
+    p = Drive(pulley=MyPulley,length=90)
     display(p)

@@ -18,8 +18,9 @@ class coupling(cqparts.Part):
     inner_diam_A = PositiveFloat(8)
     inner_diam_B = PositiveFloat(8)
 
+    _render = render_props(color=(75,75,50))
     def make(self):
-        lm = cq.Workplane("XY").circle(self.outer_diam/2).circle(self.inner_diam/2).extrude(self.length)
+        lm = cq.Workplane("XY").workplane(offset=-self.length/2).circle(self.outer_diam/2).circle(self.inner_diam_A/2).extrude(self.length)
         return lm
 
 
