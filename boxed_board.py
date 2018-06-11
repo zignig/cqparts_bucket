@@ -15,8 +15,8 @@ import os
 class BoxedBoard(cqparts.Assembly):
     clearance = PositiveFloat(12)
     case = Case(thickness=3,height=30,screw=Screw)
-    board = Pizero()
-   # board = Arduino()
+    #board = Pizero()
+    board = Arduino()
 
     def initialize_parameters(self):
         self.coll = []

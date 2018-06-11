@@ -31,7 +31,7 @@ class Pulley(cqparts.Part):
             .extrude(-self.rim_thickness)\
             .translate((self.thickness/2+self.rim_thickness,0,0))
         p = p.union(bottom_rim)
-        return p 
+        return p
 
 if __name__ == "__main__":
     from cqparts.display import display

@@ -9,8 +9,8 @@ from cqparts.utils.geometry import CoordSystem
 
 class Belt(cqparts.Part):
     # Parameters
-    rad = PositiveFloat(5)
-    spacing = PositiveFloat(140)
+    rad = PositiveFloat(10)
+    spacing = PositiveFloat(100)
 
     belt_width = PositiveFloat(5)
     belt_thickness = PositiveFloat(1)
