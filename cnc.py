@@ -80,9 +80,17 @@ class Drive(_AxisBase):
         ]
         return constr
 
+    def mate_mount(self,offset=0):
+        return Mate(self,CoordSystem(
+            origin=(0,0,0),
+            xDir=(1,0,0),
+            normal=(0,0,1)
+        ))
+
 
 class Rails(_AxisBase):
     shaft = PartRef(Shaft)
+    inset = PositiveFloat(10)
 
     @classmethod
     def rail_name(cls,index):
@@ -94,7 +102,7 @@ class Rails(_AxisBase):
         pos = [1,-1]
         for i in pos:
             m = Mate(self, CoordSystem(
-                origin=(0,i*(self.width/2),0),
+                origin=(0,i*((self.width/2)-self.inset),0),
                 xDir = (1,0,0),
                 normal = (0,0,i)
             ))
