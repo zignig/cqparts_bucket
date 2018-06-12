@@ -17,7 +17,7 @@ class Coupling(cqparts.Part):
     outer_diam = PositiveFloat(9)
     inner_diam_A = PositiveFloat(5)
     inner_diam_B = PositiveFloat(5)
-    gap = PositiveFloat(2)
+    gap = PositiveFloat(3)
 
     _render = render_props(color=(75,75,50))
     def make(self):

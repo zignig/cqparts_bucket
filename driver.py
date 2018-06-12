@@ -91,7 +91,7 @@ class ThreadedDrive(cqparts.Assembly):
             normal=(0, 0, 1)
         ))
 
-class Drive(cqparts.Assembly):
+class BeltDrive(cqparts.Assembly):
     stepper = PartRef(Stepper)
     idler = PartRef(Idler)
     pulley = PartRef(Pulley)
@@ -142,6 +142,6 @@ class MyPulley(Pulley):
 
 if __name__ == "__main__":
     from cqparts.display import display
-    #p = Drive(pulley=MyPulley,length=100)
-    p = ThreadedDrive()
+    #p = BeltDrive(pulley=MyPulley,length=100)
+    p = ThreadedDrive(length=50)
     display(p)
