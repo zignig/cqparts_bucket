@@ -168,10 +168,11 @@ class Axis(_AxisBase):
 
 from driver import BeltDrive
 from driver import ThreadedDrive
-dr = BeltDrive 
+#dr = BeltDrive 
+dr = ThreadedDrive 
 
 if __name__ == "__main__":
     from cqparts.display import display
-    e = Axis(drive=dr,length=300)
+    e = Axis(drive=dr,width=50,length=300)
     #e = Axis()
     display(e)
