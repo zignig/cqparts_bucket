@@ -16,6 +16,7 @@ from cqparts.utils.geometry import CoordSystem
 
 
 from cqparts_motors.shaft import Shaft
+from threaded import Threaded
 # a parameter for passing object down
 #from drive import Drive
 
@@ -64,7 +65,21 @@ class IdleEnd(_AxisBase):
     pass
 
 class Drive(_AxisBase):
-    pass
+    threaded = PartRef(Threaded)
+
+    def make_components(self):
+        comps = {
+            'drive' : self.threaded(length=self.length)
+        }
+        return comps
+
+    def make_constraints(self):
+        constr = [
+            Fixed(self.components['drive'].mate_origin,
+            CoordSystem((0,0,0),(0,1,0),(1,0,0)))
+        ]
+        return constr
+
 
 class Rails(_AxisBase):
     shaft = PartRef(Shaft)
@@ -102,7 +117,14 @@ class Rails(_AxisBase):
         return const
 
 class Carriage(_AxisBase):
+    pos = PositiveFloat(0)
     pass
+    def make_constraints(self):
+        return [
+            Fixed(self.components['box'].mate_origin,
+                CoordSystem((self.pos,0,0),(1,0,0),(0,0,1)))
+        ]
+
 
 class Axis(_AxisBase):
     drive_end = PartRef(DriveEnd)
@@ -115,15 +137,15 @@ class Axis(_AxisBase):
     width = PositiveFloat(75)
     height = PositiveFloat(40)
 
-    pos = PositiveFloat(0)
+    pos = PositiveFloat(90)
 
     def make_components(self):
         comps = {
             'drive_end' : self.drive_end(width=self.width),
             'idle_end' : self.idle_end(width=self.width),
-            'drive': self.drive(),
+            'drive': self.drive(length=self.length),
             'rails' : self.rails(length=self.length,width=self.width),
-            'carriage' : self.carriage()
+            'carriage' : self.carriage(width=self.width,pos=self.pos)
         }
         return comps
 
@@ -135,8 +157,12 @@ class Axis(_AxisBase):
         ]
         return constr
 
+from driver import BeltDrive
+from driver import ThreadedDrive
+dr = BeltDrive
+
 if __name__ == "__main__":
     from cqparts.display import display
-    #e = Axis(pos=0,axis_length=200)
-    e = Axis()
+    e = Axis(drive=dr,length=300)
+    #e = Axis()
     display(e)
