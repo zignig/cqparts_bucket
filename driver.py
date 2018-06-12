@@ -12,6 +12,8 @@ from pulley import Pulley
 from belt import Belt
 from cqparts_motors.stepper import Stepper
 from idler import Idler
+from coupling import Coupling
+from threaded import Threaded
 
 # a parameter for passing object down
 class PartRef(Parameter):
@@ -20,7 +22,7 @@ class PartRef(Parameter):
         return value
 
 
-class BeltDrive(cqparts.Assembly):
+class BeltAssembly(cqparts.Assembly):
     spacing = PositiveFloat(20)
     pulley = PartRef(Pulley)
 
@@ -55,6 +57,33 @@ class BeltDrive(cqparts.Assembly):
             normal=(1,0,0)
         ))
 
+# TODO
+class ThreadedDrive(cqparts.Assembly):
+    coupling = PartRef(Coupling)
+    stepper = PartRef(Stepper)
+    threaded = PartRef(Threaded)
+
+    length = PositiveFloat(100)
+    def make_components(self):
+        comp = {
+            'stepper': self.stepper(),
+            'coupling': self.coupling(),
+            'thread': self.threaded(length=self.length),
+        }
+        return comp
+
+    def make_constraints(self):
+        constr = [
+            Fixed(self.components['stepper'].mate_origin),
+            Coincident(self.components['coupling'].mate_input(),
+                       self.components['stepper'].mate_origin),
+            Coincident(
+                       self.components['thread'].mate_origin,
+                       self.components['coupling'].mate_output(),
+            )
+        ]
+        return constr
+
 class Drive(cqparts.Assembly):
     stepper = PartRef(Stepper)
     idler = PartRef(Idler)
@@ -62,12 +91,12 @@ class Drive(cqparts.Assembly):
 
     height = PositiveFloat(300)
     width = PositiveFloat(300)
-    length = PositiveFloat(300)
+    length = PositiveFloat(100)
 
     def make_components(self):
         comp = {
             'stepper': self.stepper(),
-            'drive': BeltDrive(pulley=self.pulley,spacing=self.length),
+            'drive': BeltAssembly(pulley=self.pulley,spacing=self.length),
             'idler': self.idler(),
         }
         return comp
@@ -83,7 +112,6 @@ class Drive(cqparts.Assembly):
             )
         ]
         return constr
-
 
     @property
     def mate_start(self):
@@ -107,5 +135,6 @@ class MyPulley(Pulley):
 
 if __name__ == "__main__":
     from cqparts.display import display
-    p = Drive(pulley=MyPulley,length=90)
+    #p = Drive(pulley=MyPulley,length=100)
+    p = ThreadedDrive()
     display(p)

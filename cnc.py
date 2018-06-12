@@ -44,7 +44,15 @@ class EndBlock(cqparts.Part):
         ))
 
 class Drive(cqparts.Part):
-    length = PostiveFloat()
+    length = PositiveFloat()
+    width = PositiveFloat()
+    height = PositiveFloat()
+
+    def make(self):
+        wp = cq.Workplane("XY")
+        box = wp.box(self.length, self.width, self.height)
+        return box
+
 
 class Carriage(cqparts.Part):
     height = PositiveFloat()
@@ -155,16 +163,16 @@ class Axis(cqparts.Assembly):
     axis_length = PositiveFloat(220)
 
     drive_block  = PartRef(DriveBlock)
-    drive = PartRef()
+    drive = PartRef(Drive)
     rails = PartRef(Rails)
-    end = PartRef(EndBlock)
+    end_block = PartRef(EndBlock)
     carriage = PartRef(Carriage)
 
     pos = Float(0)
 
     def make_components(self):
         comp = {
-            'driveblock': self.drive_block(length=self.length,
+            'drive_block': self.drive_block(length=self.length,
                                      width=self.width,
                                      height=self.height),
             'drive': self.drive(length=self.length,
@@ -173,7 +181,7 @@ class Axis(cqparts.Assembly):
             'rails': self.rails(length=self.axis_length,
                                 width=self.width/2,
                                 height=self.height/2),
-            'endblock': self.end(length=self.length,
+            'end_block': self.end_block(length=self.length,
                                  width=self.width,
                                  height=self.height),
             'carriage': self.carriage(length=self.length,
@@ -184,14 +192,14 @@ class Axis(cqparts.Assembly):
 
     def make_constraints(self):
         constr = [
-            Fixed(self.components['driveblock'].mate_origin),
+            Fixed(self.components['drive_block'].mate_origin),
             Coincident(self.components['drive'].mate_start,
-                       self.components['driveblock'].mate_start),
+                       self.components['drive_block'].mate_start),
             Coincident(self.components['rails'].mate_start,
-                       self.components['driveblock'].mate_start),
+                       self.components['drive_block'].mate_start),
             Coincident(self.components['carriage'].mate_pos(self.pos),
                        self.components['rails'].mate_mid),
-            Coincident(self.components['endblock'].mate_start,
+            Coincident(self.components['end_block'].mate_start,
                        self.components['rails'].mate_end)
         ]
         return constr
