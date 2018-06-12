@@ -17,6 +17,7 @@ class Coupling(cqparts.Part):
     outer_diam = PositiveFloat(9)
     inner_diam_A = PositiveFloat(5)
     inner_diam_B = PositiveFloat(5)
+    gap = PositiveFloat(2)
 
     _render = render_props(color=(75,75,50))
     def make(self):
@@ -29,14 +30,14 @@ class Coupling(cqparts.Part):
 
     def mate_input(self,offset=0):
         return Mate(self,CoordSystem(
-            origin=(0,0,-self.length/2),
-            xDir=(1,0,),
+            origin=(0,0,-self.gap/2),
+            xDir=(1,0,0),
             normal=(0,0,1)
         ))
 
     def mate_output(self,offset=0):
         return Mate(self,CoordSystem(
-            origin=(0,0,self.length/2),
+            origin=(0,0,self.gap/2),
             xDir=(1,0,0),
             normal=(0,0,1)
         ))

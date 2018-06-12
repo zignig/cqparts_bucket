@@ -76,13 +76,20 @@ class ThreadedDrive(cqparts.Assembly):
         constr = [
             Fixed(self.components['stepper'].mate_origin),
             Coincident(self.components['coupling'].mate_input(),
-                       self.components['stepper'].mate_origin),
+                      self.mate_tip()), 
             Coincident(
                        self.components['thread'].mate_origin,
                        self.components['coupling'].mate_output(),
             )
         ]
         return constr
+
+    def mate_tip(self):
+        return Mate(self, CoordSystem(
+            origin=(0, 0, self.components['stepper'].shaft_length),
+            xDir=(1, 0, 0),
+            normal=(0, 0, 1)
+        ))
 
 class Drive(cqparts.Assembly):
     stepper = PartRef(Stepper)
