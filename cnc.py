@@ -67,7 +67,39 @@ class Drive(_AxisBase):
     pass
 
 class Rails(_AxisBase):
-    pass
+    shaft = PartRef(Shaft)
+
+    @classmethod
+    def rail_name(cls,index):
+        return "rail_%04i" % index
+
+    def rail_pos(self):
+        # two rails to start
+        mps = []
+        pos = [1,-1]
+        for i in pos:
+            m = Mate(self, CoordSystem(
+                origin=(0,i*(self.width/2),0),
+                xDir = (1,0,0),
+                normal = (0,0,i)
+            ))
+            mps.append(m)
+        return mps
+
+    def make_components(self):
+        comps = {}
+        for i,j in enumerate(self.rail_pos()):
+            comps[Rails.rail_name(i)] = self.shaft(length=self.length)
+        return comps
+
+
+    def make_constraints(self):
+        const = []
+        for i,j in enumerate(self.rail_pos()):
+            item = self.components[Rails.rail_name(i)]
+            m = Fixed(item.mate_origin,CoordSystem((0,j.local_coords.origin.y,0),(0,1,0),(1,0,0)))
+            const.append(m)
+        return const
 
 class Carriage(_AxisBase):
     pass
@@ -90,7 +122,7 @@ class Axis(_AxisBase):
             'drive_end' : self.drive_end(width=self.width),
             'idle_end' : self.idle_end(width=self.width),
             'drive': self.drive(),
-            'rails' : self.rails(),
+            'rails' : self.rails(length=self.length,width=self.width),
             'carriage' : self.carriage()
         }
         return comps
