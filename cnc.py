@@ -153,13 +153,14 @@ class Axis(_AxisBase):
         constr = [
             Fixed(self.components['drive_end'].mate_origin),
             Fixed(self.components['idle_end'].mate_origin
-                ,CoordSystem((self.length,0,0),(1,0,0),(0,0,1)))
+                ,CoordSystem((self.length,0,0),(1,0,0),(0,0,1))),
+            Fixed(self.components['drive'].mate_mount())
         ]
         return constr
 
 from driver import BeltDrive
 from driver import ThreadedDrive
-dr = BeltDrive
+dr = BeltDrive 
 
 if __name__ == "__main__":
     from cqparts.display import display

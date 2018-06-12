@@ -46,18 +46,25 @@ class BeltAssembly(cqparts.Assembly):
     def pulley_A_mate(self,offset=0):
         return Mate(self,CoordSystem(
             origin=(-offset,0,0),
-            xDir=(0,0,-1),
+            xDir=(0,-1,0),
             normal=(1,0,0)
         ))
 
     def pulley_B_mate(self,offset=0):
         return Mate(self,CoordSystem(
             origin=(-offset,-self.spacing,0),
-            xDir=(0,0,1),
+            xDir=(0,1,0),
             normal=(1,0,0)
         ))
 
-# TODO
+    def mate_mount(self,offset=0):
+        return Mate(self,CoordSystem(
+            origin=(0,0,0),
+            xDir=(1,0,0),
+            normal=(0,1,0)
+            ))
+
+
 class ThreadedDrive(cqparts.Assembly):
     coupling = PartRef(Coupling)
     stepper = PartRef(Stepper)
@@ -91,6 +98,13 @@ class ThreadedDrive(cqparts.Assembly):
             normal=(0, 0, 1)
         ))
 
+    def mate_mount(self,offset=0):
+        return Mate(self,CoordSystem(
+            origin=(0,0,0),
+            xDir=(0,0,1),
+            normal=(1,0,0)
+        ))
+
 class BeltDrive(cqparts.Assembly):
     stepper = PartRef(Stepper)
     idler = PartRef(Idler)
@@ -120,20 +134,11 @@ class BeltDrive(cqparts.Assembly):
         ]
         return constr
 
-    @property
-    def mate_start(self):
-        return Mate(self, CoordSystem(
-            origin=(0, 0, 0),
-            xDir=(1, 0, 0),
-            normal=(0, 1, 0)
-        ))
-
-    @property
-    def mate_end(self):
-        return Mate(self, CoordSystem(
-            origin=(0,-self.length,0),
-            xDir=(1, 0, 0),
-            normal=(0, 1, 0)
+    def mate_mount(self,offset=0):
+        return Mate(self,CoordSystem(
+            origin=(0,0,0),
+            xDir=(1,0,0),
+            normal=(0,0,1)
         ))
 
 ## test setup
@@ -142,6 +147,6 @@ class MyPulley(Pulley):
 
 if __name__ == "__main__":
     from cqparts.display import display
-    #p = BeltDrive(pulley=MyPulley,length=100)
+    p = BeltDrive(pulley=MyPulley,length=100)
     p = ThreadedDrive(length=50)
     display(p)
