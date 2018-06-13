@@ -91,6 +91,7 @@ class Drive(_AxisBase):
 class Rails(_AxisBase):
     shaft = PartRef(Shaft)
     inset = PositiveFloat(10)
+    diam = PositiveFloat(8)
 
     @classmethod
     def rail_name(cls,index):
@@ -112,7 +113,7 @@ class Rails(_AxisBase):
     def make_components(self):
         comps = {}
         for i,j in enumerate(self.rail_pos()):
-            comps[Rails.rail_name(i)] = self.shaft(length=self.length)
+            comps[Rails.rail_name(i)] = self.shaft(diam=self.diam, length=self.length)
         return comps
 
 
@@ -149,11 +150,11 @@ class Axis(_AxisBase):
 
     def make_components(self):
         comps = {
-            'drive_end' : self.drive_end(width=self.width),
-            'idle_end' : self.idle_end(width=self.width),
+            'drive_end': self.drive_end(width=self.width),
+            'idle_end': self.idle_end(width=self.width),
             'drive': self.drive(length=self.length),
-            'rails' : self.rails(length=self.length,width=self.width),
-            'carriage' : self.carriage(width=self.width,pos=self.pos)
+            'rails': self.rails(length=self.length, width=self.width),
+            'carriage': self.carriage(width=self.width, pos=self.pos)
         }
         return comps
 
@@ -161,18 +162,22 @@ class Axis(_AxisBase):
         constr = [
             Fixed(self.components['drive_end'].mate_origin),
             Fixed(self.components['idle_end'].mate_origin
-                ,CoordSystem((self.length,0,0),(1,0,0),(0,0,1))),
-            Fixed(self.components['drive'].mate_mount())
+                ,CoordSystem((self.length, 0, 0), (1, 0, 0), (0, 0, 1))),
+            Fixed(self.components['drive'].mate_mount()),
+            Fixed(self.components['rails'].mate_origin),
+            Fixed(self.components['carriage'].mate_origin),
         ]
         return constr
 
 from driver import BeltDrive
 from driver import ThreadedDrive
-#dr = BeltDrive 
-dr = ThreadedDrive 
+from multi import Arrange
 
 if __name__ == "__main__":
     from cqparts.display import display
-    e = Axis(drive=dr,width=50,length=300)
+    ar = Arrange()
+    ar.add(Axis(width=50, length=300))
+    ar.add(Axis(drive=BeltDrive,width=50, length=300))
+    ar.add(Axis(drive=ThreadedDrive, width=50, length=300))
     #e = Axis()
-    display(e)
+    display(ar)

@@ -15,6 +15,7 @@ from idler import Idler
 from coupling import Coupling
 from threaded import Threaded
 
+
 # a parameter for passing object down
 class PartRef(Parameter):
 
@@ -27,27 +28,28 @@ class BeltAssembly(cqparts.Assembly):
     pulley = PartRef(Pulley)
 
     def make_components(self):
-        pulley_rad  = self.pulley().rad
+        pulley_rad = self.pulley().rad
         comp = {
             'p': self.pulley(),
-            'p2' : self.pulley(),
-            'belt' : Belt(spacing=self.spacing,rad=pulley_rad),
+            'p2': self.pulley(),
+            'belt': Belt(spacing=self.spacing, rad=pulley_rad),
         }
         return comp
 
     def make_constraints(self):
         constr = [
             Fixed(self.components['p'].mate_origin),
-            Fixed(self.components['p2'].mate_origin,CoordSystem((0,-self.spacing,0),(1,0,0),(0,0,1))),
+            Fixed(self.components['p2'].mate_origin,
+                  CoordSystem((0, -self.spacing, 0),(1, 0, 0),(0, 0,1 ))),
             Fixed(self.components['belt'].mate_origin),
         ]
         return constr
 
-    def pulley_A_mate(self,offset=0):
+    def pulley_A_mate(self, offset=0):
         return Mate(self,CoordSystem(
-            origin=(-offset,0,0),
-            xDir=(0,-1,0),
-            normal=(1,0,0)
+            origin=(-offset, 0, 0),
+            xDir=(0, -1, 0),
+            normal=(1, 0, 0)
         ))
 
     def pulley_B_mate(self,offset=0):
@@ -100,9 +102,9 @@ class ThreadedDrive(cqparts.Assembly):
 
     def mate_mount(self,offset=0):
         return Mate(self,CoordSystem(
-            origin=(0,0,0),
-            xDir=(0,0,1),
-            normal=(1,0,0)
+            origin=(0, 0, 50),
+            xDir=(0, 0, 1),
+            normal=(1, 0, 0)
         ))
 
 class BeltDrive(cqparts.Assembly):
@@ -136,7 +138,7 @@ class BeltDrive(cqparts.Assembly):
 
     def mate_mount(self,offset=0):
         return Mate(self,CoordSystem(
-            origin=(0,0,0),
+            origin=(0,0,30),
             xDir=(1,0,0),
             normal=(0,0,1)
         ))
