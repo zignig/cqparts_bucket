@@ -176,8 +176,8 @@ from multi import Arrange
 if __name__ == "__main__":
     from cqparts.display import display
     ar = Arrange()
-    ar.add(Axis(width=50, length=300))
-    ar.add(Axis(drive=BeltDrive,width=50, length=300))
-    ar.add(Axis(drive=ThreadedDrive, width=50, length=300))
+    ar.add(Axis(width=40, length=200,pos=100))
+    ar.add(Axis(drive=BeltDrive,width=60, length=250,pos=50))
+    ar.add(Axis(drive=ThreadedDrive, width=70, length=300,pos=150))
     #e = Axis()
     display(ar)
