@@ -11,17 +11,20 @@ from cqparts.constraint import Fixed, Coincident
 from cqparts.constraint import Mate
 from cqparts.utils.geometry import CoordSystem
 
+from cqparts_motors.shaft import Shaft
 import  math
+
 
 def circumradius(sides,radius):
     a = radius * math.cos(math.pi/sides)
     return a
 
+
 class Roller(cqparts.Part):
-    length = PositiveFloat(30)
-    middle_radius = PositiveFloat(8)
+    length = PositiveFloat(15)
+    middle_radius = PositiveFloat(5)
     end_radius = PositiveFloat(4)
-    hole = PositiveFloat(2)
+    hole = PositiveFloat(1)
     _render = render_props(color=(20,30,50))
 
     def make(self):
@@ -42,6 +45,38 @@ class Roller(cqparts.Part):
 
         return roller
 
+    def mate_end(self,offset=0):
+        return Mate(self,CoordSystem(
+            origin=(-self.length/2,0,0),
+            xDir=(0,0,1),
+            normal=(1,0,0)
+        ))
+
+
+class RollerShaft(cqparts.Assembly):
+    length = PositiveFloat(20)
+    shaft_diam= PositiveFloat(2)
+
+    def make_components(self):
+        comps = {
+            'shaft' : Shaft(length=self.length,diam=self.shaft_diam),
+            'roller'  : Roller(length=self.length),
+        }
+        return comps
+
+    def make_constraints(self):
+        constr = [
+            Fixed(self.components['shaft'].mate_origin),
+            Fixed(self.components['roller'].mate_end()),
+        ]
+        return constr
+
+    def mate_end(self,offset=0):
+        return Mate(self,CoordSystem(
+            origin=(-self.length/2,0,0),
+            xDir=(0,0,1),
+            normal=(1,0,0)
+        ))
 
 class _Mount(cqparts.Part):
     roller_size = PositiveFloat(4)
@@ -90,8 +125,17 @@ class Hub(cqparts.Part):
     # TODO mount point for rollers
     def roller_mounts(self):
         mounts = []
+        incr = 360/self.rollers
         for i in range(self.rollers):
-            mounts.append(i)
+            m = Mate(self,CoordSystem(
+                    origin=(-self.hub_diam/2,0,0),
+                    xDir=(1,1,0),
+                    normal=(0,0,1)))+\
+                CoordSystem(
+                    origin=(0,0,0),
+                    xDir=(1,0,0),
+                    normal=(0,0,1))
+            mounts.append(m)
         return mounts
 
 class MercanumWheel(cqparts.Assembly):
@@ -105,19 +149,24 @@ class MercanumWheel(cqparts.Assembly):
     def make_components(self):
         comp = { 'hub': Hub(rollers=self.rollers) }
         for i in range(self.rollers):
-            comp[MercanumWheel.item_name[i]] = Roller()
+            comp[MercanumWheel.item_name(i)] = RollerShaft()
         return comp
 
     def make_constraints(self):
-        constr = [ Fixed(self.components['hub'].make_origin) ]
+        constr = [ Fixed(self.components['hub'].mate_origin) ]
         for i,j in enumerate(self.components['hub'].roller_mounts()):
-            print i,j
+            name = self.components[MercanumWheel.item_name(i)]
+            m = Coincident(name.mate_origin,j)
+            constr.append(m)
+        return constr
 
 
 if __name__ == "__main__":
     from cqparts.display import display
     #r = Roller()
-    r = Hub()
+    #r = Hub()
     #r = _Mount()
+    #r = RollerShaft()
+    r = MercanumWheel()
     display(r)
 
