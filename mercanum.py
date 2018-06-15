@@ -91,7 +91,8 @@ class Hub(cqparts.Part):
     def roller_mounts(self):
         mounts = []
         for i in range(self.rollers):
-            print i
+            mounts.append(i)
+        return mounts
 
 class MercanumWheel(cqparts.Assembly):
     rollers = Int(10)
@@ -106,6 +107,11 @@ class MercanumWheel(cqparts.Assembly):
         for i in range(self.rollers):
             comp[MercanumWheel.item_name[i]] = Roller()
         return comp
+
+    def make_constraints(self):
+        constr = [ Fixed(self.components['hub'].make_origin) ]
+        for i,j in enumerate(self.components['hub'].roller_mounts()):
+            print i,j
 
 
 if __name__ == "__main__":
