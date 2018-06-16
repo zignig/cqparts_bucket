@@ -25,6 +25,8 @@ class Roller(cqparts.Part):
     middle_radius = PositiveFloat(5)
     end_radius = PositiveFloat(4)
     hole = PositiveFloat(1)
+    clearance = PositiveFloat(1)
+    mount_thickness = PositiveFloat(4)
     _render = render_props(color=(20,30,50))
 
     def make(self):
@@ -42,6 +44,11 @@ class Roller(cqparts.Part):
             .circle(self.hole)\
             .extrude(self.length)
         roller = roller.cut(hole)
+        mount_gap = cq.Workplane("YZ")\
+            .workplane(offset=-self.clearance/2-self.mount_thickness/2)\
+            .circle(self.middle_radius+self.clearance)\
+            .extrude(self.mount_thickness+self.clearance)
+        roller = roller.cut(mount_gap)
 
         return roller
 
@@ -58,17 +65,16 @@ class RollerShaft(cqparts.Assembly):
     shaft_diam = PositiveFloat(2)
     mount_thickness = PositiveFloat(4)
 
-
     def make_components(self):
         comps = {
-            'shaft' : Shaft(length=self.length+self.mount_thickness*2,diam=self.shaft_diam),
-            'roller'  : Roller(length=self.length),
+            'shaft' : Shaft(length=self.length,diam=self.shaft_diam),
+            'roller'  : Roller(length=self.length,mount_thickness=self.mount_thickness),
         }
         return comps
 
     def make_constraints(self):
         constr = [
-            Fixed(self.components['shaft'].mate_origin,CoordSystem(origin=(0,0,-self.mount_thickness))),
+            Fixed(self.components['shaft'].mate_origin,CoordSystem(origin=(0,0,0))),
             Fixed(self.components['roller'].mate_end())
         ]
         return constr
@@ -84,14 +90,15 @@ class _Mount(cqparts.Part):
     roller_size = PositiveFloat(4)
     mount_thickness = PositiveFloat(4)
     shaft = PositiveFloat(2)
+    clearance = PositiveFloat(1)
     def make(self):
         c = cq.Workplane("XY")\
-            .circle(self.roller_size)\
+            .circle(self.roller_size-self.clearance)\
             .extrude(self.mount_thickness)
         b = cq.Workplane("XY")\
             .box(
                 self.roller_size,
-                self.roller_size*2,
+                (self.roller_size-self.clearance)*2,
                 self.mount_thickness,
                 centered=(True,True,False))\
             .translate((-self.roller_size/2,0,0))
@@ -100,17 +107,18 @@ class _Mount(cqparts.Part):
             .circle(self.shaft/2)\
             .extrude(self.mount_thickness)
         c = c.cut(h)
+        c = c.translate((0,0,-self.mount_thickness/2))
         return c
 
 
 class Hub(cqparts.Part):
-    rollers = Int(4)
+    rollers = Int()
     roller_diam = PositiveFloat(5)
-    mount_thickness = PositiveFloat(4)
+    roller_length = PositiveFloat(5)
+    mount_thickness = PositiveFloat(3)
     hub_diam = PositiveFloat(40)
-    thickness = PositiveFloat(20)
+    thickness = PositiveFloat(10)
     angle = PositiveFloat(45)
-    clearance = PositiveFloat(0.5)
 
     # mount points
     mp = []
@@ -123,21 +131,20 @@ class Hub(cqparts.Part):
         for i in range(self.rollers):
             h = _Mount(mount_thickness=self.mount_thickness,roller_size=self.roller_diam).local_obj
             h = h.rotate((0,0,0),(1,0,0),self.angle)
-            h = h.translate((circumradius(self.rollers,self.hub_diam/2)+self.roller_diam,0,self.mount_thickness-self.thickness/2))
+            h = h.translate((circumradius(self.rollers,self.hub_diam/2)+self.roller_diam,0,0))
             h = h.rotate((0,0,0),(0,0,1),i*incr)
             # reach deep inside each mount and grab the matrix
             self.mp.append(h.objects[0].wrapped.Matrix)
             hub = hub.union(h)
         return hub
 
-    # TODO mount point for rollers
     def roller_mounts(self):
         mounts = []
         self.make()
         for i in range(self.rollers):
             m = Mate(self,
                      CoordSystem.from_transform(self.mp[i])\
-                     +CoordSystem(origin=(0,0,self.mount_thickness+self.clearance),
+                     +CoordSystem(origin=(0,0,self.mount_thickness/2-self.roller_length/2),
                                   xDir=(1,0,0),
                                   normal=(0,0,1)
                                   )
@@ -146,17 +153,21 @@ class Hub(cqparts.Part):
         return mounts
 
 class MercanumWheel(cqparts.Assembly):
-    rollers = Int(11)
-
+    rollers = Int(10)
+    roller_length = PositiveFloat(30)
+    roller_diam = PositiveFloat(30)
+    mount_thickness = PositiveFloat(2)
     # get some names
     @classmethod
     def item_name(cls,index):
         return "roller_%03i" % index
 
     def make_components(self):
-        comp = { 'hub': Hub(rollers=self.rollers) }
+        comp = { 'hub': Hub(mount_thickness=self.mount_thickness
+                            ,roller_length=self.roller_length
+                            ,rollers=self.rollers) }
         for i in range(self.rollers):
-            comp[MercanumWheel.item_name(i)] = RollerShaft()
+            comp[MercanumWheel.item_name(i)] = RollerShaft(mount_thickness=self.mount_thickness,length=self.roller_length)
         return comp
 
     def make_constraints(self):
