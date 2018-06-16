@@ -49,6 +49,7 @@ class Roller(cqparts.Part):
             .circle(self.middle_radius+self.clearance)\
             .extrude(self.mount_thickness+self.clearance)
         roller = roller.cut(mount_gap)
+        roller = roller.chamfer(0.2)
         return roller
 
     def mate_end(self,offset=0):
@@ -91,11 +92,11 @@ class _Mount(cqparts.Part):
     mount_thickness = PositiveFloat(4)
     shaft = PositiveFloat(2)
     clearance = PositiveFloat(1)
-    roller_clearance = PositiveFloat(2)
+    roller_clearance = PositiveFloat(1)
 
     def make(self):
         c = cq.Workplane("XY")\
-            .circle(self.roller_size-self.clearance)\
+            .circle(self.roller_size-self.roller_clearance)\
             .extrude(self.mount_thickness)
         b = cq.Workplane("XY")\
             .box(
@@ -106,7 +107,7 @@ class _Mount(cqparts.Part):
             .translate((-self.roller_size/2-self.roller_clearance,0,0))
         c = c.union(b)
         h = cq.Workplane("XY")\
-            .circle(self.shaft/2)\
+            .circle(self.shaft/2+self.clearance/4)\
             .extrude(self.mount_thickness)
         c = c.cut(h)
         c = c.translate((0,0,-self.mount_thickness/2))
@@ -156,12 +157,12 @@ class Hub(cqparts.Part):
         return mounts
 
 class MercanumWheel(cqparts.Assembly):
-    hub_diam = PositiveFloat(40)
-    thickness = PositiveFloat(10)
+    hub_diam = PositiveFloat(48)
+    thickness = PositiveFloat(12)
 
-    rollers = Int(13)
+    rollers = Int(11)
     roller_length = PositiveFloat(30)
-    roller_diam = PositiveFloat(4)
+    roller_diam = PositiveFloat(6)
     mount_thickness = PositiveFloat(3)
     # get some names
     @classmethod

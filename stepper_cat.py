@@ -9,6 +9,8 @@ from cqparts.catalogue import JSONCatalogue
 import cqparts_motors
 import os
 
+from motor_mount import MountedStepper
+
 filename = os.path.join(
 os.path.dirname(cqparts_motors.__file__),
 'catalogue', 'stepper-nema.json',
@@ -26,7 +28,7 @@ class StepperCat(cqparts.Assembly):
 
     def initialize_parameters(self):
         self.coll = []
-        self.offset = 60
+        self.offset = 90
 
     def add(self,i):
         self.coll.append(i)
@@ -49,7 +51,7 @@ class StepperCat(cqparts.Assembly):
             constraints.append(Fixed(self.coll[i].mate_origin,
                 CoordSystem(
                     origin=(0,i*self.offset-(total/2),0),
-                    xDir=(1,0,0),
+                    xDir=(0,1,0),
                     normal=(0,0,1)
                 )
             ))
@@ -59,6 +61,6 @@ class StepperCat(cqparts.Assembly):
 
 ar = StepperCat()
 for i in stepper_list:
-    ar.add(i)
+    ar.add(MountedStepper(stepper=i))
 
 display(ar)
