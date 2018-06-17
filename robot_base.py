@@ -50,14 +50,20 @@ class RobotBase(cqparts.Part):
         ))
 
 class ThisWheel(SimpleWheel):
-    diameter = PositiveFloat(80)
+    diameter = PositiveFloat(100)
     thickness = PositiveFloat(20)
+
+
+class ThisStepper(Stepper):
+    width = PositiveFloat(20)
+    height = PositiveFloat(20)
 
 class Rover(cqparts.Assembly):
     length = PositiveFloat(220)
     width = PositiveFloat(140)
-    chamfer = PositiveFloat(20)
-    wheel = PartRef(MercanumWheel)
+    chamfer = PositiveFloat(10)
+    wheel = PartRef(ThisWheel)
+    stepper = PartRef(Stepper)
 
     def make_components(self):
         base = RobotBase(
@@ -67,17 +73,18 @@ class Rover(cqparts.Assembly):
         )
         # TODO target not working on mounted stepper yet
         comps = {
-            'base': base, 
-            'Ldrive_b': MountedStepper(driven=self.wheel,target=base),
-            'Rdrive_b': MountedStepper(driven=self.wheel,target=base),
-            'Ldrive_f': MountedStepper(driven=self.wheel,target=base),
-            'Rdrive_f': MountedStepper(driven=self.wheel,target=base)
+            'base': base,
+            'Ldrive_b': MountedStepper(stepper=self.stepper,driven=self.wheel,target=base),
+            'Rdrive_b': MountedStepper(stepper=self.stepper,driven=self.wheel,target=base),
+            'Ldrive_f': MountedStepper(stepper=self.stepper,driven=self.wheel,target=base),
+            'Rdrive_f': MountedStepper(stepper=self.stepper,driven=self.wheel,target=base)
         }
         return comps
 
     def make_constraints(self):
         constr = [
-            Fixed(self.components['base'].mate_origin),
+            Fixed(self.components['base'].mate_origin,
+                  CoordSystem(origin=(0,0,100))),
             Coincident(
                 self.components['Ldrive_b'].mate_corner(flip=-1),
                 self.components['base'].mate_RL()
