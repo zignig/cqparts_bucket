@@ -13,6 +13,13 @@ from cqparts.utils.geometry import CoordSystem
 
 from motor_mount import MountedStepper 
 from cqparts_motors.stepper import Stepper
+from mercanum import MercanumWheel
+from wheel import SimpleWheel
+
+class PartRef(Parameter):
+
+    def type(self, value):
+        return value
 
 class RobotBase(cqparts.Part):
     length = PositiveFloat(250)
@@ -28,27 +35,43 @@ class RobotBase(cqparts.Part):
 
     # TODO mountpoints for stuff
 
-    def mate_RL(self):
+    def mate_RL(self,offset=0):
         return Mate(self, CoordSystem(
-            origin=(-self.length/2, self.width/2,0),
+            origin=(-self.length/2+offset, self.width/2,0),
             xDir=(1, 0, 0),
             normal=(0, 0,-1)
         ))
 
-    def mate_RR(self):
+    def mate_RR(self,offset=0):
         return Mate(self, CoordSystem(
-            origin=(-self.length/2, -self.width/2,0),
+            origin=(-self.length/2+offset, -self.width/2,0),
             xDir=(-1, 0, 0),
             normal=(0, 0,-1)
         ))
 
+class ThisWheel(SimpleWheel):
+    diameter = PositiveFloat(80)
+    thickness = PositiveFloat(20)
+
 class Rover(cqparts.Assembly):
+    length = PositiveFloat(220)
+    width = PositiveFloat(140)
+    chamfer = PositiveFloat(20)
+    wheel = PartRef(MercanumWheel)
 
     def make_components(self):
+        base = RobotBase(
+            length=self.length
+            ,width=self.width
+            ,chamfer=self.chamfer
+        )
+        # TODO target not working on mounted stepper yet
         comps = {
-            'base': RobotBase(),
-            'Ldrive': MountedStepper(),
-            'Rdrive': MountedStepper()
+            'base': base, 
+            'Ldrive_b': MountedStepper(driven=self.wheel,target=base),
+            'Rdrive_b': MountedStepper(driven=self.wheel,target=base),
+            'Ldrive_f': MountedStepper(driven=self.wheel,target=base),
+            'Rdrive_f': MountedStepper(driven=self.wheel,target=base)
         }
         return comps
 
@@ -56,12 +79,20 @@ class Rover(cqparts.Assembly):
         constr = [
             Fixed(self.components['base'].mate_origin),
             Coincident(
-                self.components['Ldrive'].mate_corner(flip=-1),
+                self.components['Ldrive_b'].mate_corner(flip=-1),
                 self.components['base'].mate_RL()
             ),
             Coincident(
-                self.components['Rdrive'].mate_corner(flip=1),
+                self.components['Rdrive_b'].mate_corner(flip=1),
                 self.components['base'].mate_RR()
+            ),
+            Coincident(
+                self.components['Ldrive_f'].mate_corner(flip=1),
+                self.components['base'].mate_RL(offset=self.length-self.chamfer)
+            ),
+            Coincident(
+                self.components['Rdrive_f'].mate_corner(flip=-1),
+                self.components['base'].mate_RR(offset=self.length-self.chamfer)
             )
         ]
         return constr

@@ -14,6 +14,9 @@ from cqparts.utils.geometry import CoordSystem
 from cqparts_motors.shaft import Shaft
 from cqparts_motors.stepper import Stepper 
 
+#from mercanum import MercanumWheel
+from wheel import SimpleWheel
+
 
 class PartRef(Parameter):
 
@@ -58,10 +61,9 @@ class StepperMount(cqparts.Part):
         base = base.translate((0,self.thickness,0))
         return base
 
-    @property
-    def mate_motor(self):
+    def mate_motor(self,offset=0):
         return Mate(self,CoordSystem(
-            origin=(0,-self.length/2+self.thickness,self.height/2.0+self.thickness+self.clearance/2.0),
+            origin=(0,-offset-self.length/2+self.thickness,self.height/2.0+self.thickness+self.clearance/2.0),
             xDir=(1,0,0),
             normal=(0,-1,0)
         ))
@@ -73,6 +75,9 @@ class LongStepper(Stepper):
 
 class MountedStepper(cqparts.Assembly):
     stepper = PartRef(Stepper)
+    # TODO use to for screw mounts
+    target = PartRef()
+    driven = PartRef() # for attching things to the motor
     thickness = PositiveFloat(6)
     clearance = PositiveFloat(5)
 
@@ -91,15 +96,22 @@ class MountedStepper(cqparts.Assembly):
             ),
             "stepper": self.stepper()
         }
-        self.mount = comps['mount']
+        if self.driven is not None:
+            comps['driven'] = self.driven()
         return comps
 
     def make_constraints(self):
         constr = [
             Fixed(self.components['mount'].mate_origin),
             Coincident(self.components['stepper'].mate_origin,
-                       self.components['mount'].mate_motor)
+                       self.components['mount'].mate_motor())
         ]
+        if self.driven is not None:
+            shaft_length = self.stepper().shaft_length
+            constr.append(
+                Coincident(self.components['driven'].mate_origin,
+                           self.components['mount'].mate_motor(offset=shaft_length))
+            )
         return constr
 
     def make_alterations(self):
@@ -116,7 +128,7 @@ class MountedStepper(cqparts.Assembly):
 
 class _PosMount(cqparts.Assembly):
     def make_components(self):
-        return {'m': MountedStepper()}
+        return {'m': MountedStepper(driven=SimpleWheel)}
     def make_constraints(self):
         return [ Fixed(self.components['m'].mate_corner(flip=-1)) ]
 
