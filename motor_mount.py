@@ -72,13 +72,13 @@ class LongStepper(Stepper):
     heigth = PositiveFloat(100)
 
 class MountedStepper(cqparts.Assembly):
-    stepper = PartRef(Stepper())
+    stepper = PartRef(Stepper)
     thickness = PositiveFloat(6)
     clearance = PositiveFloat(5)
 
     def make_components(self):
         # get some dims from the stepper
-        st = self.stepper
+        st = self.stepper()
         l = st.length
         w = st.width
         comps = {
@@ -89,8 +89,9 @@ class MountedStepper(cqparts.Assembly):
                 ,thickness=self.thickness
                 ,clearance=self.clearance
             ),
-            "stepper": self.stepper
+            "stepper": self.stepper()
         }
+        self.mount = comps['mount']
         return comps
 
     def make_constraints(self):
@@ -105,8 +106,22 @@ class MountedStepper(cqparts.Assembly):
         stepper = self.components['stepper']
         mount = self.components['mount']
 
+    def mate_corner(self,flip=1):
+
+        return Mate(self,CoordSystem(
+            origin=(flip*(self.stepper().width/2+self.thickness+self.clearance/2),-self.stepper().length/2,0),
+            xDir=(1,0,0),
+            normal=(0,0,1)
+        ))
+
+class _PosMount(cqparts.Assembly):
+    def make_components(self):
+        return {'m': MountedStepper()}
+    def make_constraints(self):
+        return [ Fixed(self.components['m'].mate_corner(flip=-1)) ]
+
 if __name__ == "__main__":
     from cqparts.display import display
-    B = MountedStepper()
+    B = _PosMount()
     display(B)
 
