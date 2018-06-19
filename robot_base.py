@@ -62,7 +62,7 @@ class Rover(cqparts.Assembly):
     length = PositiveFloat(220)
     width = PositiveFloat(140)
     chamfer = PositiveFloat(10)
-    wheel = PartRef(ThisWheel)
+    wheel = PartRef(MercanumWheel)
     stepper = PartRef(Stepper)
 
     def make_components(self):
