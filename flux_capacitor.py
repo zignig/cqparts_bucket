@@ -75,8 +75,8 @@ class Seal(cover):
 
 class YellowDisc(cqparts.Part):
     radius = PositiveFloat(10)
-    thickness = PositiveFloat(1)
-    inner = PositiveFloat(5)
+    thickness = PositiveFloat(10)
+    inner = PositiveFloat(2)
 
     _render = render_props(color=(255,255,0))
 
@@ -126,7 +126,7 @@ class PlugCover(cqparts.Part):
 
 if __name__ == "__main__":
     from cqparts.display import display
-    fc  = _flux_bits(offset=60)
+    fc  = _flux_bits()
     fc.add(cabinet())
     fc.add(PlugCover())
     fc.add(cover())

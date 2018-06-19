@@ -1,15 +1,16 @@
 
 import cqparts
+from cqparts.params import PositiveFloat 
 from cqparts.display import display
 from cqparts.constraint import Fixed, Coincident
 from cqparts.constraint import Mate
 from cqparts.utils import CoordSystem
 
 class Arrange(cqparts.Assembly):
+    offset = PositiveFloat(60)
 
     def initialize_parameters(self):
         self.coll = []
-        self.offset = 105
 
     def add(self,i):
         self.coll.append(i)
