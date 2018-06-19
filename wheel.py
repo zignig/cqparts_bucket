@@ -22,6 +22,7 @@ class SimpleWheel(cqparts.Part):
 
     def make(self):
         sw = cq.Workplane("XY").circle(self.diameter/2).extrude(self.thickness)
+        sw = sw.faces("|Z").chamfer(self.thickness/6)
         return sw
 
 

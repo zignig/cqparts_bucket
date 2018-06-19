@@ -134,6 +134,7 @@ class _PosMount(cqparts.Assembly):
 
 if __name__ == "__main__":
     from cqparts.display import display
-    B = _PosMount()
+    #B = _PosMount()
+    B = MountedStepper()
     display(B)
 
