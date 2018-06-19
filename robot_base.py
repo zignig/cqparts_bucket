@@ -59,9 +59,9 @@ class ThisStepper(Stepper):
     height = PositiveFloat(20)
 
 class Rover(cqparts.Assembly):
-    length = PositiveFloat(220)
+    length = PositiveFloat(250)
     width = PositiveFloat(140)
-    chamfer = PositiveFloat(10)
+    chamfer = PositiveFloat(20)
     wheel = PartRef(MercanumWheel)
     stepper = PartRef(Stepper)
 
