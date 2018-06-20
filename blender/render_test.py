@@ -22,7 +22,7 @@ theScene.render.filepath = "/opt/stash/image.png"
 bpy.ops.object.camera_add()
 cam = bpy.context.selected_objects[0]
 bpy.context.scene.camera = cam
-cam.location = (0,-20,20)
+cam.location = (4,-20,20)
 # add the track
 bpy.ops.object.constraint_add(type="TRACK_TO")
 

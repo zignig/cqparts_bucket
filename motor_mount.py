@@ -12,11 +12,10 @@ from cqparts.constraint import Mate
 from cqparts.utils.geometry import CoordSystem
 
 from cqparts_motors.shaft import Shaft
-from cqparts_motors.stepper import Stepper 
+from stepper import Stepper 
 
 #from mercanum import MercanumWheel
 from wheel import SimpleWheel
-
 
 class PartRef(Parameter):
 

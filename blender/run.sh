@@ -1,2 +1,2 @@
 #!/bin/sh
-blender render.blend -P ./render_test.py -b
+blender -P ./render_test.py

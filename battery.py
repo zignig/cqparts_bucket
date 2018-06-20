@@ -19,7 +19,8 @@ from multi import Arrange
 class PartRef(Parameter):
     def type(self,value):
         return value
-        
+
+# For showing a different name
 class _BattView(Arrange):
     pass
 
@@ -63,23 +64,25 @@ class D(CylBattery):
     length = PositiveFloat(50.5)
     diameter = PositiveFloat(34.2)
 
+
 class Li18650(CylBattery):
     length = PositiveFloat(65.2)
     diameter = PositiveFloat(18.6)
-    
+
+
 class Battpack(cqparts.Assembly):
     countX = Int(1)
     countY = Int(1)
     countZ = Int(1)
     batt = PartRef(AA)
-    
+
     def initialize_parameters(self):
         self.batts = []
         b = self.batt()
         self.offset = b.diameter
         self.zoffset = b.length
         self.total_batts = self.countX * self.countY * self.countZ
-        
+
 
     @classmethod
     def item_name(cls,index):
@@ -98,9 +101,9 @@ class Battpack(cqparts.Assembly):
         total = length* self.offset
         # tripple loop of awesome
         count = 0
-        for i in range(self.countX):        
-            for j in range(self.countY):        
-                for k in range(self.countZ):                        
+        for i in range(self.countX):
+            for j in range(self.countY):
+                for k in range(self.countZ):
                     pos=(j*self.offset,i*self.offset,self.zoffset*k),
                     print(i,j,k,pos)
                     constraints.append(Fixed(self.batts[count].mate_origin,

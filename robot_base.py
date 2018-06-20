@@ -35,6 +35,13 @@ class RobotBase(cqparts.Part):
 
     # TODO mountpoints for stuff
 
+    def mate_back_third(self,offset=0):
+        return Mate(self, CoordSystem(
+            origin=(-self.length/2+offset, self.width/2,0),
+            xDir=(1, 0, 0),
+            normal=(0, 0,-1)
+        ))
+
     def mate_RL(self,offset=0):
         return Mate(self, CoordSystem(
             origin=(-self.length/2+offset, self.width/2,0),
@@ -62,7 +69,7 @@ class Rover(cqparts.Assembly):
     length = PositiveFloat(250)
     width = PositiveFloat(140)
     chamfer = PositiveFloat(20)
-    wheel = PartRef(MercanumWheel)
+    wheel = PartRef(SimpleWheel)
     stepper = PartRef(Stepper)
 
     def make_components(self):
