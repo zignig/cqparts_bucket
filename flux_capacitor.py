@@ -103,7 +103,7 @@ class YellowPipe(cqparts.Part):
         leg2 = cq.Workplane("ZY")\
                 .circle(self.radius)\
                 .extrude(self.leg2)\
-                .translate((0,0,self.leg1+self.turn))
+                .translate((-self.turn,0,self.leg1+self.turn))
         leg1 = leg1.union(leg2)
         return leg1 
 
