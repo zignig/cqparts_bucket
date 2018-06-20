@@ -57,19 +57,21 @@ class RobotBase(cqparts.Part):
         ))
 
 class ThisWheel(SimpleWheel):
-    diameter = PositiveFloat(100)
+    diameter = PositiveFloat(40)
     thickness = PositiveFloat(20)
 
 
 class ThisStepper(Stepper):
     width = PositiveFloat(20)
     height = PositiveFloat(20)
+    length = PositiveFloat(30)
 
 class Rover(cqparts.Assembly):
     length = PositiveFloat(250)
-    width = PositiveFloat(140)
-    chamfer = PositiveFloat(20)
-    wheel = PartRef(SimpleWheel)
+    width = PositiveFloat(116)
+    chamfer = PositiveFloat(40)
+    #wheel = PartRef(SimpleWheel)
+    wheel = PartRef(MercanumWheel)
     stepper = PartRef(Stepper)
 
     def make_components(self):

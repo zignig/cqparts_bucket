@@ -18,59 +18,83 @@ class _flux_bits(Arrange):
 
 # a model of a flux capacitor
 
+
 class cabinet(cqparts.Part):
-    length = PositiveFloat(35)
+    depth = PositiveFloat(35)
     width = PositiveFloat(60)
     height = PositiveFloat(80)
     thickness = PositiveFloat(2)
     _render = render_props(color=(255,255,205))
 
     def make(self):
-        cab = cq.Workplane("XY").box(self.length,self.width,self.height)
+        cab = cq.Workplane("XY").box(self.depth,self.width,self.height)
         cab = cab.faces(">X").shell(-self.thickness)
         cab = cab.edges("|X").fillet(self.thickness+0.1)
         #cab = cab.faces().fillet(2)
         return cab
 
+    def mate_front(self):
+        return Mate(self, CoordSystem(
+            origin=(self.depth/2,0,0 ),
+            xDir=(-1, 0, 0),
+            normal=(0, 0,1)
+        ))
+
+    def mate_back(self):
+        return Mate(self, CoordSystem(
+            origin=(self.depth/2,0,0 ),
+            xDir=(1, 0, 0),
+            normal=(0, 0,1)
+        ))
+
 class cover(cabinet):
-    length = PositiveFloat(10)
+    depth = PositiveFloat(10)
     shrinkX = PositiveFloat(0.75)
     shrinkY = PositiveFloat(0.72)
     offset = PositiveFloat(0)
     corner = PositiveFloat(8)
 
+    _render = render_props(template='wood_dark')
+
     def make(self):
         cov = super(cover,self).make()
         window = cq.Workplane('XY')\
-            .box(self.length,self.width*self.shrinkX,self.height*self.shrinkY)\
+            .box(self.depth,self.width*self.shrinkX,self.height*self.shrinkY)\
             .translate((0,0,self.height*self.offset))
         window = window.edges("|X").fillet(self.corner)
         cov = cov.cut(window)
         return cov
 
 
-class Rounded(cover):
+class rounded(cover):
     def make(self):
         window = cq.Workplane('XY')\
-            .box(self.length,self.width*self.shrinkX,self.height*self.shrinkY)\
+            .box(self.depth,self.width*self.shrinkX,self.height*self.shrinkY)\
             .translate((0,0,self.height*self.offset))
         window = window.edges("|X").fillet(self.corner)
         return window
 
 
-class Seal(cover):
+class seal(cover):
     shrink = PositiveFloat(0.69)
     overlap = PositiveFloat(0.83)
-    length = PositiveFloat(2.5)
+    depth = PositiveFloat(2.5)
 
     _render = render_props(color=(20,20,20))
 
     def make(self):
-        outer = Rounded(length=self.length,shrinkX=self.overlap,shrinkY=self.overlap).local_obj
-        inner = Rounded(shrinkX=self.shrink,shrinkY=self.shrink).local_obj
+        outer = rounded(depth=self.depth,shrinkX=self.overlap,shrinkY=self.overlap).local_obj
+        inner = rounded(shrinkX=self.shrink,shrinkY=self.shrink).local_obj
         outer  = outer.cut(inner)
-        outer = outer.faces("<X").fillet(self.length*0.5)
+        outer = outer.faces("<X").fillet(self.depth*0.5)
         return  outer
+
+    def mate_back(self):
+        return Mate(self, CoordSystem(
+            origin=(self.depth,0,0 ),
+            xDir=(1, 0, 0),
+            normal=(0, 0,1)
+        ))
 
 
 class YellowDisc(cqparts.Part):
@@ -124,13 +148,54 @@ class PlugCover(cqparts.Part):
         plug = plug.fillet(0.5)
         return plug
 
+
+class BuiltBox(cqparts.Assembly):
+    depth = PositiveFloat(40)
+    width = PositiveFloat(60)
+    height = PositiveFloat(80)
+    cover = PositiveFloat(4)
+    thickness = PositiveFloat(2)
+
+    def make_components(self):
+        comps = {
+            'back': cabinet(depth=self.depth
+                            ,width=self.width
+                            ,height=self.height
+                            ,thickness=self.thickness
+                        ),
+            'cover': cover(depth=self.cover
+                            ,width=self.width
+                            ,height=self.height
+                            ,thickness=self.thickness
+                        ),
+            'seal': seal(depth=self.cover
+                            ,width=self.width
+                            ,height=self.height
+                            ,thickness=self.thickness
+                        ),
+        }
+        return comps
+
+    def make_constraints(self):
+        constr = [
+            Fixed(self.components['back'].mate_origin),
+            Coincident(
+                self.components['cover'].mate_back()
+                ,self.components['back'].mate_front()),
+            Coincident(
+                self.components['seal'].mate_back()
+                ,self.components['cover'].mate_origin)
+        ]
+        return constr
+
 if __name__ == "__main__":
     from cqparts.display import display
-    fc  = _flux_bits()
-    fc.add(cabinet())
-    fc.add(PlugCover())
-    fc.add(cover())
-    fc.add(YellowDisc())
-    fc.add(YellowPipe())
-    fc.add(Seal())
+    fc  = _flux_bits(offset=80)
+    #fc.add(seal())
+    #fc.add(cover())
+    #fc.add(cabinet())
+    #fc.add(PlugCover())
+    #fc.add(YellowDisc())
+    #fc.add(YellowPipe())
+    fc.add(BuiltBox())
     display(fc)

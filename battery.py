@@ -123,6 +123,7 @@ if __name__ == "__main__":
     #bv.add(AA())
     #bv.add(C())
     #bv.add(D())
-    bv = Battpack(batt=Li18650,countX=5,countY=1,countZ=1)
+    #bv = Battpack(batt=Li18650,countX=5,countY=3,countZ=2)
+    bv = Battpack(batt=AA,countX=6,countY=1,countZ=1)
     display(bv)
 
