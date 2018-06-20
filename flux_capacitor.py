@@ -23,7 +23,7 @@ class cabinet(cqparts.Part):
     depth = PositiveFloat(35)
     width = PositiveFloat(60)
     height = PositiveFloat(80)
-    thickness = PositiveFloat(2)
+    thickness = PositiveFloat(1.5)
     _render = render_props(color=(255,255,205))
 
     def make(self):
@@ -50,11 +50,11 @@ class cabinet(cqparts.Part):
 class cover(cabinet):
     depth = PositiveFloat(10)
     shrinkX = PositiveFloat(0.75)
-    shrinkY = PositiveFloat(0.72)
+    shrinkY = PositiveFloat(0.75)
     offset = PositiveFloat(0)
-    corner = PositiveFloat(8)
+    corner = PositiveFloat(15)
 
-    _render = render_props(template='wood_dark')
+    # _render = render_props(template='wood_dark')
 
     def make(self):
         cov = super(cover,self).make()
@@ -78,20 +78,19 @@ class rounded(cover):
 class seal(cover):
     shrink = PositiveFloat(0.69)
     overlap = PositiveFloat(0.83)
-    depth = PositiveFloat(2.5)
 
     _render = render_props(color=(20,20,20))
 
     def make(self):
-        outer = rounded(depth=self.depth,shrinkX=self.overlap,shrinkY=self.overlap).local_obj
+        outer = rounded(depth=self.thickness,shrinkX=self.overlap,shrinkY=self.overlap).local_obj
         inner = rounded(shrinkX=self.shrink,shrinkY=self.shrink).local_obj
         outer  = outer.cut(inner)
-        outer = outer.faces("<X").fillet(self.depth*0.5)
+        outer = outer.faces("<X").fillet(self.thickness*0.5)
         return  outer
 
     def mate_back(self):
         return Mate(self, CoordSystem(
-            origin=(self.depth,0,0 ),
+            origin=(self.depth/2+self.thickness/2,0,0 ),
             xDir=(1, 0, 0),
             normal=(0, 0,1)
         ))
@@ -150,11 +149,11 @@ class PlugCover(cqparts.Part):
 
 
 class BuiltBox(cqparts.Assembly):
-    depth = PositiveFloat(40)
-    width = PositiveFloat(60)
+    depth = PositiveFloat(15)
+    width = PositiveFloat(65)
     height = PositiveFloat(80)
-    cover = PositiveFloat(4)
-    thickness = PositiveFloat(2)
+    cover = PositiveFloat(15)
+    thickness = PositiveFloat(1)
 
     def make_components(self):
         comps = {
@@ -194,8 +193,8 @@ if __name__ == "__main__":
     #fc.add(seal())
     #fc.add(cover())
     #fc.add(cabinet())
-    #fc.add(PlugCover())
-    #fc.add(YellowDisc())
-    #fc.add(YellowPipe())
+    fc.add(PlugCover())
+    fc.add(YellowDisc())
+    fc.add(YellowPipe())
     fc.add(BuiltBox())
     display(fc)
