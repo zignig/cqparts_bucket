@@ -152,9 +152,11 @@ class Stepper(motor.Motor):
         return self.shaft_type
 
     def mount_points(self):
-        # TODO mount points
         " return mount points"
-        pass
+        wp = cq.Workplane("XY")
+        h = wp.rect(self.hole_spacing,self.hole_spacing
+                    ,forConstruction=True).vertices()
+        return h.objects
 
     def make_components(self):
         sec = self.length / 6

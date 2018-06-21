@@ -163,14 +163,14 @@ class MountedStepper(cqparts.Assembly):
         for i,j in enumerate(self.components['stepper'].mount_points()):
             m =  Mate(self, CoordSystem(
                 origin=(j.X,j.Y,self.thickness),
-                xDir=(0, -1, 0),
+                xDir=(1,0 , 0),
                 normal=(0, 0,1)
             ))
             constr.append(
                 Coincident(
                     self.components[self.screw_name(i)].mate_origin,
                     m
-                )
+                ),
             )
         return constr
 
