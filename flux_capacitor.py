@@ -98,14 +98,21 @@ class seal(cover):
 
 class YellowDisc(cqparts.Part):
     radius = PositiveFloat(10)
-    thickness = PositiveFloat(10)
+    height = PositiveFloat(15)
     inner = PositiveFloat(2)
 
     _render = render_props(color=(255,255,0))
 
     def make(self):
-        disc = cq.Workplane("XY").circle(self.radius).circle(self.inner).extrude(self.thickness)
+        disc = cq.Workplane("XY").circle(self.radius).circle(self.inner).extrude(self.height)
         return disc
+
+    def mate_top(self):
+        return Mate(self, CoordSystem(
+            origin=(0,0,self.height),
+            xDir=(1, 0, 0),
+            normal=(0, 0,1)
+        ))
 
 
 class YellowPipe(cqparts.Part):
@@ -117,16 +124,16 @@ class YellowPipe(cqparts.Part):
     _render = render_props(color=(255,255,0))
 
     def make(self):
-        leg1 = cq.Workplane("XY").circle(self.radius).extrude(self.leg1)
+        leg1 = cq.Workplane("XY").circle(self.radius).extrude(self.leg1-self.turn)
         corner= cq.Workplane("XY")\
-            .workplane(offset=self.leg1)\
+            .workplane(offset=self.leg1-self.turn)\
             .circle(self.radius)\
             .revolve(angleDegrees=90,axisStart=(-self.turn,1),axisEnd=(-self.turn,2))
         leg1 = leg1.union(corner)
         leg2 = cq.Workplane("ZY")\
                 .circle(self.radius)\
-                .extrude(self.leg2)\
-                .translate((-self.turn,0,self.leg1+self.turn))
+                .extrude(self.leg2-self.turn-self.radius*2)\
+                .translate((-self.turn,0,self.leg1))
         leg1 = leg1.union(leg2)
         return leg1 
 
@@ -141,15 +148,22 @@ class PlugCover(cqparts.Part):
         plug = cq.Workplane("XY").circle(self.diam1/2).extrude(self.height)
         side = cq.Workplane("YZ")\
             .circle(self.diam2/2)\
+            .circle((self.diam2-self.thickness)/2)\
             .extrude(self.height)\
             .translate((0,0,self.height-self.diam2*0.7))
         plug = plug.union(side)
-        plug = plug.fillet(0.5)
         return plug
+
+    def mate_out(self):
+        return Mate(self, CoordSystem(
+            origin=(self.diam1/2,0,self.height-self.diam2*0.7),
+            xDir=(0, 0, 1),
+            normal=(1, 0,0)
+        ))
 
 
 class BuiltBox(cqparts.Assembly):
-    depth = PositiveFloat(15)
+    depth = PositiveFloat(20)
     width = PositiveFloat(65)
     height = PositiveFloat(80)
     cover = PositiveFloat(15)
@@ -187,14 +201,47 @@ class BuiltBox(cqparts.Assembly):
         ]
         return constr
 
+
+class Electrode(cqparts.Assembly):
+    height = PositiveFloat(10)
+    plug_height = PositiveFloat(10)
+    width = PositiveFloat(30)
+    radius = PositiveFloat(8)
+    def make_components(self):
+        comps = {
+            'base' : YellowDisc(height=self.height,
+                                radius=self.radius),
+            'plug': PlugCover(height=self.plug_height),
+            'pipe': YellowPipe(leg1=self.width,
+                               leg2=self.height+self.plug_height)
+        }
+        return comps
+
+    def make_constraints(self):
+
+        constr = [
+            Fixed(self.components['base'].mate_origin),
+            Coincident(
+                self.components['plug'].mate_origin,
+                self.components['base'].mate_top()
+            ),
+            Coincident(
+                self.components['pipe'].mate_origin,
+                self.components['plug'].mate_out()
+            ),
+        ]
+        return constr
+
 if __name__ == "__main__":
     from cqparts.display import display
     fc  = _flux_bits(offset=80)
     #fc.add(seal())
     #fc.add(cover())
     #fc.add(cabinet())
-    fc.add(PlugCover())
-    fc.add(YellowDisc())
-    fc.add(YellowPipe())
+
+    #fc.add(PlugCover())
+    #fc.add(YellowDisc())
+    #fc.add(YellowPipe())
     fc.add(BuiltBox())
+    fc.add(Electrode())
     display(fc)
