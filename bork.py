@@ -78,7 +78,7 @@ class broken(cqparts.Assembly):
             Fixed(self.components['a'].mate_origin),
             Coincident(
                 self.components['b'].mate_origin,
-                Mate(self,CoordSystem(origin=(10,0,0)))
+                Mate(self,CoordSystem(origin=(20,0,0)))
                 )
             ]
         return constr
