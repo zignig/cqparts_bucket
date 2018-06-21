@@ -108,6 +108,11 @@ class LongStepper(Stepper):
     width = PositiveFloat(100)
     heigth = PositiveFloat(100)
 
+class block(cqparts.Part):
+    def make(self):
+        b = cq.Workplane("XY").box(5,5,10)
+        return b
+
 class MountedStepper(cqparts.Assembly):
     stepper = PartRef(Stepper)
     screw = PartRef(Screw)
@@ -141,11 +146,12 @@ class MountedStepper(cqparts.Assembly):
         if self.driven is not None:
             comps['driven'] = self.driven()
         # Add the mounting screws
-        cap =  stepper.components['topcap']
         for i,j in enumerate(stepper.mount_points()):
-            s = StepperFastener(parts=[cap,mount])
+            s = StepperFastener(parts=[stepper.components['topcap'],mount])
             s.screw = self.screw()
             comps[self.screw_name(i)] = s
+            #comps[self.screw_name(i)] = block()
+
         return comps
 
     def make_constraints(self):
@@ -160,11 +166,12 @@ class MountedStepper(cqparts.Assembly):
                 Coincident(self.components['driven'].mate_origin,
                            self.components['mount'].mate_motor(offset=shaft_length))
             )
+        mnt = self.components['mount']
         for i,j in enumerate(self.components['stepper'].mount_points()):
             m =  Mate(self, CoordSystem(
-                origin=(j.X,j.Y,self.thickness),
-                xDir=(1,0 , 0),
-                normal=(0, 0,1)
+                origin=(j.X,-mnt.length/2,j.Y+mnt.height/2+mnt.clearance),
+                xDir=(1, 0, 0),
+                normal=(0, 1, 0)
             ))
             constr.append(
                 Coincident(
