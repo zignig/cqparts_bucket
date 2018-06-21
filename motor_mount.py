@@ -77,7 +77,7 @@ class MountedStepper(cqparts.Assembly):
     # TODO use to for screw mounts
     target = PartRef()
     driven = PartRef() # for attching things to the motor
-    thickness = PositiveFloat(6)
+    thickness = PositiveFloat(3)
     clearance = PositiveFloat(5)
 
     def make_components(self):
@@ -116,6 +116,7 @@ class MountedStepper(cqparts.Assembly):
     def make_alterations(self):
         stepper = self.components['stepper']
         mount = self.components['mount']
+        stepper.cut_boss(mount,clearance=self.clearance)
 
     def mate_corner(self,flip=1):
 

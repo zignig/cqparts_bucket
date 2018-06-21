@@ -12,7 +12,7 @@ from cqparts.constraint import Mate
 from cqparts.utils.geometry import CoordSystem
 
 from motor_mount import MountedStepper 
-from cqparts_motors.stepper import Stepper
+from stepper import Stepper
 from mercanum import MercanumWheel
 from wheel import SimpleWheel
 
@@ -70,8 +70,8 @@ class Rover(cqparts.Assembly):
     length = PositiveFloat(250)
     width = PositiveFloat(116)
     chamfer = PositiveFloat(40)
-    #wheel = PartRef(SimpleWheel)
-    wheel = PartRef(MercanumWheel)
+    wheel = PartRef(SimpleWheel)
+    #wheel = PartRef(MercanumWheel)
     stepper = PartRef(Stepper)
 
     def make_components(self):

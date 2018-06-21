@@ -205,6 +205,17 @@ class Stepper(motor.Motor):
     def make_alterations(self):
         self.apply_cutout()
 
+    def boss_cutout(self,clearance=0):
+        bc = cq.Workplane("XY")\
+            .circle(self.boss_size/2+clearance/4)\
+            .extrude(self.shaft_length)
+        return bc
+
+    def cut_boss(self,part,clearance=0):
+        co = self.boss_cutout(clearance=clearance)
+        lo = part.local_obj\
+            .cut((self.world_coords - part.world_coords)+co)
+
 if __name__ == "__main__":
     from cqparts.display import display
     st = Stepper()
