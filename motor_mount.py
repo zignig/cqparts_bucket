@@ -11,11 +11,47 @@ from cqparts.constraint import Fixed, Coincident
 from cqparts.constraint import Mate
 from cqparts.utils.geometry import CoordSystem
 
+# For fasteners
+from cqparts_fasteners.fasteners.screw import Screw
+from cqparts_fasteners.fasteners.base import Fastener
+from cqparts_fasteners.utils import VectorEvaluator, Selector, Applicator
+
 from cqparts_motors.shaft import Shaft
 from stepper import Stepper 
 
 #from mercanum import MercanumWheel
 from wheel import SimpleWheel
+
+
+# A simple fastener
+class StepperFastener(Fastener):
+    Evaluator = VectorEvaluator
+
+    screw = None
+    class Selector(Selector):
+
+        def get_components(self):
+            return {'screw': self.parent.screw}
+
+        def get_constraints(self):
+            # bind fastener relative to its anchor; the part holding it in.
+            anchor_part = self.evaluator.eval[-1].part  # last effected part
+
+            return [Coincident(
+                self.components['screw'].mate_origin,
+                Mate(anchor_part, self.evaluator.eval[0].start_coordsys - anchor_part.world_coords)
+            )]
+
+    class Applicator(Applicator):
+
+        def apply_alterations(self):
+            screw = self.selector.components['screw']
+            cutter = screw.make_cutter()  # cutter in local coords
+
+            for effect in self.evaluator.eval:
+                relative_coordsys = screw.world_coords - effect.part.world_coords
+                local_cutter = relative_coordsys + cutter
+                effect.part.local_obj = effect.part.local_obj.cut(local_cutter)
 
 class PartRef(Parameter):
 
@@ -74,29 +110,42 @@ class LongStepper(Stepper):
 
 class MountedStepper(cqparts.Assembly):
     stepper = PartRef(Stepper)
+    screw = PartRef(Screw)
     # TODO use to for screw mounts
     target = PartRef()
     driven = PartRef() # for attching things to the motor
     thickness = PositiveFloat(3)
     clearance = PositiveFloat(5)
 
+    @classmethod
+    def screw_name(cls,index):
+        return "screw_%03i" % index
+
     def make_components(self):
         # get some dims from the stepper
         st = self.stepper()
         l = st.length
         w = st.width
+        mount =  StepperMount(
+            length=l
+            ,width=w
+            ,height=w
+            ,thickness=self.thickness
+            ,clearance=self.clearance
+        )
+        stepper=  self.stepper()
         comps = {
-            "mount": StepperMount(
-                length=l
-                ,width=w
-                ,height=w
-                ,thickness=self.thickness
-                ,clearance=self.clearance
-            ),
-            "stepper": self.stepper()
+            "mount": mount,
+            "stepper": stepper,
         }
         if self.driven is not None:
             comps['driven'] = self.driven()
+        # Add the mounting screws
+        cap =  stepper.components['topcap']
+        for i,j in enumerate(stepper.mount_points()):
+            s = StepperFastener(parts=[cap,mount])
+            s.screw = self.screw()
+            comps[self.screw_name(i)] = s
         return comps
 
     def make_constraints(self):
@@ -110,6 +159,18 @@ class MountedStepper(cqparts.Assembly):
             constr.append(
                 Coincident(self.components['driven'].mate_origin,
                            self.components['mount'].mate_motor(offset=shaft_length))
+            )
+        for i,j in enumerate(self.components['stepper'].mount_points()):
+            m =  Mate(self, CoordSystem(
+                origin=(j.X,j.Y,self.thickness),
+                xDir=(0, -1, 0),
+                normal=(0, 0,1)
+            ))
+            constr.append(
+                Coincident(
+                    self.components[self.screw_name(i)].mate_origin,
+                    m
+                )
             )
         return constr
 
