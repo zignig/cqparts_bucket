@@ -148,10 +148,10 @@ class MountedStepper(cqparts.Assembly):
             comps['driven'] = self.driven()
         # Add the mounting screws
         for i,j in enumerate(stepper.mount_points()):
-            s = StepperFastener(parts=[stepper.components['topcap'],mount])
-            s.screw = self.screw()
-            comps[self.screw_name(i)] = s
-            #comps[self.screw_name(i)] = block()
+            #s = StepperFastener(parts=[stepper.components['topcap'],mount])
+            #s.screw = self.screw()
+            #comps[self.screw_name(i)] = s
+            comps[self.screw_name(i)] = block()
 
         return comps
 

@@ -209,7 +209,7 @@ class Stepper(motor.Motor):
 
     def boss_cutout(self,clearance=0):
         bc = cq.Workplane("XY")\
-            .circle(self.boss_size/2+clearance/4)\
+            .circle(self.boss_size/2)\
             .extrude(self.shaft_length)
         return bc
 

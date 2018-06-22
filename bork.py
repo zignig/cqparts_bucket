@@ -70,7 +70,7 @@ class broken(cqparts.Assembly):
             'a' : a,
             'b' : b
         }
-        #t = b.components['box']
+        t = b.components['box']
         return comps
 
     def make_constraints(self):
