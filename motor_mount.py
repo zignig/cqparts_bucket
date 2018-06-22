@@ -13,6 +13,7 @@ from cqparts.utils.geometry import CoordSystem
 
 # For fasteners
 from cqparts_fasteners.fasteners.screw import Screw
+from cqparts_fasteners.bolts import Bolt
 from cqparts_fasteners.fasteners.base import Fastener
 from cqparts_fasteners.utils import VectorEvaluator, Selector, Applicator
 
@@ -110,12 +111,12 @@ class LongStepper(Stepper):
 
 class block(cqparts.Part):
     def make(self):
-        b = cq.Workplane("XY").box(5,5,10)
+        b = cq.Workplane("XY").box(1,1,5,centered=(True,True,False))
         return b
 
 class MountedStepper(cqparts.Assembly):
     stepper = PartRef(Stepper)
-    screw = PartRef(Screw)
+    screw = PartRef(Bolt)
     # TODO use to for screw mounts
     target = PartRef()
     driven = PartRef() # for attching things to the motor
@@ -166,12 +167,12 @@ class MountedStepper(cqparts.Assembly):
                 Coincident(self.components['driven'].mate_origin,
                            self.components['mount'].mate_motor(offset=shaft_length))
             )
-        mnt = self.components['mount']
+        mnt = self.find('mount')
         for i,j in enumerate(self.components['stepper'].mount_points()):
             m =  Mate(self, CoordSystem(
                 origin=(j.X,-mnt.length/2,j.Y+mnt.height/2+mnt.clearance),
                 xDir=(1, 0, 0),
-                normal=(0, 1, 0)
+                normal=(0, -1, 0)
             ))
             constr.append(
                 Coincident(
@@ -190,7 +191,7 @@ class MountedStepper(cqparts.Assembly):
 
         return Mate(self,CoordSystem(
             origin=(flip*(self.stepper().width/2+self.thickness+self.clearance/2),-self.stepper().length/2,0),
-            xDir=(1,0,0),
+            xDir=(-1,0,0),
             normal=(0,0,1)
         ))
 

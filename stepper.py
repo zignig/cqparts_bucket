@@ -94,10 +94,10 @@ class _StepperMount(_EndCap):
 
     def make(self):
         obj = super(_StepperMount, self).make()
-        obj.faces(">Z").workplane() \
-            .rect(self.spacing, self.spacing, forConstruction=True)\
-            .vertices() \
-            .hole(self.hole_size)
+        #obj.faces(">Z").workplane() \
+        #    .rect(self.spacing, self.spacing, forConstruction=True)\
+        #    .vertices() \
+        #    .hole(self.hole_size)
         obj.faces(">Z").workplane()\
             .circle(self.boss/2).extrude(self.boss_length)
         return obj
