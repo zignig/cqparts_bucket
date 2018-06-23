@@ -82,6 +82,8 @@ class Battpack(cqparts.Assembly):
         self.offset = b.diameter
         self.zoffset = b.length
         self.total_batts = self.countX * self.countY * self.countZ
+        self.width = self.countX * self.offset
+        self.length = self.countZ * self.zoffset
 
 
     @classmethod
@@ -116,6 +118,29 @@ class Battpack(cqparts.Assembly):
                     count = count+1
         return constraints
 
+    def mate_flat(self,flip=-1):
+
+        return Mate(self,CoordSystem(
+            origin=(-self.offset/2.0,self.width/2.0-self.offset/2,self.length/2),
+            xDir=(0,0,1),
+            normal=(1,0,0)
+        ))
+
+class _FlatBatt(cqparts.Assembly):
+    countX = Int(5)
+    countY = Int(1)
+    countZ = Int(1)
+    batt = PartRef(Li18650)
+    def make_components(self):
+        return {
+            'm': Battpack(batt=self.batt,countX=self.countX,countY=self.countY,countZ=self.countZ)
+        }
+
+    def make_constraints(self):
+        return [
+            Fixed(self.components['m'].mate_flat())
+        ]
+
 if __name__ == "__main__":
     from cqparts.display import display
     #bv = _BattView()
@@ -124,6 +149,7 @@ if __name__ == "__main__":
     #bv.add(C())
     #bv.add(D())
     #bv = Battpack(batt=Li18650,countX=5,countY=3,countZ=2)
-    bv = Battpack(batt=Li18650,countX=5,countY=1,countZ=1)
+    #bv = Battpack(batt=Li18650,countX=5,countY=1,countZ=1)
+    bv = _FlatBatt()
     display(bv)
 
