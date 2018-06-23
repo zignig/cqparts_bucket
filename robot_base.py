@@ -21,6 +21,7 @@ class PartRef(Parameter):
     def type(self, value):
         return value
 
+
 class RobotBase(cqparts.Part):
     length = PositiveFloat(250)
     width = PositiveFloat(260)
@@ -83,7 +84,6 @@ class Rover(cqparts.Assembly):
             ,chamfer=self.chamfer
             ,thickness=self.thickness
         )
-        # TODO target not working on mounted stepper yet
         comps = {
             'base': base,
             'Ldrive_b': MountedStepper(stepper=self.stepper,driven=self.wheel,target=base),

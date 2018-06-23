@@ -69,7 +69,7 @@ class StepperMount(cqparts.Part):
     thickness = PositiveFloat(8)
     clearance = PositiveFloat(20)
 
-    _render = render_props(template="copper")
+    _render = render_props(template="tin")
 
     def mount_points(self,inset=2):
         " return mount points"
@@ -137,9 +137,8 @@ class StepperMount(cqparts.Part):
             )
         # cut the screw from the mount
         this.cut((coord)+part.make_cutter())
-        # cut the screw from the target 
+        # cut the screw from the target
         wc = target.world_obj
-        print wc
         target.local_obj.cut((self.world_coords+coord-target.world_coords)+part.make_cutter())
 
 class LongStepper(Stepper):
@@ -159,7 +158,7 @@ class plank(cqparts.Part):
 
 class MountedStepper(cqparts.Assembly):
     stepper = PartRef(Stepper)
-    screw = PartRef(Bolt)
+    screw = PartRef(Screw)
     mount = PartRef(Bolt)
     # TODO use to for screw mounts
     target = PartRef()

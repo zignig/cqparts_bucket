@@ -18,7 +18,7 @@ class _flux_bits(Arrange):
 
 # a model of a flux capacitor
 
-
+# ---- Box Parts
 class cabinet(cqparts.Part):
     depth = PositiveFloat(35)
     width = PositiveFloat(60)
@@ -95,7 +95,7 @@ class seal(cover):
             normal=(0, 0,1)
         ))
 
-
+# -- Capcitor bits
 class YellowDisc(cqparts.Part):
     radius = PositiveFloat(10)
     height = PositiveFloat(15)
@@ -161,7 +161,7 @@ class PlugCover(cqparts.Part):
             normal=(1, 0,0)
         ))
 
-
+# --- Assemblies 
 class BuiltBox(cqparts.Assembly):
     depth = PositiveFloat(20)
     width = PositiveFloat(65)
@@ -202,7 +202,7 @@ class BuiltBox(cqparts.Assembly):
         return constr
 
 
-class Electrode(cqparts.Assembly):
+class ElectrodeAssem(cqparts.Assembly):
     height = PositiveFloat(10)
     plug_height = PositiveFloat(10)
     width = PositiveFloat(30)
@@ -243,5 +243,5 @@ if __name__ == "__main__":
     #fc.add(YellowDisc())
     #fc.add(YellowPipe())
     fc.add(BuiltBox())
-    fc.add(Electrode())
+    fc.add(ElectrodeAssem())
     display(fc)
