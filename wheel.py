@@ -12,9 +12,86 @@ from cqparts.constraint import Mate
 from cqparts.utils.geometry import CoordSystem
 
 
+# Again ... need to move into lib
+class PartRef(Parameter):
 
-# TODO Break into hub , spokes , rim and tyre 
-# parametric contructavism for the win
+    def type(self, value):
+        return value
+
+# TODO Break into hub , spokes , rim and tyre
+# parametric constructavism for the win
+
+# base components for wheels
+class _Wheel(cqparts.Part):
+    diameter = PositiveFloat(100)
+    thickness = PositiveFloat(10)
+
+
+class Hub(_Wheel):
+    thickness = PositiveFloat(15)
+    diameter = PositiveFloat(15)
+    def make(self):
+        h = cq.Workplane("XY").circle(self.diameter/2).extrude(self.thickness)
+        return h
+
+
+class CenterDisc(_Wheel):
+    thickness = PositiveFloat(2)
+    count = Int(5)
+    def make(self):
+        cd = cq.Workplane("XY").circle(self.diameter/2).extrude(self.thickness)
+        cd = cd.translate((0,0,-self.thickness/2))
+        inc = 360.0/float(self.count)
+        for i in range(self.count):
+            h = cq.Workplane("XY").circle(self.diameter/8).extrude(2*self.thickness)
+            h = h.translate((0,self.diameter/4,-self.thickness))
+            h = h.rotate((0,0,0),(0,0,1),float(i*inc))
+            cd = cd.cut(h)
+        return cd 
+
+
+class Rim(_Wheel):
+
+    # The rim profile
+    def profile(self):
+        p = cq.Workplane("XZ").rect(self.thickness/2,self.thickness)
+        return p
+
+    def make(self):
+        r = self.profile()
+        r = r.revolve(360,(self.diameter/2,1),(self.diameter/2,2))
+        r = r.translate((-self.diameter/2,0,0))
+        r = r.chamfer(self.thickness/10)
+        return r
+
+class Tyre(_Wheel):
+    pass
+
+
+class BuiltWheel(_Wheel):
+    hub = PartRef(Hub)
+    center_disc= PartRef(CenterDisc)
+    rim = PartRef(Rim)
+
+    thickness = PositiveFloat(20)
+
+    def make(self):
+        hub = self.hub()
+        center_disc = self.center_disc(thickness=self.thickness/5)
+        rim = self.rim(thickness=self.thickness)
+        w = hub.local_obj
+        w = w.union(center_disc.local_obj)
+        w = w.union(rim.local_obj)
+        return w
+
+    def mate_wheel(self,flip=-1):
+        return Mate(self,CoordSystem(
+            origin=(0,0,0),
+            xDir=(1,0,0),
+            normal=(0,0,flip)
+        ))
+
+
 class SimpleWheel(cqparts.Part):
     diameter = PositiveFloat(100)
     thickness = PositiveFloat(10)
@@ -26,8 +103,20 @@ class SimpleWheel(cqparts.Part):
         return sw
 
 
+    def mate_wheel(self,flip=-1):
+        return Mate(self,CoordSystem(
+            origin=(0,0,0),
+            xDir=(1,0,0),
+            normal=(0,0,flip)
+        ))
+
+
 if __name__ == "__main__":
     from cqparts.display import display
-    B = SimpleWheel()
+    #B = SimpleWheel()
+    #B = Hub(diameter=10,thickness=20)
+    #B = Rim(diameter=200,thickness=40)
+    #B = CenterDisc(thickness=3)
+    B = BuiltWheel()
     display(B)
 

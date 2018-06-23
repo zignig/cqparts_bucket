@@ -26,6 +26,7 @@ class _EndCap(cqparts.Part):
     length = PositiveFloat(10, doc="End length")
     cham = PositiveFloat(3, doc="chamfer")
 
+    # _render = render_props(color=(50, 50, 50),alpha=0.4)
     def make(self):
         base = cq.Workplane("XY")\
             .box(self.width, self.width, self.length)\
@@ -62,7 +63,7 @@ class _Stator(cqparts.Part):
 
     def make(self):
         base = cq.Workplane("XY")\
-            .box(self.width, self.width, self.length)\
+            .box(self.width, self.width, self.length,centered=(True,True,True))\
             .edges("|Z")\
             .chamfer(self.cham)
         return base
@@ -71,7 +72,7 @@ class _Stator(cqparts.Part):
     def mate_top(self):
         " top of the stator"
         return Mate(self, CoordSystem(
-            origin=(0, 0, self.length/4),
+            origin=(0, 0, self.length/2),
             xDir=(0, 1, 0),
             normal=(0, 0, 1)
             ))
@@ -94,10 +95,10 @@ class _StepperMount(_EndCap):
 
     def make(self):
         obj = super(_StepperMount, self).make()
-        #obj.faces(">Z").workplane() \
-        #    .rect(self.spacing, self.spacing, forConstruction=True)\
-        #    .vertices() \
-        #    .hole(self.hole_size)
+        obj.faces(">Z").workplane() \
+            .rect(self.spacing, self.spacing, forConstruction=True)\
+            .vertices() \
+            .hole(self.hole_size)
         obj.faces(">Z").workplane()\
             .circle(self.boss/2).extrude(self.boss_length)
         return obj
@@ -115,7 +116,7 @@ class _StepperMount(_EndCap):
     def mate_bottom(self):
         " bottom of the mount"
         return Mate(self, CoordSystem(
-            origin=(0, 0, -self.length),
+            origin=(0, 0,-self.length/2),
             xDir=(0, 1, 0),
             normal=(0, 0, 1)
             ))

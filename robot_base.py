@@ -14,7 +14,7 @@ from cqparts.utils.geometry import CoordSystem
 from motor_mount import MountedStepper 
 from stepper import Stepper
 from mercanum import MercanumWheel
-from wheel import SimpleWheel
+from wheel import SimpleWheel , BuiltWheel
 
 class PartRef(Parameter):
 
@@ -23,7 +23,7 @@ class PartRef(Parameter):
 
 class RobotBase(cqparts.Part):
     length = PositiveFloat(250)
-    width = PositiveFloat(220)
+    width = PositiveFloat(260)
     thickness = PositiveFloat(8)
     chamfer = PositiveFloat(30)
     _render = render_props(template="wood")
@@ -56,8 +56,8 @@ class RobotBase(cqparts.Part):
             normal=(0, 0,-1)
         ))
 
-class ThisWheel(SimpleWheel):
-    diameter = PositiveFloat(40)
+class ThisWheel(BuiltWheel):
+    diameter = PositiveFloat(90)
     thickness = PositiveFloat(20)
 
 
@@ -66,11 +66,12 @@ class ThisStepper(Stepper):
     height = PositiveFloat(20)
     length = PositiveFloat(30)
 
+
 class Rover(cqparts.Assembly):
     length = PositiveFloat(250)
-    width = PositiveFloat(116)
-    chamfer = PositiveFloat(40)
-    wheel = PartRef(SimpleWheel)
+    width = PositiveFloat(140)
+    chamfer = PositiveFloat(20)
+    wheel = PartRef(ThisWheel)
     #wheel = PartRef(MercanumWheel)
     stepper = PartRef(Stepper)
 
@@ -93,7 +94,7 @@ class Rover(cqparts.Assembly):
     def make_constraints(self):
         constr = [
             Fixed(self.components['base'].mate_origin,
-                  CoordSystem(origin=(0,0,100))),
+                  CoordSystem(origin=(0,0,0))),
             Coincident(
                 self.components['Ldrive_b'].mate_corner(flip=-1),
                 self.components['base'].mate_RL()
