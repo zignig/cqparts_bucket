@@ -57,8 +57,8 @@ class RobotBase(cqparts.Part):
         ))
 
 class ThisWheel(BuiltWheel):
-    diameter = PositiveFloat(90)
-    thickness = PositiveFloat(20)
+    diameter = PositiveFloat(70)
+    thickness = PositiveFloat(30)
 
 
 class ThisStepper(Stepper):
@@ -71,6 +71,7 @@ class Rover(cqparts.Assembly):
     length = PositiveFloat(250)
     width = PositiveFloat(140)
     chamfer = PositiveFloat(20)
+    thickness = PositiveFloat(13)
     wheel = PartRef(ThisWheel)
     #wheel = PartRef(MercanumWheel)
     stepper = PartRef(Stepper)
@@ -80,6 +81,7 @@ class Rover(cqparts.Assembly):
             length=self.length
             ,width=self.width
             ,chamfer=self.chamfer
+            ,thickness=self.thickness
         )
         # TODO target not working on mounted stepper yet
         comps = {
@@ -110,7 +112,7 @@ class Rover(cqparts.Assembly):
             Coincident(
                 self.components['Rdrive_f'].mate_corner(flip=-1),
                 self.components['base'].mate_RR(offset=self.length-self.chamfer)
-            )
+            ),
         ]
         return constr
 

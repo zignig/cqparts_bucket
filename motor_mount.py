@@ -70,6 +70,15 @@ class StepperMount(cqparts.Part):
     clearance = PositiveFloat(20)
 
     _render = render_props(template="copper")
+
+    def mount_points(self,inset=2):
+        " return mount points"
+        wp = cq.Workplane("XY")
+        gap = self.thickness+self.clearance+inset
+        h = wp.rect(self.length-gap,self.width-gap, forConstruction=True).vertices()
+        h = h.translate((0,gap/2,0))
+        return h.objects
+
     def wedge(self,off=0):
         h = self.height * 0.5
         w = cq.Workplane("YZ")\
@@ -119,6 +128,20 @@ class StepperMount(cqparts.Part):
         #    .cut((self.local_obj.world_coords \
         #          - part.world_coords)+part.make_cutter())
 
+    def target_cut_out(self,X,Y,part,target):
+        this = self.local_obj
+        coord =  CoordSystem(
+            origin=(X,Y,self.thickness),
+            xDir=(1,0,0),
+            normal=(0,0,1)
+            )
+        # cut the screw from the mount
+        this.cut((coord)+part.make_cutter())
+        # cut the screw from the target 
+        wc = target.world_obj
+        print wc
+        target.local_obj.cut((self.world_coords+coord-target.world_coords)+part.make_cutter())
+
 class LongStepper(Stepper):
     length = PositiveFloat(200)
     width = PositiveFloat(100)
@@ -129,18 +152,29 @@ class block(cqparts.Part):
         b = cq.Workplane("XY").box(1,1,5,centered=(True,True,False))
         return b
 
+class plank(cqparts.Part):
+    def make(self):
+        pl  = cq.Workplane("XY").box(100,100,5,centered=(True,True,False))
+        return pl 
+
 class MountedStepper(cqparts.Assembly):
     stepper = PartRef(Stepper)
-    screw = PartRef(Screw)
+    screw = PartRef(Bolt)
+    mount = PartRef(Bolt)
     # TODO use to for screw mounts
     target = PartRef()
     driven = PartRef() # for attching things to the motor
     thickness = PositiveFloat(6)
-    clearance = PositiveFloat(5)
+    clearance = PositiveFloat(10)
 
     @classmethod
     def screw_name(cls,index):
         return "screw_%03i" % index
+
+    @classmethod
+    def mount_name(cls,index):
+        return "mount_screw_%03i" % index
+
 
     def make_components(self):
         # get some dims from the stepper
@@ -159,13 +193,15 @@ class MountedStepper(cqparts.Assembly):
             "mount": mount,
             "stepper": stepper,
         }
+        if self.target is not None:
+            # have a target , attach to it
+            for i,j in enumerate(mount.mount_points()):
+                comps[self.mount_name(i)] = self.mount()
+
         if self.driven is not None:
             comps['driven'] = self.driven()
         # Add the mounting screws
         for i,j in enumerate(stepper.mount_points()):
-            #s = StepperFastener(parts=[stepper.components['topcap'],mount])
-            #s.screw = self.screw()
-            #comps[self.screw_name(i)] = s
             comps[self.screw_name(i)] = self.screw()
 
         return comps
@@ -185,6 +221,20 @@ class MountedStepper(cqparts.Assembly):
                            self.components['mount'].mate_motor(offset=shaft_length))
             )
         mnt = self.find('mount')
+        if self.target is not None:
+            for i,j in enumerate(self.components['mount'].mount_points()):
+                m =  Mate(self, CoordSystem(
+                    origin=(j.X,j.Y,mnt.thickness),
+                    xDir=(1, 0, 0),
+                    normal=(0,0 , 1)
+                ))
+                constr.append(
+                    Coincident(
+                        self.components[self.mount_name(i)].mate_origin,
+                        m
+                    ),
+                )
+
         for i,j in enumerate(self.components['stepper'].mount_points()):
             m =  Mate(self, CoordSystem(
                 origin=(j.X,-mnt.length/2,j.Y+mnt.height/2+mnt.clearance/2+mnt.thickness),
@@ -206,6 +256,10 @@ class MountedStepper(cqparts.Assembly):
         # cut out the screw holes 
         for i,j in enumerate(stepper.mount_points()):
             mount.cut_out(j.X,j.Y,self.components[self.screw_name(i)])
+        if self.target is not None:
+            self.target.make()
+            for i,j in enumerate(mount.mount_points()):
+                mount.target_cut_out(j.X,j.Y,self.components[self.mount_name(i)],self.target)
 
 
     def mate_corner(self,flip=-1):
@@ -218,9 +272,17 @@ class MountedStepper(cqparts.Assembly):
 
 class _PosMount(cqparts.Assembly):
     def make_components(self):
-        return {'m': MountedStepper(driven=BuiltWheel)}
+        p = plank()
+        return {
+            'm': MountedStepper(driven=None,target=p)
+            ,'p': p
+        }
+
     def make_constraints(self):
-        return [ Fixed(self.components['m'].mate_corner(flip=-1)) ]
+        return [
+            Fixed(self.components['p'].mate_origin,CoordSystem(origin=(2,4,-5))),
+            Fixed(self.components['m'].mate_corner())
+        ]
 
 if __name__ == "__main__":
     from cqparts.display import display
