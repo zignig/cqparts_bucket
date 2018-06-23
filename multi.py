@@ -32,7 +32,7 @@ class Arrange(cqparts.Assembly):
         for i in range(len(self.coll)):
             constraints.append(Fixed(self.coll[i].mate_origin,
                 CoordSystem(
-                    origin=(0,i*self.offset-(total/2),0),
+                    origin=(0,i*self.offset-(total/2)+self.offset/2,0),
                     xDir=(1,0,0),
                     normal=(0,0,1)
                 )
