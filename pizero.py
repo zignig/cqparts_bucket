@@ -7,6 +7,7 @@ from cqparts.constraint import Fixed, Coincident
 from cqparts.constraint import Mate
 from cqparts.utils.geometry import CoordSystem
 
+
 class Pizero(cqparts.Part):
     # Parameters
     length = PositiveFloat(65)
@@ -29,9 +30,8 @@ class Pizero(cqparts.Part):
                     ,forConstruction=True).vertices()
         return h
 
-    def mount_verts(self,offset):
-        h = self.mount_points(self,offset=offset)
-        return h.objects
+    def mount_verts(self,offset=0):
+        return self.mount_points().objects
 
     def make(self):
         wp = cq.Workplane("XY")
