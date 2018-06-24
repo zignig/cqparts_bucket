@@ -8,7 +8,7 @@ from cqparts.constraint import Mate
 from cqparts.utils.geometry import CoordSystem
 
 
-class Pizero(cqparts.Part):
+class PCBBoard(cqparts.Part):
     # Parameters
     length = PositiveFloat(65)
     width = PositiveFloat(30)
@@ -39,7 +39,23 @@ class Pizero(cqparts.Part):
         board.edges("|Z").fillet(self.corner_radius)
         holes =  self.mount_points(offset=-self.thickness).circle(self.hole_size/2).extrude(self.thickness*2)
         board = board.cut(holes)
-        return  board 
+        return board
+
+class Pizero(PCBBoard):
+    length = PositiveFloat(65)
+    width = PositiveFloat(30)
+    thickness = PositiveFloat(1)
+    corner_radius = PositiveFloat(4)
+
+    hole_size = PositiveFloat(2.8)
+    hole_length = PositiveFloat(58)
+    hole_width = PositiveFloat(23)
+
+class BeagleBoneBlack(PCBBoard):
+    length = PositiveFloat(86.36)
+    width = PositiveFloat(54.61)
+    thickness = PositiveFloat(1)
+    corner_radius = PositiveFloat(12.7)
 
 if __name__ == "__main__":
     from cqparts.display import display

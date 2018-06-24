@@ -6,7 +6,7 @@ from cqparts.constraint import Mate
 from cqparts.utils.geometry import CoordSystem
 
 from pizero import Pizero
-from arduino import Arduino 
+from pizero import BeagleBoneBlack
 from standoff import Standoff, ComputerScrew
 
 class PartRef(Parameter):
@@ -70,5 +70,5 @@ class MountedBoard(cqparts.Assembly):
 
 if __name__ == "__main__":
     from cqparts.display import display
-    p = MountedBoard()
+    p = MountedBoard(board=Pizero)
     display(p)

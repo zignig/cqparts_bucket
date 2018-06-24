@@ -25,13 +25,15 @@ class PartRef(Parameter):
 class _Wheel(cqparts.Part):
     diameter = PositiveFloat(100)
     thickness = PositiveFloat(10)
+    outset = PositiveFloat(10)
 
 
 class Hub(_Wheel):
     thickness = PositiveFloat(15)
     diameter = PositiveFloat(15)
     def make(self):
-        h = cq.Workplane("XY").circle(self.diameter/2).extrude(self.thickness)
+        h = cq.Workplane("XY").circle(self.diameter/2).extrude(self.thickness+self.outset)
+        h = h.translate((0,0,-self.thickness/2))
         return h
 
 
@@ -47,7 +49,7 @@ class CenterDisc(_Wheel):
             h = h.translate((0,self.diameter/4,-self.thickness))
             h = h.rotate((0,0,0),(0,0,1),float(i*inc))
             cd = cd.cut(h)
-        return cd 
+        return cd
 
 
 class Rim(_Wheel):
