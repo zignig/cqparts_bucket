@@ -1,5 +1,5 @@
 """
-Generic Coupling
+Mount for stepper motors
 """
 
 import cadquery as cq
@@ -23,6 +23,10 @@ from stepper import Stepper
 #from mercanum import MercanumWheel
 from wheel import SimpleWheel, BuiltWheel
 
+
+# A modified version of the nutbolt fastener from cqparts_fasteners
+# https://github.com/zignig/cqparts/blob/master/src/cqparts_fasteners/fasteners/nutbolt.py
+# TODO convert to nutbolt
 
 # A simple fastener
 class StepperFastener(Fastener):
