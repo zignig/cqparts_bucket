@@ -72,7 +72,7 @@ class Rover(cqparts.Assembly):
     length = PositiveFloat(250)
     width = PositiveFloat(140)
     chamfer = PositiveFloat(20)
-    thickness = PositiveFloat(13)
+    thickness = PositiveFloat(6)
     wheel = PartRef(ThisWheel)
     #wheel = PartRef(MercanumWheel)
     stepper = PartRef(Stepper)

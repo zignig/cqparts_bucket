@@ -5,7 +5,6 @@
 """
 
 # TODO
-# need a cutout for mounting
 # even 4 fasteners so it auto mounts to whatever it is parented to.
 
 import cadquery as cq

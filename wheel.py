@@ -54,16 +54,20 @@ class CenterDisc(_Wheel):
 
 class Rim(_Wheel):
 
-    # The rim profile
+    # The rim profile / override for other wheels
     def profile(self):
         p = cq.Workplane("XZ").rect(self.thickness/2,self.thickness)
         return p
+
+    # over ride in sub classes
+    def extra(self,rim):
+        rim  = rim.chamfer(self.thickness/10)
 
     def make(self):
         r = self.profile()
         r = r.revolve(360,(self.diameter/2,1),(self.diameter/2,2))
         r = r.translate((-self.diameter/2,0,0))
-        r = r.chamfer(self.thickness/10)
+        self.extra(r)
         return r
 
 class Tyre(_Wheel):
