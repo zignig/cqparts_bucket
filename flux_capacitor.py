@@ -18,12 +18,16 @@ class _flux_bits(Arrange):
 
 # a model of a flux capacitor
 class Printable(cqparts.Part):
-    _printable = True 
-    clearance = PositiveFloat(0.1)
+    _printable = True
+    clearance = PositiveFloat(0.2)
 
     # make cutout available to all sub classes
     def make_cutout(self,part):
         self.local_obj.cut((part.world_coords-self.world_coords)+part.cutout())
+
+    def crossX(self):
+        print self.world_coords
+        self.local_obj.transformed(rotate=(0,90,0),offset=(0,0,0)).split(keepTop=True)#((part.world_coords-self.world_coords)+part.cutout())
 
 # ---- Box Parts
 class cabinet(Printable):
@@ -299,6 +303,8 @@ class ElectrodeAssem(cqparts.Assembly):
         base.make_cutout(electrode)
         base.make_cutout(plug)
         plug.make_cutout(electrode)
+        #for i in self.components:
+        #    self.components[i].crossX()
 
 class FluxCap(cqparts.Assembly):
     count = Int(3)
@@ -377,6 +383,6 @@ if __name__ == "__main__":
 
     fc.add(BuiltBox())
     fc.add(CompleteFlux())
-    #fc = ElectrodeAssem(pipe_rotate=50)
-    fc = FluxCap()
+    fc = ElectrodeAssem(pipe_rotate=50)
+    #fc = FluxCap()
     display(fc)
