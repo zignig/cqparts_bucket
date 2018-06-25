@@ -61,10 +61,10 @@ class Plank(cqparts.Part):
 
 
 class Rect(cqparts.Assembly):
-    length = PositiveFloat(200, doc="rect length")
-    width = PositiveFloat(100, doc="rect width")
-    depth = PositiveFloat(100, doc="rect depth")
-    thickness = PositiveFloat(20, doc="plank thickness")
+    length = PositiveFloat(100, doc="rect length")
+    width = PositiveFloat(50, doc="rect width")
+    depth = PositiveFloat(50, doc="rect depth")
+    thickness = PositiveFloat(10, doc="plank thickness")
 
     def _name(self,int):
         return 'item_%03i' % int

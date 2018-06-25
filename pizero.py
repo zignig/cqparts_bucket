@@ -7,6 +7,10 @@ from cqparts.constraint import Fixed, Coincident
 from cqparts.constraint import Mate
 from cqparts.utils.geometry import CoordSystem
 
+from multi import Arrange
+
+class _Boards(Arrange):
+    pass
 
 class PCBBoard(cqparts.Part):
     # Parameters
@@ -59,5 +63,7 @@ class BeagleBoneBlack(PCBBoard):
 
 if __name__ == "__main__":
     from cqparts.display import display
-    p = Pizero()
-    display(p)
+    db = _Boards()
+    db.add(Pizero())
+    db.add(BeagleBoneBlack())
+    display(db)
