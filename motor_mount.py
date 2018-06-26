@@ -229,6 +229,12 @@ class MountedStepper(cqparts.Assembly):
         # cut out the screw holes
         for i,j in enumerate(stepper.mount_points()):
             mount.cut_out(j.X,j.Y,self.components[self.screw_name(i)])
+        # if there is a driven cut out the shaft
+        if self.driven:
+            driven = self.components['driven']
+            shaft = stepper.get_shaft()
+            driven.make_cutout(shaft)
+
 
     def mate_corner(self,flip=-1):
 
@@ -243,7 +249,7 @@ class _PosMount(cqparts.Assembly):
     def make_components(self):
         p = plank()
         return {
-            'm': MountedStepper(driven=SimpleWheel,target=p)
+            'm': MountedStepper(driven=BuiltWheel,target=p)
             ,'p': p
         }
 

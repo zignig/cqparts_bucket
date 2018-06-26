@@ -27,6 +27,9 @@ class _Wheel(cqparts.Part):
     thickness = PositiveFloat(10)
     outset = PositiveFloat(10)
 
+    def make_cutout(self,part):
+        self.local_obj.cut((part.world_coords-self.world_coords)+part.cut_out())
+
 
 class Hub(_Wheel):
     thickness = PositiveFloat(15)
@@ -98,9 +101,7 @@ class BuiltWheel(_Wheel):
         ))
 
 
-class SimpleWheel(cqparts.Part):
-    diameter = PositiveFloat(100)
-    thickness = PositiveFloat(10)
+class SimpleWheel(_Wheel):
     _render = render_props(color=(90,90,90))
 
     def make(self):

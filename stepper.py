@@ -149,7 +149,7 @@ class Stepper(motor.Motor):
     shaft_length = PositiveFloat(24, doc="length from top surface")
 
     def get_shaft(self):
-        return self.shaft_type
+        return self.components['shaft']
 
     def mount_points(self):
         " return mount points"
