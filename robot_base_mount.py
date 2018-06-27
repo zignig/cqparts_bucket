@@ -16,20 +16,20 @@ from cqparts.utils.geometry import CoordSystem
 class MountScrew(MaleFastenerPart):
     head = HeadType(
         default=('countersunk', {
-            'diameter': 5.0,
-            'height': 2.4,
+            'diameter': 10.0,
+            'height': 6.4,
         }),
     )
     drive = DriveType(
         default=('phillips', {
-            'diameter': 3.0,
-            'depth': 2,
+            'diameter': 5.0,
+            'depth': 4,
             'width': 0.5,
         }),
     )
     thread = ThreadType(
         default=('iso68', {
-            'diameter': 3.0,
+            'diameter': 6.0,
             'pitch': 0.5,
         }),
     )
@@ -40,11 +40,11 @@ class MountScrew(MaleFastenerPart):
 
 class MountNut(HexNut):
     edges = PositiveInt(6)
-    width = PositiveFloat(5.5)
-    heigth = PositiveFloat(2.4)
+    width = PositiveFloat(8)
+    heigth = PositiveFloat(6)
     thread = ThreadType(
             default=('iso68', {
-                    'diameter': 3,
+                    'diameter': 6,
                         'pitch': 0.5,
                     }),
                 )
@@ -117,19 +117,16 @@ class Thing(cqparts.Assembly):
             'base': base,
             'top': top,
             'fastener': FlushFastener(parts=[base, top]),
-            'a': MountScrew()
         }
 
     def make_constraints(self):
         base = self.components['base']
         top = self.components['top']
         fastener = self.components['fastener']
-        a = self.components['a']
         return [
             Fixed(base.mate_bottom),
             Coincident(top.mate_bottom, base.mate_top),
             Coincident(fastener.mate_origin, top.mate_top),
-            Fixed(a.mate_origin)
         ]
 
 
