@@ -23,8 +23,8 @@ class MountScrew(MaleFastenerPart):
     drive = DriveType(
         default=('phillips', {
             'diameter': 5.0,
-            'depth': 4,
-            'width': 0.5,
+            'depth': 5,
+            'width': 1,
         }),
     )
     thread = ThreadType(
