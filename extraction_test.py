@@ -10,6 +10,7 @@ from manufacture import Printable
 from robot_base import Rover 
 from motor_mount import _PosMount
 from flux_capacitor import  CompleteFlux
+from case import Case
 
 
 
@@ -41,7 +42,11 @@ class Extractor(cqparts.Assembly):
 
 
 
-m = CompleteFlux()
+#m = CompleteFlux()
+#m = Rover()
+m = Case()
+
+#Extract the printables
 e = Extractor()
 e.scan(m)
 e.show()

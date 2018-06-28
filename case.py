@@ -106,7 +106,7 @@ class _Case(cqparts.Part):
     width = PositiveFloat(12.4)
     length = PositiveFloat(22.8)
     thickness = PositiveFloat(0.6)
-    screw = PartRef()
+    screw = PartRef(Screw)
 
     #_render = render_props(color=(255,255,255),alpha=0.4)
 

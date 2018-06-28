@@ -86,7 +86,7 @@ class BuiltWheel(_Wheel):
     thickness = PositiveFloat(10)
 
     def make(self):
-        hub = self.hub()
+        hub = self.hub(thickness=self.thickness,outset=self.outset)
         center_disc = self.center_disc(thickness=self.thickness/5,diameter=self.diameter)
         rim = self.rim(thickness=self.thickness,diameter=self.diameter)
         w = hub.local_obj
