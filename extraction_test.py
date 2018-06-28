@@ -2,6 +2,8 @@
 Test for part extraction on assemblies 
 """
 
+# TODO printable parts should have a mate_print for the correct orientation
+
 import cqparts
 
 from manufacture import Printable
@@ -44,4 +46,11 @@ e = Extractor()
 e.scan(m)
 e.show()
 p = e.get_printable()
-print p
+
+from multi import Arrange
+if __name__ == "__main__":
+    from cqparts.display import display
+    ar = Arrange(offset=100)
+    for i in  p:
+        ar.add(i)
+    display(ar)
