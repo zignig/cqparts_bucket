@@ -83,12 +83,12 @@ class BuiltWheel(_Wheel):
     center_disc= PartRef(CenterDisc)
     rim = PartRef(Rim)
 
-    thickness = PositiveFloat(20)
+    thickness = PositiveFloat(10)
 
     def make(self):
         hub = self.hub()
-        center_disc = self.center_disc(thickness=self.thickness/5)
-        rim = self.rim(thickness=self.thickness)
+        center_disc = self.center_disc(thickness=self.thickness/5,diameter=self.diameter)
+        rim = self.rim(thickness=self.thickness,diameter=self.diameter)
         w = hub.local_obj
         w = w.union(center_disc.local_obj)
         w = w.union(rim.local_obj)
@@ -125,6 +125,6 @@ if __name__ == "__main__":
     #B = Hub(diameter=10,thickness=20)
     #B = Rim(diameter=200,thickness=40)
     #B = CenterDisc(thickness=3)
-    B = BuiltWheel()
+    B = BuiltWheel(diameter=50)
     display(B)
 
