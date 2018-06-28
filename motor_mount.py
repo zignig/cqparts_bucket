@@ -24,6 +24,7 @@ from stepper import Stepper
 from wheel import SimpleWheel, BuiltWheel
 
 from robot_base_mount import FlushFastener, MountScrew
+from manufacture import Printable
 
 # https://github.com/zignig/cqparts/blob/master/src/cqparts_fasteners/fasteners/nutbolt.py
 
@@ -33,7 +34,7 @@ class PartRef(Parameter):
         return value
 
 
-class StepperMount(cqparts.Part):
+class StepperMount(Printable):
     length = PositiveFloat(50)
     width = PositiveFloat(40)
     height = PositiveFloat(40)

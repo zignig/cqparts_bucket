@@ -12,6 +12,7 @@ from cqparts.constraint import Mate
 from cqparts.utils.geometry import CoordSystem
 
 
+from manufacture import Printable
 # Again ... need to move into lib
 class PartRef(Parameter):
 
@@ -22,7 +23,7 @@ class PartRef(Parameter):
 # parametric constructavism for the win
 
 # base components for wheels
-class _Wheel(cqparts.Part):
+class _Wheel(Printable):
     diameter = PositiveFloat(100)
     thickness = PositiveFloat(10)
     outset = PositiveFloat(10)

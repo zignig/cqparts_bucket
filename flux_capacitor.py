@@ -12,22 +12,12 @@ from cqparts.utils.geometry import CoordSystem
 
 
 from multi import Arrange
+from manufacture import Printable
 
 class _flux_bits(Arrange):
     pass
 
 # a model of a flux capacitor
-class Printable(cqparts.Part):
-    _printable = True
-    clearance = PositiveFloat(0.2)
-
-    # make cutout available to all sub classes
-    def make_cutout(self,part):
-        self.local_obj.cut((part.world_coords-self.world_coords)+part.cutout())
-
-    def crossX(self):
-        print self.world_coords
-        self.local_obj.transformed(rotate=(0,90,0),offset=(0,0,0)).split(keepTop=True)#((part.world_coords-self.world_coords)+part.cutout())
 
 # ---- Box Parts
 class cabinet(Printable):
