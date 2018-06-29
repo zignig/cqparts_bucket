@@ -30,11 +30,18 @@ class MountedBoard(cqparts.Assembly):
     def standoff_name(cls,index):
         return "standoff_%03i" % index
 
+    def initialize_parameters(self):
+        b = self.board()
+        self.length = b.length
+        self.width = b.width
+
     def make_components(self):
         board = self.board()
         comps = {
             'board': board
         }
+        self.length = board.length
+        self.width = board.width
         print (board.mount_verts())
         for i,j in enumerate(board.mount_verts()):
             comps[self.screw_name(i)] = ComputerScrew()
@@ -70,6 +77,12 @@ class MountedBoard(cqparts.Assembly):
             )
         return constr
 
+    def mate_transverse(self):
+        return Mate(self, CoordSystem(
+            origin=(0,0,0),
+            xDir=(0, 1, 0),
+            normal=(0, 0,1)
+        ))
 
 # standoff widget
 class Standoff(cqparts.Part):
