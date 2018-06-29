@@ -17,11 +17,10 @@ class PartRef(Parameter):
         return value
 
 class RoverBatt(Battpack):
-    countX = Int(4)
+    countX = Int(5)
     countY = Int(1)
     countZ = Int(1)
-    #batt = PartRef(battery.Li18650)
-    batt = PartRef(battery.AA)
+    batt = PartRef(battery.Li18650)
 
 class RoverController(MountedBoard):
     board = PartRef(Pizero)

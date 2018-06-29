@@ -15,6 +15,7 @@ from motor_mount import MountedStepper
 from stepper import Stepper
 from mercanum import MercanumWheel
 from wheel import SimpleWheel , BuiltWheel
+from electronics import  Electronics
 
 class PartRef(Parameter):
 
@@ -24,8 +25,8 @@ class PartRef(Parameter):
 
 class RobotBase(cqparts.Part):
     length = PositiveFloat(250)
-    width = PositiveFloat(260)
-    thickness = PositiveFloat(8)
+    width = PositiveFloat(240)
+    thickness = PositiveFloat(6)
     chamfer = PositiveFloat(30)
     _render = render_props(template="wood")
 
@@ -36,11 +37,11 @@ class RobotBase(cqparts.Part):
 
     # TODO mountpoints for stuff
 
-    def mate_back_third(self,offset=0):
+    def mate_back(self,offset=5):
         return Mate(self, CoordSystem(
-            origin=(-self.length/2+offset, self.width/2,0),
+            origin=(-self.length/2+offset,0,self.thickness),
             xDir=(1, 0, 0),
-            normal=(0, 0,-1)
+            normal=(0, 0,1)
         ))
 
     def mate_RL(self,offset=0):
@@ -74,8 +75,8 @@ class Rover(cqparts.Assembly):
     chamfer = PositiveFloat(20)
     thickness = PositiveFloat(6)
     wheel = PartRef(ThisWheel)
-    #wheel = PartRef(MercanumWheel)
     stepper = PartRef(Stepper)
+    electronics = PartRef(Electronics)
 
     def make_components(self):
         base = RobotBase(
@@ -86,6 +87,7 @@ class Rover(cqparts.Assembly):
         )
         comps = {
             'base': base,
+            'electronics' : self.electronics(),
             'Ldrive_b': MountedStepper(stepper=self.stepper,driven=self.wheel,target=base),
             'Rdrive_b': MountedStepper(stepper=self.stepper,driven=self.wheel,target=base),
             'Ldrive_f': MountedStepper(stepper=self.stepper,driven=self.wheel,target=base),
@@ -97,6 +99,10 @@ class Rover(cqparts.Assembly):
         constr = [
             Fixed(self.components['base'].mate_origin,
                   CoordSystem(origin=(0,0,0))),
+            Coincident(
+                self.components['electronics'].mate_origin,
+                self.components['base'].mate_back()
+            ),
             Coincident(
                 self.components['Ldrive_b'].mate_corner(flip=-1),
                 self.components['base'].mate_RL()
