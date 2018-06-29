@@ -11,8 +11,7 @@ from cqparts_fasteners.male import MaleFastenerPart
 from cqparts_fasteners.fasteners.screw import Screw
 from cqparts_fasteners.params import HeadType, DriveType, ThreadType
 
-from pizero import Pizero
-from pizero import BeagleBoneBlack
+from controller import Pizero, BeagleBoneBlack
 
 class PartRef(Parameter):
 
@@ -21,7 +20,7 @@ class PartRef(Parameter):
 
 class MountedBoard(cqparts.Assembly):
     board = PartRef(Pizero)
-    standoff = Int(15)
+    standoff = Int(20)
 
     @classmethod
     def screw_name(cls,index):

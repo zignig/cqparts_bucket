@@ -58,8 +58,9 @@ class RobotBase(cqparts.Part):
         ))
 
 class ThisWheel(BuiltWheel):
-    diameter = PositiveFloat(70)
-    thickness = PositiveFloat(10)
+    diameter = PositiveFloat(90)
+    thickness = PositiveFloat(20)
+    outset = PositiveFloat(10)
 
 class ThisStepper(Stepper):
     width = PositiveFloat(20)
