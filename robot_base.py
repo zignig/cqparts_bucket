@@ -60,7 +60,7 @@ class RobotBase(cqparts.Part):
 
 class ThisWheel(BuiltWheel):
     diameter = PositiveFloat(90)
-    thickness = PositiveFloat(20)
+    thickness = PositiveFloat(15)
     outset = PositiveFloat(10)
 
 class ThisStepper(Stepper):
@@ -72,7 +72,7 @@ class ThisStepper(Stepper):
 class Rover(cqparts.Assembly):
     length = PositiveFloat(250)
     width = PositiveFloat(140)
-    chamfer = PositiveFloat(20)
+    chamfer = PositiveFloat(40)
     thickness = PositiveFloat(6)
     wheel = PartRef(ThisWheel)
     stepper = PartRef(Stepper)
@@ -87,7 +87,7 @@ class Rover(cqparts.Assembly):
         )
         comps = {
             'base': base,
-            'electronics' : self.electronics(),
+            'electronics' : self.electronics(target=base),
             'Ldrive_b': MountedStepper(stepper=self.stepper,driven=self.wheel,target=base),
             'Rdrive_b': MountedStepper(stepper=self.stepper,driven=self.wheel,target=base),
             'Ldrive_f': MountedStepper(stepper=self.stepper,driven=self.wheel,target=base),

@@ -20,7 +20,7 @@ class PartRef(Parameter):
 
 class MountedBoard(cqparts.Assembly):
     board = PartRef(Pizero)
-    standoff = Int(20)
+    standoff = Int(10)
 
     @classmethod
     def screw_name(cls,index):
@@ -51,11 +51,11 @@ class MountedBoard(cqparts.Assembly):
     def make_constraints(self):
         board = self.components['board']
         constr = [
-            Fixed(board.mate_origin,CoordSystem(origin=(0,0,self.standoff)))
+            Fixed(board.mate_origin,CoordSystem(origin=(0,0,self.standoff+board.thickness/2)))
         ]
         for i,j in enumerate(board.mount_verts()):
             m =  Mate(self, CoordSystem(
-                origin=(j.X,j.Y,self.standoff+board.thickness/2),
+                origin=(j.X,j.Y,self.standoff+board.thickness),
                 xDir=(1, 0, 0),
                 normal=(0, 0,1)
             ))
@@ -69,7 +69,7 @@ class MountedBoard(cqparts.Assembly):
                 Coincident(
                     self.components[self.standoff_name(i)].mate_top(),
                     Mate(self, CoordSystem(
-                        origin=(j.X,j.Y,self.standoff-board.thickness/2),
+                        origin=(j.X,j.Y,self.standoff),
                         xDir=(1, 0, 0),
                         normal=(0, 0,1)
                     ))
@@ -77,6 +77,8 @@ class MountedBoard(cqparts.Assembly):
             )
         return constr
 
+
+    # put the board across
     def mate_transverse(self):
         return Mate(self, CoordSystem(
             origin=(0,0,0),
@@ -92,8 +94,9 @@ class Standoff(cqparts.Part):
 
     def make(self):
         so = cq.Workplane("XY").circle(self.size/2).extrude(-self.size)
-        hx = cq.Workplane("XY").polygon(6,self.size*2).extrude(self.length)
-        so = so.union(hx)
+        if self.length > 0:
+            hx = cq.Workplane("XY").polygon(6,self.size*2).extrude(self.length)
+            so = so.union(hx)
         return so
 
     def mate_top(self):
@@ -135,7 +138,7 @@ class ComputerScrew(Screw):
 
 if __name__ == "__main__":
     from cqparts.display import display
-    #p = MountedBoard(board=Pizero)
-    p = MountedBoard(board=BeagleBoneBlack)
+    p = MountedBoard(board=Pizero)
+    #p = MountedBoard(board=BeagleBoneBlack)
     display(p)
 

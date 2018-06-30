@@ -20,11 +20,17 @@ class PCBBoard(cqparts.Part):
     corner_radius = PositiveFloat(4)
 
     hole_size = PositiveFloat(2.8)
-    hole_length = PositiveFloat(58)
-    hole_width = PositiveFloat(23)
+    hole_length = PositiveFloat()
+    hole_width = PositiveFloat()
 
     # default appearance
     #_render = render_props(template='tin')
+    def initialize_parameters(self):
+        if self.hole_length is None:
+            self.hole_length = self.length - 3*self.hole_size
+        if self.hole_width is None:
+            self.hole_width = self.width - 3*self.hole_size
+
 
     # This returns the verts that the screws get aligned to
     def mount_points(self,offset=0):
@@ -84,4 +90,5 @@ if __name__ == "__main__":
     db = _Boards()
     db.add(Pizero())
     db.add(BeagleBoneBlack())
+    db.add(PCBBoard(length=100,width=50))
     display(db)

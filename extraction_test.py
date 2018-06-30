@@ -43,8 +43,8 @@ class Extractor(cqparts.Assembly):
 
 
 #m = CompleteFlux()
-#m = Rover()
-m = Case()
+m = Rover()
+#m = Case()
 
 #Extract the printables
 e = Extractor()

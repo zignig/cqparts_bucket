@@ -21,27 +21,29 @@ class RoverBatt(Battpack):
     countY = Int(1)
     countZ = Int(1)
     batt = PartRef(battery.Li18650)
+    #batt = PartRef(battery.AA)
 
 class RoverController(MountedBoard):
     board = PartRef(Pizero)
     #board = PartRef(BeagleBoneBlack)
+    standoff = PositiveFloat(20) 
 
 # temp motor driver
 
 class MotorBoard(PCBBoard):
-    length = PositiveFloat(50)
-    width = PositiveFloat(50)
-    hole_length = PositiveFloat(45)
-    hole_width = PositiveFloat(45)
+    length = PositiveFloat(100)
+    width = PositiveFloat(40)
 
 class MotorController(MountedBoard):
     board = PartRef(MotorBoard)
+    standoff = PositiveFloat(15)
 
 
 class Electronics(cqparts.Assembly):
     battpack = PartRef(RoverBatt)
     controller = PartRef(RoverController)
     motorcontroller = PartRef(MotorController)
+    target = PartRef() # what the electronics are bound to
 
     gap = PositiveFloat(5)
 
@@ -76,6 +78,12 @@ class Electronics(cqparts.Assembly):
             Fixed(mc.mate_transverse(),self.off(off3))
             ]
         return constr
+
+    def make_alterations(self):
+        # cut all the mount points out of the target 
+        if self.target is not None:
+            pass
+        pass
 
 if __name__ == "__main__":
     from cqparts.display import display
