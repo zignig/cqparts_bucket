@@ -8,6 +8,7 @@ from cqparts.params import *
 from cqparts.constraint import Fixed, Coincident
 from cqparts.constraint import Mate
 from cqparts.utils.geometry import CoordSystem
+from cqparts_misc.basic.primatives import Box
 
 from cqparts_motors.shaft import Shaft
 
@@ -159,10 +160,13 @@ class Servo(cqparts.Assembly):
         ]
         return constr
 
-    def make_cutout(self,clearance=0):
+    def make_cutout(self,part,clearance=0):
+        part = part.local_obj.cut((self.world_coords-part.world_coords)+self.cutout(clearance=clearance))
+
+    def cutout(self,clearance=0):
         body = cq.Workplane("XY").box(
-            self.length+self.clearance/2,
-            self.width+self.clearance/2,
+            self.length+clearance/2,
+            self.width+clearance/2,
             self.wing_lift,centered=(True,True,False))
         return body
 
@@ -208,7 +212,24 @@ class SubMicro(Servo):
 # Test assembly for mount points and cutouts
 class _PosMount(cqparts.Assembly):
     def make_components(self):
-        pass
+        plank = Box(height=3,width=60,length=60)
+        comps = {
+            "servo": Servo(),
+            "plank": plank 
+        } 
+        return comps
+
+    def make_constraints(self):
+        return [
+            Fixed(self.components['plank'].mate_origin),
+            Coincident(
+                self.components['servo'].mate_wing_bottom(),
+                self.components['plank'].mate_top
+            )
+        ]
+
+    def make_alterations(self):
+        self.components['servo'].make_cutout(self.components['plank'],clearance=2)
 
 
 
@@ -216,6 +237,7 @@ if __name__ == "__main__":
     from cqparts.display import display
     #em = Servo()
     #em = _wing()
-    em = SubMicro()
+    #em = SubMicro()
+    em = _PosMount()
     display(em)
 
