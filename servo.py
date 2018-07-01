@@ -177,6 +177,34 @@ class Servo(cqparts.Assembly):
         return Mate(self,CoordSystem(origin=(0,0,self.wing_lift+self.wing_thickness)))
 
 
+class SubMicro(Servo):
+    # TODO
+    """
+    Submicro mini servo 
+    https://www.sparkfun.com/products/9065
+    """
+    # main body
+    length = PositiveFloat(23.114)
+    width = PositiveFloat(11.735)
+    height = PositiveFloat(22.092)
+
+    # wings
+    wing_lift = PositiveFloat(15.037)
+    wing_width = PositiveFloat(4.303)
+    wing_thickness = PositiveFloat(1.524)
+    hole_size = PositiveFloat(2.032)
+    hole_gap = PositiveFloat()
+
+    # boss
+    boss_radius = PositiveFloat(5.867)
+    boss_height = PositiveFloat(3.988)
+    boss_offset = PositiveFloat(5.867)
+
+    #shaft
+    shaft_length = PositiveFloat(2.972)
+    shaft_diameter = PositiveFloat(4.668)
+
+
 # Test assembly for mount points and cutouts
 class _PosMount(cqparts.Assembly):
     def make_components(self):
@@ -186,7 +214,8 @@ class _PosMount(cqparts.Assembly):
 
 if __name__ == "__main__":
     from cqparts.display import display
-    em = Servo()
+    #em = Servo()
     #em = _wing()
+    em = SubMicro()
     display(em)
 

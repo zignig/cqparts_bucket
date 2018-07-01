@@ -23,7 +23,7 @@ class _ServoHorn(cqparts.Part):
     arms = Int(1)
 
     holes = Int(3)
-    hole_size = PositiveFloat(2.0)
+    hole_size = PositiveFloat(1.5)
     hole_spacing = PositiveFloat(5)
 
     thickness = PositiveFloat(2.5)
