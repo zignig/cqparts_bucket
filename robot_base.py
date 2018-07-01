@@ -64,9 +64,10 @@ class ThisWheel(BuiltWheel):
     outset = PositiveFloat(10)
 
 class ThisStepper(Stepper):
-    width = PositiveFloat(20)
-    height = PositiveFloat(20)
+    width = PositiveFloat(30)
+    height = PositiveFloat(30)
     length = PositiveFloat(30)
+    hole_spacing = PositiveFloat(15)
 
 
 class Rover(cqparts.Assembly):

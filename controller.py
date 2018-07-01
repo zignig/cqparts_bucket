@@ -46,7 +46,8 @@ class PCBBoard(cqparts.Part):
     def make(self):
         wp = cq.Workplane("XY")
         board = wp.box(length=self.length,width=self.width,height=self.thickness)
-        board.edges("|Z").fillet(self.corner_radius)
+        if self.corner_radius > 0:
+            board.edges("|Z").fillet(self.corner_radius)
         holes =  self.mount_points(offset=-self.thickness).circle(self.hole_size/2).extrude(self.thickness*2)
         board = board.cut(holes)
         return board
