@@ -1,0 +1,192 @@
+"""
+basic servo model (no internals)
+"""
+
+import cadquery as cq
+import cqparts
+from cqparts.params import *
+from cqparts.constraint import Fixed, Coincident
+from cqparts.constraint import Mate
+from cqparts.utils.geometry import CoordSystem
+
+from cqparts_motors.shaft import Shaft
+
+class _wing(cqparts.Part):
+    height = PositiveFloat(2.5)
+    width = PositiveFloat(16.77)
+    length = PositiveFloat(5)
+
+    hole_size = PositiveFloat(2.5)
+    hole_gap = PositiveFloat()
+
+    def make(self):
+        wing  = cq.Workplane("XY").rect(self.length,self.width).extrude(self.height)
+        # cut out the holes
+        hole = cq.Workplane("XY").circle(self.hole_size/2).extrude(self.height)
+        slot = cq.Workplane("XY")\
+                .rect(self.length,self.hole_size/2)\
+                .extrude(self.height)\
+                .translate((-self.length/2,0,0))
+        # one hole servo check
+        hole = hole.union(slot)
+        if self.hole_gap is not None:
+            hole = hole.translate((0,self.hole_gap,0))
+            other_hole = hole.mirror(mirrorPlane=("XZ"))
+            hole = hole.union(other_hole)
+        wing = wing.cut(hole)
+        return wing 
+
+class ServoBody(cqparts.Part):
+    # main body
+    length = PositiveFloat(32.53)
+    width = PositiveFloat(16.77)
+    height = PositiveFloat(30.9)
+
+    # wings
+    wing_lift = PositiveFloat(23.69)
+    wing_width = PositiveFloat(5)
+    wing_thickness = PositiveFloat(2.5)
+    hole_size = PositiveFloat(2.5)
+    hole_gap = PositiveFloat(5)
+
+    # boss
+    boss_radius = PositiveFloat(5)
+    boss_height = PositiveFloat(3)
+    boss_offset = PositiveFloat(8.35)
+
+    def make(self):
+        body = cq.Workplane("XY").box(self.length,self.width,self.height,centered=(True,True,False))
+
+        boss = cq.Workplane("XY")\
+                .circle(self.boss_radius)\
+                .extrude(self.boss_height)\
+                .translate((self.length/2-self.boss_offset,0,self.height))
+
+        body = body.union(boss)
+
+        left_wing = _wing(
+            height=self.wing_thickness,
+            width=self.width,
+            length=self.wing_width,
+            hole_size=self.hole_size,
+            hole_gap=self.hole_gap
+            )
+        left_wing = left_wing.local_obj.rotate((0,0,0),(0,0,1),180)
+        left_wing = left_wing.translate((self.length/2+self.wing_width/2,0,self.wing_lift))
+        body = body.union(left_wing)
+
+        right_wing = _wing(
+            height=self.wing_thickness,
+            width=self.width,
+            length=self.wing_width,
+            hole_size=self.hole_size,
+            hole_gap=self.hole_gap
+            )
+        right_wing = right_wing.local_obj.translate((-self.length/2-self.wing_width/2,0,self.wing_lift))
+        body = body.union(right_wing)
+        return body
+
+    def mate_shaft(self):
+        return Mate(self,CoordSystem(
+            origin=(self.length/2-self.boss_offset,0,self.height+self.boss_height)
+        ))
+
+class Servo(cqparts.Assembly):
+    # TODO
+    """
+    Servo assembly with shaft and mount points
+    """
+    # main body
+    length = PositiveFloat(32.53)
+    width = PositiveFloat(16.77)
+    height = PositiveFloat(30.9)
+
+    # wings
+    wing_lift = PositiveFloat(23.69)
+    wing_width = PositiveFloat(5)
+    wing_thickness = PositiveFloat(2.5)
+    hole_size = PositiveFloat(2.5)
+    hole_gap = PositiveFloat(5)
+
+    # boss
+    boss_radius = PositiveFloat(5)
+    boss_height = PositiveFloat(3)
+    boss_offset = PositiveFloat(8.35)
+
+    #shaft
+    shaft_length = PositiveFloat(4)
+    shaft_diameter = PositiveFloat(4)
+    # TODO servo rotation
+    rotate =  PositiveFloat(0)
+
+    def make_components(self):
+        servobody = ServoBody(
+            length=self.length,
+            width=self.width,
+            height=self.height,
+            wing_lift=self.wing_lift,
+            wing_width=self.wing_width,
+            wing_thickness=self.wing_thickness,
+            hole_size=self.hole_size,
+            hole_gap=self.hole_gap,
+            boss_radius=self.boss_radius,
+            boss_height=self.boss_height,
+            boss_offset=self.boss_offset
+        )
+        shaft = Shaft(
+            length = self.shaft_length,
+            diam = self.shaft_diameter
+        )
+        comps = {
+            'servobody': servobody,
+            'shaft': shaft
+        }
+        return comps
+
+    def get_shaft(self):
+        return self.components['shaft']
+
+    def make_constraints(self):
+        servobody = self.components['servobody']
+        shaft = self.components['shaft']
+
+        constr = [
+            Fixed(servobody.mate_origin),
+            Coincident(
+                shaft.mate_origin,
+                servobody.mate_shaft()
+            )
+        ]
+        return constr
+
+    def make_cutout(self,clearance=0):
+        body = cq.Workplane("XY").box(
+            self.length+self.clearance/2,
+            self.width+self.clearance/2,
+            self.wing_lift,centered=(True,True,False))
+        return body
+
+    def mount_points(self):
+        # TODO
+        pass
+
+    def mate_wing_bottom(self):
+        return Mate(self,CoordSystem(origin=(0,0,self.wing_lift)))
+
+    def mate_wing_top(self):
+        return Mate(self,CoordSystem(origin=(0,0,self.wing_lift+self.wing_thickness)))
+
+
+# Test assembly for mount points and cutouts
+class _PosMount(cqparts.Assembly):
+    def make_components(self):
+        pass
+
+
+
+if __name__ == "__main__":
+    from cqparts.display import display
+    em = Servo()
+    #em = _wing()
+    display(em)
+
