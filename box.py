@@ -24,6 +24,8 @@ class _Sheet(cqparts.Part):
     width = PositiveFloat(50)
     thickness = PositiveFloat(3)
     outset = PositiveFloat()
+    l_outset = PositiveFloat(0)
+    w_outset = PositiveFloat(0)
 
     tabs = Int(1)
     tab_width = PositiveFloat(10)
@@ -37,8 +39,11 @@ class _Sheet(cqparts.Part):
 
     def make(self):
         if self.outset > 0:
+            self.l_outset = self.outset
+            self.w_outset = self.outset
+        if ( self.outset > 0) or (self.l_outset > 0 ) or (self.w_outset>0): 
             s = cq.Workplane("XY")\
-                .rect(self.length+2*self.outset,self.width+2*self.outset)\
+                .rect(self.length+2*self.l_outset,self.width+2*self.w_outset)\
                 .extrude(self.thickness)
             s = s.edges("|Z").fillet(self.thickness)
         else:
@@ -101,6 +106,27 @@ class _Sheet(cqparts.Part):
             normal=(0, 1,0)
         ))
 
+    def mate_front_edge(self):
+        return Mate(self, CoordSystem(
+            origin=(-self.length/2-self.thickness,0,0),
+            xDir=(0, 0, 1),
+            normal=(1,0 ,0)
+        ))
+
+    def mate_front_top(self):
+        return Mate(self, CoordSystem(
+            origin=(self.length/2-self.thickness,0,0),
+            xDir=(1, 0, 0),
+            normal=(0,0 ,1)
+        ))
+
+    def mate_back_top(self):
+        return Mate(self, CoordSystem(
+            origin=(-self.length/2,0,0),
+            xDir=(1, 0, 0),
+            normal=(0,0 ,1)
+        ))
+
     def mate_left_bottom(self):
         return Mate(self, CoordSystem(
             origin=(0,self.width/2,0),
@@ -132,11 +158,19 @@ class Top(_Sheet):
     _render = render_props(color=(100,150,70))
     pass
 
+class Front(_Sheet):
+    _render = render_props(color=(100,150,110))
+    pass
+
+class Back(_Sheet):
+    _render = render_props(color=(100,150,110))
+    pass
+
 class Boxen(cqparts.Assembly):
-    length = PositiveFloat(40)
-    width = PositiveFloat(50)
-    height = PositiveFloat(20)
-    thickness = PositiveFloat(2)
+    length = PositiveFloat(100)
+    width = PositiveFloat(100)
+    height = PositiveFloat(100)
+    thickness = PositiveFloat(3)
     outset = PositiveFloat(3)
 
     def make_components(self):
@@ -157,14 +191,28 @@ class Boxen(cqparts.Assembly):
                 length=self.length,
                 width=self.width,
                 thickness=self.thickness,
+                l_outset = self.outset,
                 tabs_on = BoolList([True,False,True,False])
                 ),
             'top' : Top(
                 length=self.length,
                 width=self.width,
                 thickness=self.thickness,
+                l_outset = self.outset,
                 tabs_on = BoolList([True,False,True,False])
-                )
+                ),
+            'front' : Front(
+                length=self.height-2*self.thickness,
+                width=self.width,
+                thickness=self.thickness,
+                tabs_on = BoolList([True,True,True,True])
+                ),
+            'back' : Back(
+                length=self.height-2*self.thickness,
+                width=self.width,
+                thickness=self.thickness,
+                tabs_on = BoolList([True,True,True,True])
+                ),
                 }
         return comps
 
@@ -175,6 +223,8 @@ class Boxen(cqparts.Assembly):
         right = self.components['right']
         bottom = self.components['bottom']
         top = self.components['top']
+        front = self.components['front']
+        back = self.components['back']
         constr = [
             Fixed(bottom.mate_origin+CoordSystem(origin=(0,0,-self.outset))),
             Coincident(
@@ -189,6 +239,14 @@ class Boxen(cqparts.Assembly):
 		top.mate_left_bottom(),
 		left.mate_left_edge()
 		),
+            Coincident(
+                front.mate_front_edge(),
+                bottom.mate_front_top()
+                ),
+            Coincident(
+                back.mate_front_edge(),
+                bottom.mate_back_top()
+                ),
         ]
         return constr
 
@@ -197,11 +255,24 @@ class Boxen(cqparts.Assembly):
         right = self.components['right']
         bottom = self.components['bottom']
         top = self.components['top']
+        front = self.components['front']
+        back = self.components['back']
+
         left.cutter(bottom)
         right.cutter(bottom)
+
         left.cutter(top)
         right.cutter(top)
 
+        left.cutter(front)
+        right.cutter(front)
+        top.cutter(front)
+        bottom.cutter(front)
+
+        left.cutter(back)
+        right.cutter(back)
+        top.cutter(back)
+        bottom.cutter(back)
 
 if __name__ == "__main__":
     from cqparts.display import display
