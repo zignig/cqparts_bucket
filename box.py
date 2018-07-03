@@ -18,6 +18,25 @@ class BoolList(Parameter):
     def type(self,value):
         return value
 
+class PartRef(Parameter):
+    def type(self,value):
+        return value
+
+# super class for all the types of tabs 
+class _Tab(cqparts.Part):
+    length = PositiveFloat() # length of the side
+    tab_width = PositiveFloat()
+    thickness = PositiveFloat()
+
+    def make(self):
+        s = cq.Workplane("XZ")\
+            .rect(self.tab_width,self.thickness)\
+            .extrude(-self.thickness)
+        s = s.translate((2*self.tab_width,0,0))
+        b = s.mirror("YZ")
+        s = s.union(b)
+        return s
+
 # this is just a shaft with a different colour
 class _Sheet(cqparts.Part):
     length = PositiveFloat(50)
@@ -27,9 +46,9 @@ class _Sheet(cqparts.Part):
     l_outset = PositiveFloat(0)
     w_outset = PositiveFloat(0)
 
-    tabs = Int(1)
     tab_width = PositiveFloat(10)
     tabs_on = BoolList() # tabs on sides ( dodj, but first cut )
+    tab = PartRef()
 
     _render = render_props(color=(255,255,70))
 
@@ -54,7 +73,7 @@ class _Sheet(cqparts.Part):
             pos = 0
             for i in  self.tabs_on.default:
                 if i:
-                    t = self.tab(pos=pos)
+                    t = self.make_tab(pos=pos)
                     s = s.union(t)
                 pos = pos + 1
         return s
@@ -64,15 +83,19 @@ class _Sheet(cqparts.Part):
     # need to have a positive and negative version
     # for more complicated connectors
 
-    def tab(self,pos=0):
-        s = cq.Workplane("XZ")\
-            .rect(self.tab_width,self.thickness)\
-            .extrude(-self.thickness)
-        off =0
+    def make_tab(self,pos=0):
+        off = 0
+        length = 0
         if (pos == 0 ) or (pos == 2):
             off = self.width/2
+            length = self.width
         if (pos == 1 ) or (pos == 3):
             off = self.length/2
+            length = self.length
+        s = self.tab(length=length,
+            tab_width=self.tab_width,
+            thickness=self.thickness)
+        s = s.local_obj
         s = s.translate((0,off,self.thickness/2))
         s = s.rotate((0,0,0),(0,0,1),pos*90.0)
         return s
@@ -172,6 +195,7 @@ class Boxen(cqparts.Assembly):
     height = PositiveFloat(100)
     thickness = PositiveFloat(3)
     outset = PositiveFloat(3)
+    tab = PartRef(_Tab)
 
     def make_components(self):
         comps = {
@@ -192,26 +216,30 @@ class Boxen(cqparts.Assembly):
                 width=self.width,
                 thickness=self.thickness,
                 l_outset = self.outset,
-                tabs_on = BoolList([True,False,True,False])
+                tabs_on = BoolList([True,False,True,False]),
+                tab = self.tab,
                 ),
             'top' : Top(
                 length=self.length,
                 width=self.width,
                 thickness=self.thickness,
                 l_outset = self.outset,
-                tabs_on = BoolList([True,False,True,False])
+                tabs_on = BoolList([True,False,True,False]),
+                tab=self.tab,
                 ),
             'front' : Front(
                 length=self.height-2*self.thickness,
                 width=self.width,
                 thickness=self.thickness,
-                tabs_on = BoolList([True,True,True,True])
+                tabs_on = BoolList([True,True,True,True]),
+                tab=self.tab,
                 ),
             'back' : Back(
                 length=self.height-2*self.thickness,
                 width=self.width,
                 thickness=self.thickness,
-                tabs_on = BoolList([True,True,True,True])
+                tabs_on = BoolList([True,True,True,True]),
+                tab=self.tab,
                 ),
                 }
         return comps
