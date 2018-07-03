@@ -82,37 +82,37 @@ class _Sheet(cqparts.Part):
 
     def mate_left_edge(self):
         return Mate(self, CoordSystem(
-            origin=(0,self.width/2,self.length/2),
-            xDir=(1, 0, 0),
+            origin=(0,-self.width/2,0),
+            xDir=(-1, 0, 0),
             normal=(0, 0,-1)
         ))
 
     def mate_right_edge(self):
         return Mate(self, CoordSystem(
-            origin=(0,-self.width/2,self.length/2),
+            origin=(0,self.width/2,0),
             xDir=(1, 0, 0),
             normal=(0,0,1)
         ))
 
     def mate_left_top(self):
         return Mate(self, CoordSystem(
-            origin=(0,0,0),
+            origin=(0,self.width/2,0),
             xDir=(1, 0, 0),
             normal=(0, 1,0)
         ))
 
     def mate_right_top(self):
         return Mate(self, CoordSystem(
-            origin=(0,0,0),
+            origin=(0,self.width/2,0),
             xDir=(1, 0, 0),
-            normal=(0,1,0)
+            normal=(0,-1,0)
             ))
 
 
 class _Corner(cqparts.Assembly):
-    length = PositiveFloat(100)
-    width = PositiveFloat(100)
-    height = PositiveFloat(50)
+    length = PositiveFloat(20)
+    width = PositiveFloat(60)
+    height = PositiveFloat(40)
     thickness = PositiveFloat(3)
     outset = PositiveFloat(3)
 
