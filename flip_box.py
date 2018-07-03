@@ -1,5 +1,6 @@
 """
 Flip lid box
+Subclass test for Boxen
 """
 
 import cadquery as cq
@@ -51,18 +52,15 @@ class Hinge(box.Left):
         base = base.cut(hole)
         return base
 
+class FlipBox(box.Boxen):
+    # Pass down subclassed faces
+    left = box.PartRef(Hinge)
+    right = box.PartRef(Hinge)
+    top = box.PartRef(Lid)
+    front = box.PartRef(Front)
+    back = box.PartRef(Back)
+
 if __name__ == "__main__":
     from cqparts.display import display
-    B = box.Boxen(
-        thickness=3,
-        outset=3,
-        length=100,
-        width=100,
-        height=50,
-        front=Front,
-        left=Hinge,
-        right=Hinge,
-        top=Lid,
-        back=Back,
-        )
-    display(B)
+    FB = FlipBox(height=50,thickness=3)
+    display(FB)

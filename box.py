@@ -28,15 +28,18 @@ class PartRef(Parameter):
 class _Tab(cqparts.Part):
     length = PositiveFloat() # length of the side
     thickness = PositiveFloat()
+    count = Int(6)
 
     def make(self):
-        s = cq.Workplane("XZ")\
-            .rect(self.length/4,self.thickness)\
-            .extrude(-self.thickness)
-        s = s.translate((self.length/4,0,0))
-        b = s.mirror("ZY")
-        s = s.union(b)
-        return s
+        tab = cq.Workplane("XY")
+        for i in range(self.count):
+            incr  = self.length/(2*self.count)
+            s = cq.Workplane("XZ")\
+                .rect(incr,self.thickness)\
+                .extrude(-self.thickness)
+            s = s.translate((incr-self.length/2+(2*i*incr),0,0))
+            tab = tab.union(s)
+        return tab 
 
     def cut(self):
         # TODO some tabs need a cutout
