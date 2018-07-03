@@ -84,27 +84,34 @@ class _Sheet(cqparts.Part):
         return Mate(self, CoordSystem(
             origin=(0,self.width/2,self.length/2),
             xDir=(1, 0, 0),
-            normal=(0, 1,0)
+            normal=(0, 0,-1)
         ))
 
     def mate_right_edge(self):
         return Mate(self, CoordSystem(
             origin=(0,-self.width/2,self.length/2),
             xDir=(1, 0, 0),
-            normal=(0,-1,0)
+            normal=(0,0,1)
         ))
 
     def mate_left_top(self):
         return Mate(self, CoordSystem(
-            origin=(0,self.width/2,-self.length/2+self.thickness),
+            origin=(0,0,0),
             xDir=(1, 0, 0),
             normal=(0, 1,0)
         ))
 
+    def mate_right_top(self):
+        return Mate(self, CoordSystem(
+            origin=(0,0,0),
+            xDir=(1, 0, 0),
+            normal=(0,1,0)
+            ))
+
 
 class _Corner(cqparts.Assembly):
-    length = PositiveFloat(50)
-    width = PositiveFloat(90)
+    length = PositiveFloat(100)
+    width = PositiveFloat(100)
     height = PositiveFloat(50)
     thickness = PositiveFloat(3)
     outset = PositiveFloat(3)
@@ -148,16 +155,16 @@ class _Corner(cqparts.Assembly):
         constr = [
             Fixed(bottom.mate_origin),
             Coincident(
-		left.mate_origin,
+		left.mate_left_top(),
 		bottom.mate_left_edge()
 		),
             Coincident(
-		right.mate_origin,
+		right.mate_right_top(),
 		bottom.mate_right_edge()
 		),
             Coincident(
 		top.mate_left_top(),
-		left.mate_origin
+		right.mate_origin
 		),
         ]
         return constr
