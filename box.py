@@ -96,7 +96,7 @@ class _Sheet(cqparts.Part):
 
     def mate_left_top(self):
         return Mate(self, CoordSystem(
-            origin=(0,0,0),
+            origin=(0,self.width/2,-self.length/2+self.thickness),
             xDir=(1, 0, 0),
             normal=(0, 1,0)
         ))
@@ -104,7 +104,8 @@ class _Sheet(cqparts.Part):
 
 class _Corner(cqparts.Assembly):
     length = PositiveFloat(50)
-    width = PositiveFloat(50)
+    width = PositiveFloat(90)
+    height = PositiveFloat(50)
     thickness = PositiveFloat(3)
     outset = PositiveFloat(3)
 
@@ -112,13 +113,13 @@ class _Corner(cqparts.Assembly):
         comps = {
             'left' : _Sheet(
                 length=self.length,
-                width=self.width,
+                width=self.height,
                 thickness=self.thickness,
                 outset=self.outset,
                 ),
             'right' : _Sheet(
                 length=self.length,
-                width=self.width,
+                width=self.height,
                 thickness=self.thickness,
                 outset=self.outset,
                 ),
@@ -127,14 +128,23 @@ class _Corner(cqparts.Assembly):
                 width=self.width,
                 thickness=self.thickness,
                 tabs_on = BoolList([True,False,True,False])
+                ),
+            'top' : _Sheet(
+                length=self.length,
+                width=self.width,
+                thickness=self.thickness,
+                tabs_on = BoolList([True,False,True,False])
                 )
                 }
         return comps
+
+    # TODO constraints need to be fixed, check with different sizes
 
     def make_constraints(self):
         left = self.components['left']
         right = self.components['right']
         bottom = self.components['bottom']
+        top = self.components['top']
         constr = [
             Fixed(bottom.mate_origin),
             Coincident(
@@ -144,7 +154,11 @@ class _Corner(cqparts.Assembly):
             Coincident(
 		right.mate_origin,
 		bottom.mate_right_edge()
-		)
+		),
+            Coincident(
+		top.mate_left_top(),
+		left.mate_origin
+		),
         ]
         return constr
 
@@ -152,8 +166,11 @@ class _Corner(cqparts.Assembly):
         left = self.components['left']
         right = self.components['right']
         bottom = self.components['bottom']
+        top = self.components['top']
         left.cutter(bottom)
         right.cutter(bottom)
+        left.cutter(top)
+        right.cutter(top)
 
 
 if __name__ == "__main__":
