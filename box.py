@@ -14,6 +14,7 @@ from cqparts.utils.geometry import CoordSystem
 
 # TODO
 # mounting for bolts and nuts 
+# if None check all the faces so missing sides are possible
 
 # a list of bools for tab edges
 class BoolList(Parameter):
