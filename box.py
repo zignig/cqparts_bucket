@@ -101,6 +101,13 @@ class _Sheet(cqparts.Part):
             normal=(0, 1,0)
         ))
 
+    def mate_left_bottom(self):
+        return Mate(self, CoordSystem(
+            origin=(0,self.width/2,0),
+            xDir=(1, 0, 0),
+            normal=(0, -1,0)
+        ))
+
     def mate_right_top(self):
         return Mate(self, CoordSystem(
             origin=(0,self.width/2,0),
@@ -109,34 +116,50 @@ class _Sheet(cqparts.Part):
             ))
 
 
-class _Corner(cqparts.Assembly):
-    length = PositiveFloat(20)
-    width = PositiveFloat(60)
-    height = PositiveFloat(40)
-    thickness = PositiveFloat(3)
+class Left(_Sheet):
+    _render = render_props(color=(100,255,70))
+    pass
+
+class Right(_Sheet):
+    _render = render_props(color=(100,255,70))
+    pass
+
+class Bottom(_Sheet):
+    _render = render_props(color=(100,150,70))
+    pass
+
+class Top(_Sheet):
+    _render = render_props(color=(100,150,70))
+    pass
+
+class Boxen(cqparts.Assembly):
+    length = PositiveFloat(40)
+    width = PositiveFloat(50)
+    height = PositiveFloat(20)
+    thickness = PositiveFloat(2)
     outset = PositiveFloat(3)
 
     def make_components(self):
         comps = {
-            'left' : _Sheet(
+            'left' : Left(
                 length=self.length,
                 width=self.height,
                 thickness=self.thickness,
                 outset=self.outset,
                 ),
-            'right' : _Sheet(
+            'right' : Right(
                 length=self.length,
                 width=self.height,
                 thickness=self.thickness,
                 outset=self.outset,
                 ),
-            'bottom' : _Sheet(
+            'bottom' : Bottom(
                 length=self.length,
                 width=self.width,
                 thickness=self.thickness,
                 tabs_on = BoolList([True,False,True,False])
                 ),
-            'top' : _Sheet(
+            'top' : Top(
                 length=self.length,
                 width=self.width,
                 thickness=self.thickness,
@@ -153,7 +176,7 @@ class _Corner(cqparts.Assembly):
         bottom = self.components['bottom']
         top = self.components['top']
         constr = [
-            Fixed(bottom.mate_origin),
+            Fixed(bottom.mate_origin+CoordSystem(origin=(0,0,-self.outset))),
             Coincident(
 		left.mate_left_top(),
 		bottom.mate_left_edge()
@@ -163,8 +186,8 @@ class _Corner(cqparts.Assembly):
 		bottom.mate_right_edge()
 		),
             Coincident(
-		top.mate_left_top(),
-		right.mate_origin
+		top.mate_left_bottom(),
+		left.mate_left_edge()
 		),
         ]
         return constr
@@ -182,6 +205,6 @@ class _Corner(cqparts.Assembly):
 
 if __name__ == "__main__":
     from cqparts.display import display
-    B = _Corner()
+    B = Boxen()
     display(B)
 
