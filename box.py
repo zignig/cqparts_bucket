@@ -37,10 +37,14 @@ class _Tab(cqparts.Part):
         s = s.union(b)
         return s
 
+    def cut(self):
+        # TODO some tabs need a cutout
+        pass
+
 # this is just a shaft with a different colour
 class _Sheet(cqparts.Part):
     length = PositiveFloat(50)
-    width = PositiveFloat(50)
+    width = PositiveFloat(70)
     thickness = PositiveFloat(3)
     outset = PositiveFloat()
     l_outset = PositiveFloat(0)
@@ -190,9 +194,9 @@ class Back(_Sheet):
     pass
 
 class Boxen(cqparts.Assembly):
-    length = PositiveFloat(100)
+    length = PositiveFloat(50)
     width = PositiveFloat(100)
-    height = PositiveFloat(100)
+    height = PositiveFloat(60)
     thickness = PositiveFloat(3)
     outset = PositiveFloat(3)
     tab = PartRef(_Tab)
