@@ -12,7 +12,8 @@ from cqparts.constraint import Mate
 from cqparts.utils.geometry import CoordSystem
 
 
-# TODO is this a plan ?
+# TODO
+# 
 # a list of bools for tab edges
 class BoolList(Parameter):
     def type(self,value):
@@ -32,21 +33,21 @@ class _Tab(cqparts.Part):
         s = cq.Workplane("XZ")\
             .rect(self.tab_width,self.thickness)\
             .extrude(-self.thickness)
-        s = s.translate((2*self.tab_width,0,0))
-        b = s.mirror("YZ")
-        s = s.union(b)
+        #s = s.translate((0,0,0))
+        #b = s.mirror("YZ")
+        #s = s.union(b)
         return s
 
     def cut(self):
         # TODO some tabs need a cutout
         pass
 
-# this is just a shaft with a different colour
 class _Sheet(cqparts.Part):
     length = PositiveFloat(50)
     width = PositiveFloat(70)
     thickness = PositiveFloat(3)
-    outset = PositiveFloat()
+
+    outset = PositiveFloat(0)
     l_outset = PositiveFloat(0)
     w_outset = PositiveFloat(0)
 
@@ -58,13 +59,13 @@ class _Sheet(cqparts.Part):
 
     def initialize_parameters(self):
         if self.tab_width is None:
-            self.tab_width = self.thickness*2
+            self.tab_width = self.thickness*3
 
     def make(self):
         if self.outset > 0:
             self.l_outset = self.outset
             self.w_outset = self.outset
-        if ( self.outset > 0) or (self.l_outset > 0 ) or (self.w_outset>0): 
+        if ( self.outset > 0) or (self.l_outset > 0 ) or (self.w_outset > 0): 
             s = cq.Workplane("XY")\
                 .rect(self.length+2*self.l_outset,self.width+2*self.w_outset)\
                 .extrude(self.thickness)
@@ -73,9 +74,10 @@ class _Sheet(cqparts.Part):
             s = cq.Workplane("XY")\
                 .rect(self.length,self.width)\
                 .extrude(self.thickness)
+        print self.tabs_on
         if self.tabs_on is not None :
             pos = 0
-            for i in  self.tabs_on.default:
+            for i in self.tabs_on:
                 if i:
                     t = self.make_tab(pos=pos)
                     s = s.union(t)
@@ -96,9 +98,11 @@ class _Sheet(cqparts.Part):
         if (pos == 1 ) or (pos == 3):
             off = self.length/2
             length = self.length
-        s = self.tab(length=length,
-            tab_width=self.tab_width,
-            thickness=self.thickness)
+        s = self.tab(
+                length=length,
+                tab_width=self.tab_width,
+                thickness=self.thickness
+            )
         s = s.local_obj
         s = s.translate((0,off,self.thickness/2))
         s = s.rotate((0,0,0),(0,0,1),pos*90.0)
@@ -121,8 +125,8 @@ class _Sheet(cqparts.Part):
 
     def mate_right_edge(self):
         return Mate(self, CoordSystem(
-            origin=(0,self.width/2,0),
-            xDir=(1, 0, 0),
+            origin=(0,self.width/2+self.thickness,0),
+            xDir=(-1, 0, 0),
             normal=(0,0,1)
         ))
 
@@ -169,80 +173,95 @@ class _Sheet(cqparts.Part):
             ))
 
 
+# Subclass these to alter the box faces
 class Left(_Sheet):
+    tabs_on = BoolList()
     _render = render_props(color=(100,255,70))
     pass
 
 class Right(_Sheet):
+    tabs_on = BoolList()
     _render = render_props(color=(100,255,70))
     pass
 
 class Bottom(_Sheet):
+    tabs_on = BoolList([True,False,True,False])
     _render = render_props(color=(100,150,70))
     pass
 
 class Top(_Sheet):
+    tabs_on = BoolList([True,False,True,False])
     _render = render_props(color=(100,150,70))
     pass
 
 class Front(_Sheet):
+    tabs_on = BoolList([True,True,True,True])
     _render = render_props(color=(100,150,110))
     pass
 
 class Back(_Sheet):
+    tabs_on = BoolList([True,True,True,True])
     _render = render_props(color=(100,150,110))
     pass
 
 class Boxen(cqparts.Assembly):
-    length = PositiveFloat(50)
+    length = PositiveFloat(100)
     width = PositiveFloat(100)
-    height = PositiveFloat(60)
+    height = PositiveFloat(100)
     thickness = PositiveFloat(3)
-    outset = PositiveFloat(3)
+    outset = PositiveFloat(6)
     tab = PartRef(_Tab)
+
+    # Pass down subclassed faces
+    left = PartRef(Left)
+    right = PartRef(Right)
+    bottom = PartRef(Bottom)
+    top = PartRef(Top)
+    front = PartRef(Front)
+    back = PartRef(Back)
+
+    # Tab control
 
     def make_components(self):
         comps = {
-            'left' : Left(
+            'left' : self.left(
                 length=self.length,
                 width=self.height,
                 thickness=self.thickness,
                 outset=self.outset,
+                tab = self.tab
                 ),
-            'right' : Right(
+            'right' : self.right(
                 length=self.length,
                 width=self.height,
                 thickness=self.thickness,
                 outset=self.outset,
+                tab = self.tab
                 ),
-            'bottom' : Bottom(
+            'bottom' : self.bottom(
                 length=self.length,
                 width=self.width,
                 thickness=self.thickness,
                 l_outset = self.outset,
-                tabs_on = BoolList([True,False,True,False]),
                 tab = self.tab,
                 ),
-            'top' : Top(
+            'top' : self.top(
                 length=self.length,
                 width=self.width,
                 thickness=self.thickness,
                 l_outset = self.outset,
-                tabs_on = BoolList([True,False,True,False]),
                 tab=self.tab,
                 ),
-            'front' : Front(
+            'front' : self.front(
                 length=self.height-2*self.thickness,
                 width=self.width,
                 thickness=self.thickness,
-                tabs_on = BoolList([True,True,True,True]),
                 tab=self.tab,
                 ),
-            'back' : Back(
+            'back' : self.back(
                 length=self.height-2*self.thickness,
                 width=self.width,
                 thickness=self.thickness,
-                tabs_on = BoolList([True,True,True,True]),
                 tab=self.tab,
                 ),
                 }
@@ -306,8 +325,8 @@ class Boxen(cqparts.Assembly):
         top.cutter(back)
         bottom.cutter(back)
 
+
 if __name__ == "__main__":
     from cqparts.display import display
-    B = Boxen()
+    B = Boxen(height=40)
     display(B)
-
