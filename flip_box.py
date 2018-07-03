@@ -24,7 +24,7 @@ class Back(box.Back):
 
 class Lid(box.Top):
     tabs_on = box.BoolList()
-    clearance = PositiveFloat(2)
+    clearance = PositiveFloat(1.5)
 
     def initialize_parameters(self):
         self.width = self.width - self.clearance
@@ -32,7 +32,7 @@ class Lid(box.Top):
     def make(self):
         base = super(Lid,self).make()
         detent = cq.Workplane("XY")\
-            .rect(self.thickness*2.7,self.width+self.clearance*2+self.thickness*2)\
+            .rect(self.thickness*2.7,self.width+self.clearance*3+self.thickness*2)\
             .extrude(self.thickness)
         detent = detent.translate((-self.length/2,0,0))
         base = base.union(detent)
@@ -43,7 +43,7 @@ class Hinge(box.Left):
     def make(self):
         base = super(Hinge,self).make()
         offset = (self.length/2,-self.width/2+self.thickness/2,0)
-        hinge = cq.Workplane("XY").circle(3*self.thickness).extrude(self.thickness)
+        hinge = cq.Workplane("XY").circle(2.7*self.thickness).extrude(self.thickness)
         hinge = hinge.translate(offset)
         base = base.union(hinge)
         hole = cq.Workplane("XY").circle(1.5*self.thickness).extrude(self.thickness)
@@ -54,8 +54,10 @@ class Hinge(box.Left):
 if __name__ == "__main__":
     from cqparts.display import display
     B = box.Boxen(
-        outset=3,
         thickness=3,
+        outset=3,
+        length=100,
+        width=100,
         height=50,
         front=Front,
         left=Hinge,

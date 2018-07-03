@@ -13,7 +13,8 @@ from cqparts.utils.geometry import CoordSystem
 
 
 # TODO
-# 
+# mounting for bolts and nuts 
+
 # a list of bools for tab edges
 class BoolList(Parameter):
     def type(self,value):
@@ -23,19 +24,18 @@ class PartRef(Parameter):
     def type(self,value):
         return value
 
-# super class for all the types of tabs 
+# super class for all the types of tabs
 class _Tab(cqparts.Part):
     length = PositiveFloat() # length of the side
-    tab_width = PositiveFloat()
     thickness = PositiveFloat()
 
     def make(self):
         s = cq.Workplane("XZ")\
-            .rect(self.tab_width,self.thickness)\
+            .rect(self.length/4,self.thickness)\
             .extrude(-self.thickness)
-        #s = s.translate((0,0,0))
-        #b = s.mirror("YZ")
-        #s = s.union(b)
+        s = s.translate((self.length/4,0,0))
+        b = s.mirror("ZY")
+        s = s.union(b)
         return s
 
     def cut(self):
@@ -94,13 +94,12 @@ class _Sheet(cqparts.Part):
         length = 0
         if (pos == 0 ) or (pos == 2):
             off = self.width/2
-            length = self.width
+            length = self.length
         if (pos == 1 ) or (pos == 3):
             off = self.length/2
-            length = self.length
+            length = self.width
         s = self.tab(
                 length=length,
-                tab_width=self.tab_width,
                 thickness=self.thickness
             )
         s = s.local_obj
@@ -208,8 +207,8 @@ class Boxen(cqparts.Assembly):
     length = PositiveFloat(100)
     width = PositiveFloat(100)
     height = PositiveFloat(100)
-    thickness = PositiveFloat(3)
-    outset = PositiveFloat(6)
+    thickness = PositiveFloat(5)
+    outset = PositiveFloat(5)
     tab = PartRef(_Tab)
 
     # Pass down subclassed faces
@@ -328,5 +327,5 @@ class Boxen(cqparts.Assembly):
 
 if __name__ == "__main__":
     from cqparts.display import display
-    B = Boxen(height=40)
+    B = Boxen()
     display(B)
