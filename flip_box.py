@@ -62,5 +62,5 @@ class FlipBox(box.Boxen):
 
 if __name__ == "__main__":
     from cqparts.display import display
-    FB = FlipBox(height=50,thickness=3)
+    FB = FlipBox(height=50,thickness=3,outset=3)
     display(FB)

@@ -41,7 +41,7 @@ class OpenBox(box.Boxen):
     def make_alterations(self):
         super(OpenBox,self).make_alterations()
         # some slicy crazyness
-        prop = 0 
+        prop = 0
         left = self.components['left'].local_obj
         left = left.workplane()\
             .transformed(rotate=cq.Vector(90,0,0))\
