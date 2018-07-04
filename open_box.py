@@ -29,6 +29,7 @@ class OpenBox(box.Boxen):
     top = box.PartRef(None)
     front = box.PartRef(Front)
     back = box.PartRef(Back)
+    proportion = PositiveFloat(0)
 
     def mate_top(self,lift=0):
         return Mate(self, CoordSystem(
@@ -36,6 +37,31 @@ class OpenBox(box.Boxen):
             xDir=(1, 0, 0),
             normal=(0, 0,-1)
         ))
+
+    def make_alterations(self):
+        super(OpenBox,self).make_alterations()
+        # some slicy crazyness
+        prop = 0 
+        left = self.components['left'].local_obj
+        left = left.workplane()\
+            .transformed(rotate=cq.Vector(90,0,0))\
+            .transformed(offset=cq.Vector(0,0,prop))\
+            .split(keepBottom=True)
+        front = self.components['front'].local_obj
+        front = front.workplane()\
+            .transformed(rotate=cq.Vector(0,90,0))\
+            .transformed(offset=cq.Vector(0,0,prop))\
+            .split(keepBottom=True)
+        back = self.components['back'].local_obj
+        back = back.workplane()\
+            .transformed(rotate=cq.Vector(0,90,0))\
+            .transformed(offset=cq.Vector(0,0,prop))\
+            .split(keepBottom=True)
+        right = self.components['right'].local_obj
+        right = right.workplane()\
+            .transformed(rotate=cq.Vector(90,0,0))\
+            .transformed(offset=cq.Vector(0,0,prop))\
+            .split(keepBottom=True)
 
 class SmallBox(cqparts.Assembly):
     length =  PositiveFloat(60)
@@ -49,12 +75,12 @@ class SmallBox(cqparts.Assembly):
             'top': OpenBox(
                 length=self.length,
                 width=self.width,
-                height=self.height*(1 - self.proportion)
+                height=self.height
                 ),
             'bottom': OpenBox(
                 length=self.length,
                 width=self.width,
-                height=self.height*(self.proportion)
+                height=self.height
                 ),
         }
         return comps
@@ -68,6 +94,6 @@ class SmallBox(cqparts.Assembly):
 
 if __name__ == "__main__":
     from cqparts.display import display
-    #FB = OpenBox(height=20)
+    #FB = OpenBox()
     FB = SmallBox(proportion=0.7)
     display(FB)
