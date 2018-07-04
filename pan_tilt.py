@@ -17,17 +17,22 @@ from servo import SubMicro
 
 class MountTab(cqparts.Part):
     diameter  = PositiveFloat(6)
-    height = PositiveFloat(4)
+    height = PositiveFloat(3)
     length = PositiveFloat(4)
     hole = PositiveFloat(2)
     def make(self):
         mount = cq.Workplane("XY").circle(self.diameter/2).extrude(self.height)
         tab = cq.Workplane("XY")\
-            .rect(self.length,self.diameter)\
+            .rect(self.length/2+self.diameter/2,self.diameter)\
             .extrude(self.height)\
-            .translate((self.length,0,0))
+            .translate(((self.diameter/2),0,0))
         mount = mount.union(tab)
-        return mount
+        hole = cq.Workplane("XY")\
+            .circle(self.hole/2)\
+            .extrude(self.height)
+        mount = mount.cut(hole)
+        mount = mount.translate((-(self.diameter+self.length/2),0,0))
+        return mount 
 
 class Base(cqparts.Part):
     diameter  = PositiveFloat(40)
