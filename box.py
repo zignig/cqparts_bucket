@@ -211,11 +211,12 @@ class Boxen(cqparts.Assembly):
     length = PositiveFloat(100)
     width = PositiveFloat(100)
     height = PositiveFloat(100)
-    thickness = PositiveFloat(5)
-    outset = PositiveFloat(5)
+    thickness = PositiveFloat(3)
+    outset = PositiveFloat(0)
     tab = PartRef(_Tab)
 
     # Pass down subclassed faces
+    # top and front can be nulled
     left = PartRef(Left)
     right = PartRef(Right)
     bottom = PartRef(Bottom)
@@ -248,13 +249,6 @@ class Boxen(cqparts.Assembly):
                 l_outset = self.outset,
                 tab = self.tab,
                 ),
-            'top' : self.top(
-                length=self.length,
-                width=self.width,
-                thickness=self.thickness,
-                l_outset = self.outset,
-                tab=self.tab,
-                ),
             'front' : self.front(
                 length=self.height-2*self.thickness,
                 width=self.width,
@@ -268,6 +262,15 @@ class Boxen(cqparts.Assembly):
                 tab=self.tab,
                 ),
                 }
+        if self.top is not None:
+            top =  self.top(
+                length=self.length,
+                width=self.width,
+                thickness=self.thickness,
+                l_outset = self.outset,
+                tab=self.tab,
+                )
+            comps['top'] = top
         return comps
 
     # TODO constraints need to be fixed, check with different sizes
@@ -276,7 +279,6 @@ class Boxen(cqparts.Assembly):
         left = self.components['left']
         right = self.components['right']
         bottom = self.components['bottom']
-        top = self.components['top']
         front = self.components['front']
         back = self.components['back']
         constr = [
@@ -290,10 +292,6 @@ class Boxen(cqparts.Assembly):
 		bottom.mate_right_edge()
 		),
             Coincident(
-		top.mate_left_bottom(),
-		left.mate_left_edge()
-		),
-            Coincident(
                 front.mate_front_edge(),
                 bottom.mate_front_top()
                 ),
@@ -302,30 +300,37 @@ class Boxen(cqparts.Assembly):
                 bottom.mate_back_top()
                 ),
         ]
+        if self.top is not None:
+            top = self.components['top']
+            constr.append(Coincident(
+		top.mate_left_bottom(),
+		left.mate_left_edge()
+		))
         return constr
 
     def make_alterations(self):
         left = self.components['left']
         right = self.components['right']
         bottom = self.components['bottom']
-        top = self.components['top']
+        if self.top is not None:
+            top = self.components['top']
         front = self.components['front']
         back = self.components['back']
 
         left.cutter(bottom)
         right.cutter(bottom)
-
-        left.cutter(top)
-        right.cutter(top)
+        if self.top is not None:
+            left.cutter(top)
+            right.cutter(top)
+            top.cutter(front)
+            top.cutter(back)
 
         left.cutter(front)
         right.cutter(front)
-        top.cutter(front)
         bottom.cutter(front)
 
         left.cutter(back)
         right.cutter(back)
-        top.cutter(back)
         bottom.cutter(back)
 
 
