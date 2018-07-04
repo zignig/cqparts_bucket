@@ -6,7 +6,7 @@ Test for part extraction on assemblies
 
 import cqparts
 
-from manufacture import Printable
+from manufacture import Printable, Lasercut
 from robot_base import Rover 
 from motor_mount import _PosMount
 from flux_capacitor import  CompleteFlux

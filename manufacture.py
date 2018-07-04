@@ -18,3 +18,6 @@ class Printable(cqparts.Part):
     def crossX(self):
         print self.world_coords
         self.local_obj.transformed(rotate=(0,90,0),offset=(0,0,0)).split(keepTop=True)#((part.world_coords-self.world_coords)+part.cutout())
+
+class Lasercut(cqparts.Part):
+    pass
