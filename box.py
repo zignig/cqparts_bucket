@@ -29,12 +29,12 @@ class PartRef(Parameter):
 class _Tab(cqparts.Part):
     length = PositiveFloat() # length of the side
     thickness = PositiveFloat()
-    count = Int(6)
+    count = Int(3)
 
     def make(self):
         tab = cq.Workplane("XY")
         for i in range(self.count):
-            incr  = self.length/(2*self.count)
+            incr  = self.length/float(2*self.count)
             s = cq.Workplane("XZ")\
                 .rect(incr,self.thickness)\
                 .extrude(-self.thickness)
@@ -121,56 +121,56 @@ class _Sheet(cqparts.Part):
 
     def mate_left_edge(self):
         return Mate(self, CoordSystem(
-            origin=(0,-self.width/2,0),
+            origin=(0,-self.width/2.0,0),
             xDir=(-1, 0, 0),
             normal=(0, 0,-1)
         ))
 
     def mate_right_edge(self):
         return Mate(self, CoordSystem(
-            origin=(0,self.width/2+self.thickness,0),
+            origin=(0,self.width/2.0+self.thickness,0),
             xDir=(-1, 0, 0),
             normal=(0,0,1)
         ))
 
     def mate_left_top(self):
         return Mate(self, CoordSystem(
-            origin=(0,self.width/2,0),
+            origin=(0,self.width/2.0,0),
             xDir=(1, 0, 0),
             normal=(0, 1,0)
         ))
 
     def mate_front_edge(self):
         return Mate(self, CoordSystem(
-            origin=(-self.length/2-self.thickness,0,0),
+            origin=(-self.length/2.0-self.thickness,0,0),
             xDir=(0, 0, 1),
             normal=(1,0 ,0)
         ))
 
     def mate_front_top(self):
         return Mate(self, CoordSystem(
-            origin=(self.length/2-self.thickness,0,0),
+            origin=(self.length/2.0-self.thickness,0,0),
             xDir=(1, 0, 0),
             normal=(0,0 ,1)
         ))
 
     def mate_back_top(self):
         return Mate(self, CoordSystem(
-            origin=(-self.length/2,0,0),
+            origin=(-self.length/2.0,0,0),
             xDir=(1, 0, 0),
             normal=(0,0 ,1)
         ))
 
     def mate_left_bottom(self):
         return Mate(self, CoordSystem(
-            origin=(0,self.width/2,0),
+            origin=(0,self.width/2.0,0),
             xDir=(1, 0, 0),
             normal=(0, -1,0)
         ))
 
     def mate_right_top(self):
         return Mate(self, CoordSystem(
-            origin=(0,self.width/2,0),
+            origin=(0,self.width/2.0,0),
             xDir=(1, 0, 0),
             normal=(0,-1,0)
             ))
