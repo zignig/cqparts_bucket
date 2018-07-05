@@ -12,10 +12,11 @@ from cqparts.constraint import Mate
 from cqparts.utils.geometry import CoordSystem
 
 from motor_mount import MountedStepper 
-from stepper import Stepper
+from cqparts_motors.stepper import Stepper
 from mercanum import MercanumWheel
 from wheel import SimpleWheel , BuiltWheel
 from electronics import  Electronics
+from pan_tilt import PanTilt
 
 class PartRef(Parameter):
 
@@ -40,6 +41,13 @@ class RobotBase(cqparts.Part):
     def mate_back(self,offset=5):
         return Mate(self, CoordSystem(
             origin=(-self.length/2+offset,0,self.thickness),
+            xDir=(1, 0, 0),
+            normal=(0, 0,1)
+        ))
+
+    def mate_front(self,offset=5):
+        return Mate(self, CoordSystem(
+            origin=(self.length/2-offset,0,self.thickness),
             xDir=(1, 0, 0),
             normal=(0, 0,1)
         ))
@@ -78,6 +86,7 @@ class Rover(cqparts.Assembly):
     wheel = PartRef(ThisWheel)
     stepper = PartRef(Stepper)
     electronics = PartRef(Electronics)
+    sensors = PartRef(PanTilt)
 
     def make_components(self):
         base = RobotBase(
@@ -89,6 +98,7 @@ class Rover(cqparts.Assembly):
         comps = {
             'base': base,
             'electronics' : self.electronics(target=base),
+            'sensors' : self.sensors(target=base),
             'Ldrive_b': MountedStepper(stepper=self.stepper,driven=self.wheel,target=base),
             'Rdrive_b': MountedStepper(stepper=self.stepper,driven=self.wheel,target=base),
             'Ldrive_f': MountedStepper(stepper=self.stepper,driven=self.wheel,target=base),
@@ -103,6 +113,10 @@ class Rover(cqparts.Assembly):
             Coincident(
                 self.components['electronics'].mate_origin,
                 self.components['base'].mate_back()
+            ),
+            Coincident(
+                self.components['sensors'].mate_origin,
+                self.components['base'].mate_front()
             ),
             Coincident(
                 self.components['Ldrive_b'].mate_corner(flip=-1),

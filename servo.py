@@ -12,6 +12,10 @@ from cqparts_misc.basic.primatives import Box
 
 from cqparts_motors.shaft import Shaft
 
+class PartRef(Parameter):
+    def type(self,value):
+        return value
+
 class _wing(cqparts.Part):
     height = PositiveFloat(2.5)
     width = PositiveFloat(16.77)
@@ -120,6 +124,9 @@ class Servo(cqparts.Assembly):
     # TODO servo rotation
     rotate =  PositiveFloat(0)
 
+    clearance =  PositiveFloat(2)
+    target = PartRef()
+
     def make_components(self):
         servobody = ServoBody(
             length=self.length,
@@ -160,6 +167,10 @@ class Servo(cqparts.Assembly):
         ]
         return constr
 
+    def make_alterations(self):
+        if self.target is not None:
+            self.make_cutout(self.target,clearance=self.clearance)
+
     def make_cutout(self,part,clearance=0):
         part = part.local_obj.cut((self.world_coords-part.world_coords)+self.cutout(clearance=clearance))
 
@@ -175,16 +186,15 @@ class Servo(cqparts.Assembly):
         pass
 
     def mate_wing_bottom(self):
-        return Mate(self,CoordSystem(origin=(0,0,self.wing_lift)))
+        return Mate(self,CoordSystem(origin=(self.boss_offset,0,self.wing_lift)))
 
     def mate_wing_top(self):
         return Mate(self,CoordSystem(origin=(0,0,self.wing_lift+self.wing_thickness)))
 
 
 class SubMicro(Servo):
-    # TODO
     """
-    Submicro mini servo 
+    Submicro mini servo
     https://www.sparkfun.com/products/9065
     """
     # main body
@@ -214,7 +224,7 @@ class _PosMount(cqparts.Assembly):
     def make_components(self):
         plank = Box(height=3,width=60,length=60)
         comps = {
-            "servo": Servo(),
+            "servo": Servo(target=plank),
             "plank": plank 
         } 
         return comps
@@ -228,8 +238,6 @@ class _PosMount(cqparts.Assembly):
             )
         ]
 
-    def make_alterations(self):
-        self.components['servo'].make_cutout(self.components['plank'],clearance=2)
 
 
 
