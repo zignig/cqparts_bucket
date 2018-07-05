@@ -91,17 +91,24 @@ class Pitch(cqparts.Part):
             .circle(self.diameter/2)\
             .extrude(self.height)
         pitch = pitch.transformed(rotate=(0,90,0)).split(keepTop=True)
+        rot = cq.Workplane("XZ").circle(self.height/2).extrude(-self.thickness)
+        rot = rot.translate((0,self.diameter/2,self.height/2))
+        other_side = rot.mirror("XZ")
+        rot = rot.union(other_side)
+        pitch = pitch.union(rot)
         return pitch
 
 class PanTilt(cqparts.Assembly):
-    diameter  = PositiveFloat(40)
+    diameter  = PositiveFloat(10)
     height = PositiveFloat(10)
     gap = PositiveFloat(2)
+    feet = Int(4)
     def make_components(self):
         comps = {
             'base': Base(
                 diameter=self.diameter,
                 height=self.height,
+                mounts = self.feet
                 ),
             'yaw': Yaw(
                 diameter=self.diameter,
