@@ -179,6 +179,13 @@ class Servo(cqparts.Assembly):
             self.length+clearance/2,
             self.width+clearance/2,
             self.wing_lift,centered=(True,True,False))
+        top = cq.Workplane("XY").box(
+            self.length+clearance/2+self.wing_width*2,
+            self.width+clearance/2,
+            self.height-self.wing_lift+self.boss_height+clearance,
+            centered=(True,True,False))\
+            .translate((0,0,self.wing_lift))
+        body = body.union(top)
         return body
 
     def mount_points(self):
@@ -222,7 +229,7 @@ class SubMicro(Servo):
 # Test assembly for mount points and cutouts
 class _PosMount(cqparts.Assembly):
     def make_components(self):
-        plank = Box(height=3,width=60,length=60)
+        plank = Box(height=10,width=80,length=80)
         comps = {
             "servo": Servo(target=plank),
             "plank": plank 
@@ -234,7 +241,7 @@ class _PosMount(cqparts.Assembly):
             Fixed(self.components['plank'].mate_origin),
             Coincident(
                 self.components['servo'].mate_wing_bottom(),
-                self.components['plank'].mate_top
+                self.components['plank'].mate_origin
             )
         ]
 
@@ -243,7 +250,7 @@ class _PosMount(cqparts.Assembly):
 
 if __name__ == "__main__":
     from cqparts.display import display
-    #em = Servo()
+    em = Servo()
     #em = _wing()
     #em = SubMicro()
     em = _PosMount()

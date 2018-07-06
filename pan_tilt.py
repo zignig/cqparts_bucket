@@ -23,8 +23,8 @@ class PartRef(Parameter):
 
 
 class MountTab(cqparts.Part):
-    diameter  = PositiveFloat(10)
-    height = PositiveFloat(3)
+    diameter  = PositiveFloat(8)
+    height = PositiveFloat(5)
     length = PositiveFloat(0)
     hole = PositiveFloat(3)
     extra = PositiveFloat(2)
@@ -62,7 +62,6 @@ class Base(cqparts.Part):
         base = base.union(t_r)
         base = base.union(t_l)
         base = base.rect(self.length,self.width)\
-                .rect(self.length-self.thickness,self.width-self.thickness)\
                 .extrude(self.upper_height)
         #base = base.edges("|Z").fillet(2)
         return base
@@ -134,8 +133,8 @@ class PanTilt(cqparts.Assembly):
 
     def initialize_parameters(self):
         s = self.servo() # collect some dimensions
-        self.length = 2*(s.length-s.boss_offset+s.wing_width)+self.thickness
-        self.width = s.width + self.thickness
+        self.length = 2*(s.length-s.boss_offset+s.wing_width)+self.thickness+self.gap
+        self.width = s.width + self.thickness + self.gap
         self.lower_height = s.wing_lift+self.thickness
         self.upper_height = s.height-s.wing_lift+s.boss_height
         self.upper_height = 20 
