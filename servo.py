@@ -10,7 +10,9 @@ from cqparts.constraint import Mate
 from cqparts.utils.geometry import CoordSystem
 from cqparts_misc.basic.primatives import Box
 
-from cqparts_motors.shaft import Shaft
+from shaft import Shaft
+
+import servo_horns
 
 class PartRef(Parameter):
     def type(self,value):
@@ -121,6 +123,10 @@ class Servo(cqparts.Assembly):
     #shaft
     shaft_length = PositiveFloat(4)
     shaft_diameter = PositiveFloat(4)
+
+    #servo horn
+    horn = PartRef(servo_horns.Circle)
+
     # TODO servo rotation
     rotate =  PositiveFloat(0)
 
@@ -149,6 +155,8 @@ class Servo(cqparts.Assembly):
             'servobody': servobody,
             'shaft': shaft
         }
+        if self.horn is not None:
+            comps['horn'] = self.horn()
         return comps
 
     def get_shaft(self):
@@ -165,6 +173,13 @@ class Servo(cqparts.Assembly):
                 servobody.mate_shaft()
             )
         ]
+        if self.horn is not None:
+            horn = self.components['horn']
+            constr.append(
+                Coincident(
+                    horn.mate_origin,
+                    shaft.mate_tip()
+            ))
         return constr
 
     def make_alterations(self):

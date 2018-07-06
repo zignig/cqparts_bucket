@@ -16,6 +16,8 @@ import cadquery as cq
 import cqparts
 from cqparts.params import PositiveFloat
 from cqparts.display import render_props
+from cqparts.constraint import Mate
+from cqparts.utils.geometry import CoordSystem
 
 # base shaft type
 class Shaft(cqparts.Part):
@@ -46,3 +48,10 @@ class Shaft(cqparts.Part):
         return cq.Workplane('XY', origin=(0, 0, 0)) \
             .circle((self.diam / 2) + clearance) \
             .extrude(self.length*2)
+
+    def mate_tip(self,offset=0):
+        return Mate(self,CoordSystem(
+            origin=(0,0,self.length),
+            xDir=(1,0,0),
+            normal=(0,0,1)
+        ))

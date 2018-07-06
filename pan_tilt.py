@@ -12,6 +12,7 @@ from cqparts.constraint import Mate
 from cqparts.utils.geometry import CoordSystem
 
 from calculations import CalcTangents
+from manufacture import Printable
 
 from cqparts_motors.shaft import Shaft
 
@@ -42,7 +43,7 @@ class MountTab(cqparts.Part):
         mount = mount.translate((-(self.diameter/2+self.length/2),0,0))
         return mount
 
-class Base(cqparts.Part):
+class Base(Printable):
     width = PositiveFloat(40)
     length= PositiveFloat(20)
     lower_height = PositiveFloat(20)
@@ -72,7 +73,7 @@ class Base(cqparts.Part):
         ))
 
 
-class Yaw(cqparts.Part):
+class Yaw(Printable):
     width = PositiveFloat(40)
     length= PositiveFloat(20)
     height = PositiveFloat(10)
@@ -92,7 +93,7 @@ class Yaw(cqparts.Part):
         ))
 
 
-class Pitch(cqparts.Part):
+class Pitch(Printable):
     diameter  = PositiveFloat(41)
     width = PositiveFloat(40)
     length = PositiveFloat(10)
