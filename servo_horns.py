@@ -26,14 +26,14 @@ class _ServoHorn(cqparts.Part):
     hole_size = PositiveFloat(1.5)
     hole_spacing = PositiveFloat(5)
 
-    thickness = PositiveFloat(2.5)
+    thickness = PositiveFloat(2.0)
 
     length = PositiveFloat(15)
     rad1 = PositiveFloat(4)
     rad2 = PositiveFloat(2)
 
     hub_size = PositiveFloat(4.6)
-    hub_height= PositiveFloat(4.3)
+    hub_height= PositiveFloat(2.3)
 
     def arm(self):
         b = cq.Workplane("XY").circle(self.rad1).extrude(self.thickness)
@@ -72,7 +72,6 @@ class _ServoHorn(cqparts.Part):
                 .circle(self.hole_size/2)\
                 .extrude(self.thickness)
             ci = ci.cut(holes)
-        # TODO hole
         return ci
 
     def hub(self):
@@ -87,6 +86,13 @@ class _ServoHorn(cqparts.Part):
                 .circle(self.hole_size)\
                 .extrude(self.thickness)
         return hub
+
+    def mate_top(self):
+        return Mate(self,CoordSystem(
+            origin=(0,0,self.thickness),
+            xDir=(1,0,0),
+            normal=(0,0,1)
+        ))
 
 class SingleArm(_ServoHorn):
     def make(self):

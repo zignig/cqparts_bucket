@@ -21,6 +21,7 @@ class PartRef(Parameter):
 class MountedBoard(cqparts.Assembly):
     board = PartRef(Pizero)
     standoff = Int(10)
+    target = PartRef()
 
     @classmethod
     def screw_name(cls,index):
@@ -42,7 +43,6 @@ class MountedBoard(cqparts.Assembly):
         }
         self.length = board.length
         self.width = board.width
-        print (board.mount_verts())
         for i,j in enumerate(board.mount_verts()):
             comps[self.screw_name(i)] = ComputerScrew()
             comps[self.standoff_name(i)] = Standoff(length=self.standoff)
@@ -77,6 +77,13 @@ class MountedBoard(cqparts.Assembly):
             )
         return constr
 
+    def make_alterations(self):
+        board = self.components['board']
+        if self.target is not None:
+            for i,j in enumerate(board.mount_verts()):
+                print i,j
+                print self.components[self.standoff_name(i)].make_cutout(part=self.target)
+
 
     # put the board across
     def mate_transverse(self):
@@ -97,6 +104,14 @@ class Standoff(cqparts.Part):
         if self.length > 0:
             hx = cq.Workplane("XY").polygon(6,self.size*2).extrude(self.length)
             so = so.union(hx)
+        return so
+
+
+    def make_cutout(self,part,clearance=0):
+        part = part.local_obj.cut((self.world_coords-part.world_coords)+self.cutout(clearance=clearance))
+
+    def cutout(self,clearance=0):
+        so = cq.Workplane("XY").circle(self.size/2).extrude(-self.length)
         return so
 
     def mate_top(self):
@@ -136,9 +151,29 @@ class ComputerScrew(Screw):
     length = PositiveFloat(5, doc="screw's length")
     tip_length = PositiveFloat(0, doc="length of taper on a pointed tip")
 
+class plank(cqparts.Part):
+    def make(self):
+        pl  = cq.Workplane("XY").box(100,100,5,centered=(True,True,False))
+        pl = pl.translate((0,0,-5))
+        return pl 
+# positioned mount for target testing
+class _PosMount(cqparts.Assembly):
+    def make_components(self):
+        p = plank()
+        return {
+            'm': MountedBoard(target=p,board=Pizero)
+            ,'p': p
+        }
+
+    def make_constraints(self):
+        return [
+            Fixed(self.components['p'].mate_origin),
+            Fixed(self.components['m'].mate_origin)
+        ]
 if __name__ == "__main__":
     from cqparts.display import display
-    p = MountedBoard(board=Pizero)
+    #p = MountedBoard(board=Pizero)
     #p = MountedBoard(board=BeagleBoneBlack)
+    p = _PosMount()
     display(p)
 

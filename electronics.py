@@ -55,8 +55,8 @@ class Electronics(cqparts.Assembly):
 
     def make_components(self):
         bp = self.battpack()
-        c = self.controller()
-        mc = self.motorcontroller()
+        c = self.controller(target=self.target)
+        mc = self.motorcontroller(target=self.target)
         print bp
         comps = {
             'battpack' : bp,

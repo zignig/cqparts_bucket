@@ -45,7 +45,7 @@ class RobotBase(cqparts.Part):
             normal=(0, 0,1)
         ))
 
-    def mate_front(self,offset=5):
+    def mate_front(self,offset=0):
         return Mate(self, CoordSystem(
             origin=(self.length/2-offset,0,self.thickness),
             xDir=(1, 0, 0),
@@ -115,7 +115,7 @@ class Rover(cqparts.Assembly):
                 self.components['base'].mate_back()
             ),
             Coincident(
-                self.components['sensors'].mate_origin,
+                self.components['sensors'].mate_front(),
                 self.components['base'].mate_front()
             ),
             Coincident(

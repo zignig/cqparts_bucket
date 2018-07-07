@@ -107,7 +107,6 @@ class Battpack(cqparts.Assembly):
             for j in range(self.countY):
                 for k in range(self.countZ):
                     pos=(j*self.offset,i*self.offset,self.zoffset*k),
-                    print(i,j,k,pos)
                     constraints.append(Fixed(self.batts[count].mate_origin,
                         CoordSystem(
                             origin=pos,

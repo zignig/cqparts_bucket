@@ -24,11 +24,11 @@ class PartRef(Parameter):
 
 
 class MountTab(cqparts.Part):
-    diameter  = PositiveFloat(8)
+    diameter  = PositiveFloat(10)
     height = PositiveFloat(5)
     length = PositiveFloat(0)
     hole = PositiveFloat(3)
-    extra = PositiveFloat(2)
+    extra = PositiveFloat(20)
     def make(self):
         mount = cq.Workplane("XY").circle(self.diameter/2).extrude(self.height)
         tab = cq.Workplane("XY")\
@@ -46,24 +46,23 @@ class MountTab(cqparts.Part):
 class Base(Printable):
     width = PositiveFloat(40)
     length= PositiveFloat(20)
-    lower_height = PositiveFloat(20)
-    upper_height = PositiveFloat(20)
+    height = PositiveFloat(20)
+    lower_height = PositiveFloat(10)
     thickness = PositiveFloat(2)
 
     _render = render_props(color=(100,150,100))
 
     def make(self):
-        base = cq.Workplane("XY").rect(self.length,self.width).extrude(self.lower_height)
+        #base = cq.Workplane("XY").rect(self.length,self.width).extrude(self.height)
+        base = cq.Workplane("XY").circle(self.length/2).extrude(self.height)
         inc = 360/float(4)
         mt = MountTab()
-        t1 = mt.local_obj.translate((-self.length/2,self.width/2-mt.diameter/2,0))
+        t1 = mt.local_obj.translate((-self.length/2,self.length/2-mt.diameter/2,0))
         t2 = t1.mirror("YZ")
         t_r = t1.union(t2)
         t_l = t_r.mirror("XZ")
         base = base.union(t_r)
         base = base.union(t_l)
-        base = base.rect(self.length,self.width)\
-                .extrude(self.upper_height)
         #base = base.edges("|Z").fillet(2)
         return base
 
@@ -76,29 +75,36 @@ class Base(Printable):
 class Yaw(Printable):
     width = PositiveFloat(40)
     length= PositiveFloat(20)
-    height = PositiveFloat(10)
+    height = PositiveFloat(5)
 
     _render = render_props(color=(130,150,100))
 
     def make(self):
-        yaw = cq.Workplane("XY").rect(self.length,self.width).extrude(self.height)
-        yaw = yaw.edges("|Z").fillet(2)
+        #yaw = cq.Workplane("XY").rect(self.length,self.width).extrude(self.height)
+        yaw = cq.Workplane("XY").circle(self.length/2).extrude(self.height)
+        #yaw = yaw.edges("|Z").fillet(2)
         return yaw
 
     def mate_middle(self,offset=0):
         return Mate(self,CoordSystem(
-            origin=(0,0,0),
+            origin=(0,0,self.height),
             xDir=(1,0,0),
             normal=(0,0,1)
         ))
 
+    def mate_side(self,offset=0):
+        return Mate(self,CoordSystem(
+            origin=(offset,0,self.height/2),
+            xDir=(1,0,0),
+            normal=(0,1,0)
+        ))
 
 class Pitch(Printable):
     diameter  = PositiveFloat(41)
     width = PositiveFloat(40)
     length = PositiveFloat(10)
     height = PositiveFloat(10)
-    thickness = PositiveFloat(3)
+    thickness = PositiveFloat(5)
 
     _render = render_props(color=(160,150,100))
 
@@ -107,20 +113,21 @@ class Pitch(Printable):
             .circle(self.diameter/2+self.thickness)\
             .circle(self.diameter/2)\
             .extrude(self.height)
-        pitch = pitch.transformed(rotate=(0,90,0)).split(keepTop=True)
-        rot = cq.Workplane("XZ").circle(self.height/2).extrude(-self.thickness)
-        rot = rot.translate((0,self.diameter/2,self.height/2))
-        other_side = rot.mirror("XZ")
+        pitch = pitch.transformed(rotate=(0,90,90)).split(keepTop=True)
+        rot = cq.Workplane("YZ").circle(self.height/2).extrude(-self.thickness)
+        rot = rot.translate((self.diameter/2+self.thickness,0,self.height/2))
+        other_side = rot.mirror("YZ")
         rot = rot.union(other_side)
         pitch = pitch.union(rot)
         return pitch
 
     def mate_side(self,offset=0):
         return Mate(self,CoordSystem(
-            origin=(0,0,self.height/2),
-            xDir=(1,0,0),
-            normal=(0,1,0)
+            origin=(offset,0,self.height/2),
+            xDir=(0,1,0),
+            normal=(1,0,0)
         ))
+
 
 class PanTilt(cqparts.Assembly):
     length = PositiveFloat(65)
@@ -128,24 +135,23 @@ class PanTilt(cqparts.Assembly):
     lower_height = PositiveFloat(25)
     upper_height = PositiveFloat(25)
     gap = PositiveFloat(2)
-    thickness = PositiveFloat(2)
+    thickness = PositiveFloat(5)
     servo = PartRef(SubMicro)
     target = PartRef()
 
     def initialize_parameters(self):
         s = self.servo() # collect some dimensions
         self.length = 2*(s.length-s.boss_offset+s.wing_width)+self.thickness+self.gap
-        self.width = s.width + self.thickness + self.gap
+        self.width = 40 # s.width + self.thickness + self.gap
+        self.height= s.height+self.thickness+s.boss_height
         self.lower_height = s.wing_lift+self.thickness
-        self.upper_height = s.height-s.wing_lift+s.boss_height
-        self.upper_height = 20 
 
     def make_components(self):
         base = Base(
             length=self.length,
             width=self.width,
+            height=self.height,
             lower_height=self.lower_height,
-            upper_height=self.upper_height,
             thickness=self.thickness
             )
         yaw =  Yaw(
@@ -154,6 +160,7 @@ class PanTilt(cqparts.Assembly):
             height=self.upper_height,
             )
         pitch =  Pitch(
+            diameter=self.length+self.gap,
             length=self.length,
             width=self.width,
             height=self.upper_height,
@@ -178,29 +185,29 @@ class PanTilt(cqparts.Assembly):
         constr = [
             Fixed(base.mate_origin),
             Coincident(
-                yaw.mate_origin,
-                base.mate_top()
-            ),
-            Coincident(
                 yaw_servo.mate_wing_bottom(),
                 base.mate_top()
             ),
             Coincident(
-                pitch.mate_origin,
-                yaw.mate_middle()
+                yaw.mate_origin,
+                yaw_servo.mate_top()
             ),
             Coincident(
-                pitch_servo.mate_origin,
-                pitch.mate_side()
+                pitch.mate_origin,
+                yaw_servo.mate_top()
+            ),
+            Coincident(
+                pitch_servo.mate_wing_bottom(),
+                pitch.mate_side(offset=pitch_servo.height/2)
             )
         ]
         return constr
 
     def mate_front(self,offset=0):
         return Mate(self,CoordSystem(
-            origin=(0,0,self.diameter/2),
-            xDir=(1,0,0),
-            normal=(0,1,0)
+            origin=(0,self.length/2,0),
+            xDir=(0,1,0),
+            normal=(0,0,1)
         ))
 
 if __name__ == "__main__":
@@ -209,6 +216,6 @@ if __name__ == "__main__":
     #B = Base()
     #B = Yaw()
     #B = Pitch()
-    B = PanTilt()
+    B = PanTilt(servo=SubMicro)
     display(B)
 

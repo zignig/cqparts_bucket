@@ -133,6 +133,18 @@ class Servo(cqparts.Assembly):
     clearance =  PositiveFloat(2)
     target = PartRef()
 
+    # elided variables
+    total_height =  PositiveFloat(2)
+
+    def initialize_parameters(self):
+        th = self.height+self.boss_height+self.shaft_length
+        if self.horn is not None:
+            h = self.horn()
+            th = th + h.thickness
+            self.total_height = th
+        else:
+            self.total_height = th
+
     def make_components(self):
         servobody = ServoBody(
             length=self.length,
@@ -207,6 +219,9 @@ class Servo(cqparts.Assembly):
         # TODO
         pass
 
+    def mate_top(self):
+        return Mate(self,CoordSystem(origin=(self.boss_offset,0,self.total_height)))
+
     def mate_wing_bottom(self):
         return Mate(self,CoordSystem(origin=(self.boss_offset,0,self.wing_lift)))
 
@@ -256,7 +271,7 @@ class _PosMount(cqparts.Assembly):
             Fixed(self.components['plank'].mate_origin),
             Coincident(
                 self.components['servo'].mate_wing_bottom(),
-                self.components['plank'].mate_origin
+                self.components['plank'].mate_top
             )
         ]
 
