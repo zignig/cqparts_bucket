@@ -81,8 +81,7 @@ class MountedBoard(cqparts.Assembly):
         board = self.components['board']
         if self.target is not None:
             for i,j in enumerate(board.mount_verts()):
-                print i,j
-                print self.components[self.standoff_name(i)].make_cutout(part=self.target)
+                self.components[self.standoff_name(i)].make_cutout(part=self.target)
 
 
     # put the board across

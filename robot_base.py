@@ -79,9 +79,9 @@ class ThisStepper(Stepper):
 
 
 class Rover(cqparts.Assembly):
-    length = PositiveFloat(250)
-    width = PositiveFloat(140)
-    chamfer = PositiveFloat(40)
+    length = PositiveFloat(280)
+    width = PositiveFloat(170)
+    chamfer = PositiveFloat(55)
     thickness = PositiveFloat(6)
     wheel = PartRef(ThisWheel)
     stepper = PartRef(Stepper)
@@ -109,7 +109,7 @@ class Rover(cqparts.Assembly):
     def make_constraints(self):
         constr = [
             Fixed(self.components['base'].mate_origin,
-                  CoordSystem(origin=(0,0,0))),
+                  CoordSystem(origin=(0,0,60))),
             Coincident(
                 self.components['electronics'].mate_origin,
                 self.components['base'].mate_back()

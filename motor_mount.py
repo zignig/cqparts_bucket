@@ -19,6 +19,7 @@ from cqparts_fasteners.utils import VectorEvaluator, Selector, Applicator
 
 from cqparts_motors.shaft import Shaft
 from cqparts_motors.stepper import Stepper
+from cqparts_motors.dc import DCMotor
 
 #from mercanum import MercanumWheel
 from wheel import SimpleWheel, BuiltWheel

@@ -129,8 +129,10 @@ class Servo(cqparts.Assembly):
 
     # TODO servo rotation
     rotate =  PositiveFloat(0)
-
+    # space around the cut
     clearance =  PositiveFloat(2)
+    # extra cutout on top of the servo
+    overcut =  PositiveFloat(0)
     target = PartRef()
 
     # elided variables
@@ -196,12 +198,14 @@ class Servo(cqparts.Assembly):
 
     def make_alterations(self):
         if self.target is not None:
-            self.make_cutout(self.target,clearance=self.clearance)
+            self.make_cutout(self.target,clearance=self.clearance,overcut=self.overcut)
 
-    def make_cutout(self,part,clearance=0):
-        part = part.local_obj.cut((self.world_coords-part.world_coords)+self.cutout(clearance=clearance))
+    def make_cutout(self,part,clearance=0,overcut=0):
+        part = part.local_obj.cut(
+            (self.world_coords-part.world_coords)
+            +self.cutout(clearance=clearance,overcut=overcut))
 
-    def cutout(self,clearance=0):
+    def cutout(self,clearance=0,overcut=0):
         body = cq.Workplane("XY").box(
             self.length+clearance/2,
             self.width+clearance/2,
@@ -209,7 +213,7 @@ class Servo(cqparts.Assembly):
         top = cq.Workplane("XY").box(
             self.length+clearance/2+self.wing_width*2,
             self.width+clearance/2,
-            self.height-self.wing_lift+self.boss_height+clearance,
+            self.height-self.wing_lift+self.boss_height+clearance+overcut,
             centered=(True,True,False))\
             .translate((0,0,self.wing_lift))
         body = body.union(top)
