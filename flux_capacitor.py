@@ -359,20 +359,20 @@ if __name__ == "__main__":
     from cqparts.display import display
     fc  = _flux_bits(offset=90)
 
-    fc.add(PlugCover())
-    fc.add(YellowDisc())
-    fc.add(YellowPipe())
-    fc.add(Electrode())
-
-    fc.add(ElectrodeAssem())
-    fc.add(FluxCap())
-
-    fc.add(seal())
-    fc.add(cover())
-    fc.add(cabinet())
-
-    fc.add(BuiltBox())
-    fc.add(CompleteFlux())
-    fc = ElectrodeAssem(pipe_rotate=50)
-    #fc = FluxCap()
+    #fc.add(PlugCover())
+    #fc.add(YellowDisc())
+    #fc.add(YellowPipe())
+    #fc.add(Electrode())
+#
+#    fc.add(ElectrodeAssem())
+#    fc.add(FluxCap())
+#
+#    fc.add(seal())
+#    fc.add(cover())
+#    fc.add(cabinet())
+#
+#    fc.add(BuiltBox())
+#    fc.add(CompleteFlux())
+#    fc = ElectrodeAssem(pipe_rotate=50)
+    fc = CompleteFlux()
     display(fc)
