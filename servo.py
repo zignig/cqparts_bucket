@@ -261,7 +261,7 @@ class SubMicro(Servo):
 
 
 # Test assembly for mount points and cutouts
-class _PosMount(cqparts.Assembly):
+class _MountedServo(cqparts.Assembly):
     def make_components(self):
         plank = Box(height=10,width=80,length=80)
         comps = {
@@ -287,6 +287,6 @@ if __name__ == "__main__":
     em = Servo()
     #em = _wing()
     #em = SubMicro()
-    em = _PosMount()
+    em = _MountedServo()
     display(em)
 

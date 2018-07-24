@@ -223,5 +223,6 @@ if __name__ == "__main__":
     #B = Yaw()
     #B = Pitch()
     B = PanTilt(servo=SubMicro)
+    #B = PanTilt(servo=Servo)
     display(B)
 

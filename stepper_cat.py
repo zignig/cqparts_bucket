@@ -61,6 +61,7 @@ class StepperCat(cqparts.Assembly):
 
 ar = StepperCat()
 for i in stepper_list:
-    ar.add(MountedStepper(stepper=i))
+    #ar.add(MountedStepper(stepper=i))
+    ar.add(i)
 
 display(ar)

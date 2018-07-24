@@ -373,6 +373,6 @@ if __name__ == "__main__":
 
     fc.add(BuiltBox())
     fc.add(CompleteFlux())
-    fc = ElectrodeAssem(pipe_rotate=50)
-    #fc = FluxCap()
+    #fc = ElectrodeAssem(pipe_rotate=50)
+    fc = CompleteFlux()
     display(fc)

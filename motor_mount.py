@@ -247,7 +247,7 @@ class MountedStepper(cqparts.Assembly):
         ))
 
 # positioned mount for target testing
-class _PosMount(cqparts.Assembly):
+class _StepMount(cqparts.Assembly):
     def make_components(self):
         p = plank()
         return {
@@ -263,7 +263,7 @@ class _PosMount(cqparts.Assembly):
 
 if __name__ == "__main__":
     from cqparts.display import display
-    B = _PosMount()
+    B = _StepMount()
     #B = MountedStepper()
     display(B)
 

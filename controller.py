@@ -52,6 +52,39 @@ class PCBBoard(cqparts.Part):
         board = board.cut(holes)
         return board
 
+
+class Arduino(PCBBoard):
+    # Parameters
+    length = PositiveFloat(68.6)
+    width = PositiveFloat(53.3)
+    thickness = PositiveFloat(1)
+
+    hole_size = PositiveFloat(3)
+
+
+    # This returns the verts that the screws get aligned to
+    def mount_points(self,offset=0):
+        wp = cq.Workplane("XY",origin=(-self.length/2,-self.width/2,offset))
+        h = wp.pushPoints(
+            [
+                (14,2.5),
+                (65.5,7),
+                (65.5,35),
+                (15.3,50.5),
+             ])
+        return h
+
+    def mount_verts(self,offset):
+        h = self.mount_points(self,offset=offset)
+        return h.objects
+
+    def make(self):
+        wp = cq.Workplane("XY")
+        board = wp.box(length=self.length,width=self.width,height=self.thickness)
+        holes =  self.mount_points(offset=-self.thickness).circle(self.hole_size/2).extrude(self.thickness*2)
+        board = board.cut(holes)
+        return  board 
+
 class Pizero(PCBBoard):
     length = PositiveFloat(65)
     width = PositiveFloat(30)
@@ -89,7 +122,8 @@ class BeagleBoneBlack(PCBBoard):
 if __name__ == "__main__":
     from cqparts.display import display
     db = _Boards()
+    db.add(Arduino())
     db.add(Pizero())
     db.add(BeagleBoneBlack())
-    db.add(PCBBoard(length=100,width=50))
+    db.add(PCBBoard(length=100,width=30))
     display(db)

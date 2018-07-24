@@ -4,6 +4,7 @@
 import bpy
 # snippit , not working script
 
+bpy.ops.wm.addon_enable(module="io_scene_gltf")
 # maybe script build the entire scene
 bpy.ops.scene.new(type='NEW')
 bpy.context.scene.name = 'cqparts'
@@ -47,7 +48,7 @@ bpy.ops.object.lamp_add(type='POINT')
 lamp2 = bpy.context.selected_objects[0]
 lamp2.location = (-10,-10,10)
 
-bpy.ops.import_scene.gltf(filepath="/opt/stash/out.gltf")
+bpy.ops.import_scene.gltf(filepath="/opt/stash/CompleteFlux/out.gltf")
 outer = theScene.objects['out']
 outer.scale = (100,100,100)
 
