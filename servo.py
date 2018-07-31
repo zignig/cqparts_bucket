@@ -11,6 +11,7 @@ from cqparts.utils.geometry import CoordSystem
 from cqparts_misc.basic.primatives import Box
 
 from shaft import Shaft
+from plank import Plank
 
 import servo_horns
 
@@ -263,7 +264,7 @@ class SubMicro(Servo):
 # Test assembly for mount points and cutouts
 class _MountedServo(cqparts.Assembly):
     def make_components(self):
-        plank = Box(height=10,width=80,length=80)
+        plank = Plank() 
         comps = {
             "servo": Servo(target=plank),
             "plank": plank 
@@ -272,7 +273,7 @@ class _MountedServo(cqparts.Assembly):
 
     def make_constraints(self):
         return [
-            Fixed(self.components['plank'].mate_origin),
+            Fixed(self.components['plank'].mate_bottom),
             Coincident(
                 self.components['servo'].mate_wing_bottom(),
                 self.components['plank'].mate_top
@@ -284,7 +285,7 @@ class _MountedServo(cqparts.Assembly):
 
 if __name__ == "__main__":
     from cqparts.display import display
-    em = Servo()
+    #em = Servo()
     #em = _wing()
     #em = SubMicro()
     em = _MountedServo()

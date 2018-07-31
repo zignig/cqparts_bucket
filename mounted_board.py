@@ -12,6 +12,7 @@ from cqparts_fasteners.fasteners.screw import Screw
 from cqparts_fasteners.params import HeadType, DriveType, ThreadType
 
 from controller import Pizero, BeagleBoneBlack
+from plank import Plank
 
 class PartRef(Parameter):
 
@@ -150,15 +151,10 @@ class ComputerScrew(Screw):
     length = PositiveFloat(5, doc="screw's length")
     tip_length = PositiveFloat(0, doc="length of taper on a pointed tip")
 
-class plank(cqparts.Part):
-    def make(self):
-        pl  = cq.Workplane("XY").box(100,100,5,centered=(True,True,False))
-        pl = pl.translate((0,0,-5))
-        return pl 
 # positioned mount for target testing
 class _PosMount(cqparts.Assembly):
     def make_components(self):
-        p = plank()
+        p = Plank()
         return {
             'm': MountedBoard(target=p,board=Pizero)
             ,'p': p
@@ -167,7 +163,10 @@ class _PosMount(cqparts.Assembly):
     def make_constraints(self):
         return [
             Fixed(self.components['p'].mate_origin),
-            Fixed(self.components['m'].mate_origin)
+            Coincident(
+                self.components['m'].mate_origin,
+                self.components['p'].mate_top
+            )
         ]
 
 if __name__ == "__main__":
