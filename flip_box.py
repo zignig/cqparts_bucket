@@ -6,6 +6,7 @@ Subclass test for Boxen
 import cadquery as cq
 import cqparts
 from cqparts.params import *
+from cqparts.search import register
 
 import box
 
@@ -40,9 +41,21 @@ class Lid(box.Top):
         base = base.translate((0,-self.clearance/2,0))
         return  base
 
-class Hinge(box.Left):
+class HingeL(box.Left):
     def make(self):
-        base = super(Hinge,self).make()
+        base = super(HingeL,self).make()
+        offset = (-self.length/2,-self.width/2+self.thickness/2,0)
+        hinge = cq.Workplane("XY").circle(2.7*self.thickness).extrude(self.thickness)
+        hinge = hinge.translate(offset)
+        base = base.union(hinge)
+        hole = cq.Workplane("XY").circle(1.5*self.thickness).extrude(self.thickness)
+        hole = hole.translate(offset)
+        base = base.cut(hole)
+        return base
+
+class HingeR(box.Right):
+    def make(self):
+        base = super(HingeR,self).make()
         offset = (self.length/2,-self.width/2+self.thickness/2,0)
         hinge = cq.Workplane("XY").circle(2.7*self.thickness).extrude(self.thickness)
         hinge = hinge.translate(offset)
@@ -52,10 +65,11 @@ class Hinge(box.Left):
         base = base.cut(hole)
         return base
 
+@register(export="box")
 class FlipBox(box.Boxen):
     # Pass down subclassed faces
-    left = box.PartRef(Hinge)
-    right = box.PartRef(Hinge)
+    left = box.PartRef(HingeL)
+    right = box.PartRef(HingeR)
     top = box.PartRef(Lid)
     front = box.PartRef(Front)
     back = box.PartRef(Back)

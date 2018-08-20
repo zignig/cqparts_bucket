@@ -8,7 +8,7 @@ from cqparts.utils import CoordSystem
 from case import Case
 from cqparts_fasteners.screws import Screw
 
-class Arrange(cqparts.Assembly):
+class Boxes(cqparts.Assembly):
 
     def initialize_parameters(self):
         self.coll = []
@@ -43,7 +43,7 @@ class Arrange(cqparts.Assembly):
         return constraints
 
 
-ar = Arrange()
+ar = Boxes()
 for i in range(5,10):
     c = Case(length=i*10+20,height=i*20,screw=Screw)
     ar.add(c)

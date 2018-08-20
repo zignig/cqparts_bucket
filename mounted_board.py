@@ -6,6 +6,7 @@ from cqparts.constraint import Mate
 from cqparts.utils.geometry import CoordSystem
 from cqparts.display import render_props, display
 
+from cqparts.search import register 
 from cqparts_fasteners.male import MaleFastenerPart
 
 from cqparts_fasteners.fasteners.screw import Screw
@@ -19,6 +20,7 @@ class PartRef(Parameter):
     def type(self, value):
         return value
 
+@register(export="board")
 class MountedBoard(cqparts.Assembly):
     board = PartRef(Pizero)
     standoff = Int(10)
@@ -152,7 +154,7 @@ class ComputerScrew(Screw):
     tip_length = PositiveFloat(0, doc="length of taper on a pointed tip")
 
 # positioned mount for target testing
-class _PosMount(cqparts.Assembly):
+class _DemoBoard(cqparts.Assembly):
     def make_components(self):
         p = Plank()
         return {
@@ -173,6 +175,6 @@ if __name__ == "__main__":
     from cqparts.display import display
     #p = MountedBoard(board=Pizero)
     #p = MountedBoard(board=BeagleBoneBlack)
-    p = _PosMount()
+    p = _DemoBoard()
     display(p)
 

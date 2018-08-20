@@ -11,6 +11,7 @@ from cqparts.constraint import Fixed, Coincident
 from cqparts.constraint import Mate
 from cqparts.utils.geometry import CoordSystem
 
+from cqparts.search import register
 
 # TODO
 # mounting for bolts and nuts 
@@ -121,8 +122,8 @@ class _Sheet(cqparts.Part):
 
     def mate_left_edge(self):
         return Mate(self, CoordSystem(
-            origin=(0,-self.width/2.0,0),
-            xDir=(-1, 0, 0),
+            origin=(0,-self.width/2.0-self.thickness,0),
+            xDir=(1, 0, 0),
             normal=(0, 0,-1)
         ))
 
@@ -163,9 +164,9 @@ class _Sheet(cqparts.Part):
 
     def mate_left_bottom(self):
         return Mate(self, CoordSystem(
-            origin=(0,self.width/2.0,0),
+            origin=(0,self.width/2.0+self.thickness,-self.thickness),
             xDir=(1, 0, 0),
-            normal=(0, -1,0)
+            normal=(0, 1,0)
         ))
 
     def mate_right_top(self):
@@ -207,6 +208,7 @@ class Back(_Sheet):
     _render = render_props(color=(100,150,110))
     pass
 
+@register(export="box")
 class Boxen(cqparts.Assembly):
     length = PositiveFloat(100)
     width = PositiveFloat(100)

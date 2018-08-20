@@ -2,3 +2,11 @@ go through and clean out all the examples
 
 rectangle packing 
 https://www.codeproject.com/Articles/210979/Fast-optimizing-rectangle-packing-algorithm-for-bu
+
+#SVG EXPORT 
+
+https://github.com/dcowden/cadquery/blob/master/cadquery/freecad_impl/exporters.py
+
+rewrite to just export hiddens.
+
+

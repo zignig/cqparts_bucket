@@ -6,6 +6,8 @@ from cqparts.constraint import Fixed, Coincident
 from cqparts.constraint import Mate
 from cqparts.utils.geometry import CoordSystem
 
+from cqparts.search import register
+
 class Wheel(cqparts.Part):
     # Parameters
     width = PositiveFloat(10, doc="width of wheel")
@@ -129,6 +131,7 @@ class WheeledAxle(cqparts.Assembly):
             .cut((right_wheel.world_coords - part.world_coords) + right_wheel.get_cutout(self.wheel_clearance))
         part.local_obj = local_obj
 
+@register(export="car")
 class Car(cqparts.Assembly):
     # Parameters
     wheelbase = PositiveFloat(70, "distance between front and rear axles")

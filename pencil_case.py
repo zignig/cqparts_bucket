@@ -10,6 +10,8 @@ from cqparts.constraint import Fixed, Coincident
 from cqparts.utils.geometry import CoordSystem
 from cqparts.constraint import Mate
 
+from cqparts.search import register
+
 import box
 from open_box import OpenBox
 
@@ -57,7 +59,7 @@ class PencilCaseTop(box.Boxen):
     def make_alterations(self):
         super(PencilCaseTop,self).make_alterations()
 
-
+@register(export="box")
 class PencilCase(cqparts.Assembly):
     length = PositiveFloat(200)
     width = PositiveFloat(65)

@@ -11,6 +11,7 @@ from cqparts.constraint import Fixed, Coincident
 from cqparts.constraint import Mate
 from cqparts.utils.geometry import CoordSystem
 
+from cqparts.search import register
 
 class LinearBearing(cqparts.Part):
     length = PositiveFloat(24)
@@ -35,6 +36,7 @@ class LinearBearing(cqparts.Part):
         lm = lm.cut(self._ring(offset=self.length-self.slot_inset-self.slot_width))
         return lm
 
+@register(export="linear_bearing")
 class lm8uu(LinearBearing):
     length = PositiveFloat(24)
     outer_diam = PositiveFloat(15)
