@@ -6,17 +6,21 @@ from collections import OrderedDict
 import flip_box
 import box
 import pencil_case
+import plank
+from rectpack import newPacker, float2dec
 
-#fb = flip_box.FlipBox(length=150,height=50,outset=3,thickness=3)
+fb = flip_box.FlipBox(outset=3,height=50)
 #fb = box.Boxen() 
-fb = pencil_case.PencilCase()
+#fb = pencil_case.PencilCase()
+#fb = plank.Plank()
 
 # makes an array of local objects
 class Extractor(cqparts.Assembly):
-    def __init__(self):
+    def __init__(self,obj):
     # for duplicate names
         self.track = {}
         self.parts = OrderedDict() 
+        self.scan(obj,'')
 
     def scan(self,obj,name):
         if isinstance(obj,cqparts.Part):
@@ -41,38 +45,58 @@ class Extractor(cqparts.Assembly):
     def get_parts(self):
         return self.parts
 
-ex = Extractor()
-ex.scan(fb,'')
-print(ex.get_parts())
 
-def genSVG(partDict,filename):
-    wp = cq.Workplane("XY")
-    gap = 6.0
-    widths = [0]
-    names = []
-    offset = 0  
-    offsets = [0]
+def getRects(partDict,gap=6.0):
     rects = []
     # generate offsets
     for i in partDict:
+
+        #bounding boxes are not accurate
+        #z = partDict[i].local_obj.val().tessellate(0.1)
+        ##xmin = -1e7 
+        #ymin = -1e7 
+        #xmax = 1e7
+        #ymax = 1e7
+        #for v in z[0]:
+        #    if v[0] > xmin:
+        #        xmin = v[0]
+        #    if v[0] < xmax:
+        #        xmax = v[0]
+        #    if v[1] > ymin:
+        #        ymin = v[1]
+        #    if v[1] < ymax:
+        #        ymax = v[1]
+        #calc_w = abs(xmax-xmin)
+        #calc_l = abs(ymax-ymin)
         w  = partDict[i].bounding_box.xlen
         l  = partDict[i].bounding_box.ylen
-        widths.append(w)
-        names.append(i)
-        offset += w 
-        offsets.append(offset)
-        rects.append((w,l))
+        #print(calc_w,calc_l,w,l)
+        rects.append((float2dec(w+2*gap,3),float2dec(w+2*gap,3),i))
+    return rects
         
-    print(names)
-    print(widths)
-    print(offsets)
-    print(rects)
-
-    for i,j in enumerate(names):
-        print(i,j,widths[i],offsets[i])
-        o = offsets[i]/2.0 + offsets[i+1]/2.0 + i*gap
-        wp = wp.union(partDict[names[i]].local_obj.translate((o,0,0)))
-
+def genSVG(binsize,partDict,rectList,filename):
+    wp = cq.Workplane("XY")
+    for i in rectList:
+        print(i)
+        cx = (i[1]+(i[3]/float2dec(2.0,3)))
+        cy = binsize[1]-(i[2]+(i[4]/float2dec(2.0,3)))
+        name = i[5]
+        print(cx,cy,name)
+        wp = wp.union(partDict[name].local_obj.translate((cx,cy,0)))
     SVGexport.exportSVG(wp,filename)
 
-genSVG(ex.get_parts(),"box.svg")
+ex = Extractor(fb)
+parts = ex.get_parts()
+rects = getRects(parts,gap=3)
+p = newPacker(rotation=False)
+print("RECTS")
+for r in rects:
+    print(r)
+    p.add_rect(*r)
+bins = [(600,600)]
+for b in bins:
+    p.add_bin(*b,count=10)
+p.pack()
+rects = p.rect_list()
+print("LAYOUT")
+genSVG(bins[0],parts,rects,'box.svg')

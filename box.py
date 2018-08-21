@@ -79,7 +79,7 @@ class _Sheet(cqparts.Part):
             s = cq.Workplane("XY")\
                 .rect(self.length,self.width)\
                 .extrude(self.thickness)
-        print self.tabs_on
+        #print self.tabs_on
         if self.tabs_on is not None :
             pos = 0
             for i in self.tabs_on:

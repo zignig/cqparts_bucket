@@ -8,9 +8,6 @@ import cqparts
 
 from manufacture import Printable, Lasercut
 from robot_base import Rover 
-from motor_mount import _PosMount
-from flux_capacitor import  CompleteFlux
-from case import Case
 
 
 

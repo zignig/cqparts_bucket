@@ -101,7 +101,7 @@ def getSVG(shape, opts=None, view_vector=(-0, 0, 20.0)):
         Export a shape to SVG
     """
     
-    d = {'width':800,'height':240,'marginLeft':200,'marginTop':20}
+    d = {'width':800,'height':800,'marginLeft':20,'marginTop':20}
 
     if opts:
         d.update(opts)
@@ -127,7 +127,8 @@ def getSVG(shape, opts=None, view_vector=(-0, 0, 20.0)):
     bb.add(hiddenG1.BoundBox)
 
     #width pixels for x, height pixesl for y
-    unitScale = min( width / bb.XLength * 0.75 , height / bb.YLength * 0.75 )
+    # massive hack convert pixels to mm
+    unitScale =  3.779527559 #min( width / bb.XLength * 0.75 , height / bb.YLength * 0.75 )
 
     #compute amount to translate-- move the top left into view
     (xTranslate,yTranslate) = ( (0 - bb.XMin) + marginLeft/unitScale ,(0- bb.YMax) - marginTop/unitScale)
@@ -143,7 +144,7 @@ def getSVG(shape, opts=None, view_vector=(-0, 0, 20.0)):
     svg =  SVG_TEMPLATE % (
         {
             'unitScale': str(unitScale),
-            'strokeWidth': 0.3, 
+            'strokeWidth': '0.1', 
             'hiddenContent':  visibleContent,
             'xTranslate': str(xTranslate),
             'yTranslate': str(yTranslate),
@@ -176,11 +177,12 @@ SVG_TEMPLATE = """<?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <svg
    xmlns:svg="http://www.w3.org/2000/svg"
    xmlns="http://www.w3.org/2000/svg"
-   width="%(width)s"
-   height="%(height)s"
+   width="%(width)smm"
+   height="%(height)smm"
+   viewbox="0 0 %(width)s %(height)s"
 
 >
-    <g transform="scale(%(unitScale)s, -%(unitScale)s)   translate(%(xTranslate)s,%(yTranslate)s)" stroke-width="%(strokeWidth)s"  fill="none">
+    <g transform="scale(%(unitScale)s, -%(unitScale)s) translate(%(xTranslate)s,%(yTranslate)s)" stroke-width="%(strokeWidth)s"  fill="none">
        <g  stroke="rgb(0, 0, 0)" fill="none" >
 %(hiddenContent)s
        </g>
