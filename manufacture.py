@@ -9,6 +9,7 @@ from cqparts.params import *
 
 class Printable(cqparts.Part):
     _printable = True
+    _material = "default"
     clearance = PositiveFloat(0.2)
 
     # make cutout available to all sub classes

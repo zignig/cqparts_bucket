@@ -10,8 +10,8 @@ import plank
 from rectpack import newPacker, float2dec
 
 fb = flip_box.FlipBox(outset=3,height=50)
-#fb = box.Boxen() 
-#fb = pencil_case.PencilCase()
+bo = box.Boxen() 
+pc = pencil_case.PencilCase(length=200,height=100,width=60,thickness=2.6)
 #fb = plank.Plank()
 
 # makes an array of local objects
@@ -20,7 +20,6 @@ class Extractor(cqparts.Assembly):
     # for duplicate names
         self.track = {}
         self.parts = OrderedDict() 
-        self.scan(obj,'')
 
     def scan(self,obj,name):
         if isinstance(obj,cqparts.Part):
@@ -71,7 +70,7 @@ def getRects(partDict,gap=6.0):
         w  = partDict[i].bounding_box.xlen
         l  = partDict[i].bounding_box.ylen
         #print(calc_w,calc_l,w,l)
-        rects.append((float2dec(w+2*gap,3),float2dec(w+2*gap,3),i))
+        rects.append((float2dec(w+2*gap,3),float2dec(l+2*gap,3),i))
     return rects
         
 def genSVG(binsize,partDict,rectList,filename):
@@ -86,6 +85,9 @@ def genSVG(binsize,partDict,rectList,filename):
     SVGexport.exportSVG(wp,filename)
 
 ex = Extractor(fb)
+ex.scan(fb,'')
+ex.scan(pc,'')
+ex.scan(fb,'')
 parts = ex.get_parts()
 rects = getRects(parts,gap=3)
 p = newPacker(rotation=False)
@@ -93,7 +95,7 @@ print("RECTS")
 for r in rects:
     print(r)
     p.add_rect(*r)
-bins = [(600,600)]
+bins = [(500,600)]
 for b in bins:
     p.add_bin(*b,count=10)
 p.pack()

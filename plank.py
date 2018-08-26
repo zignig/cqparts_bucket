@@ -15,6 +15,7 @@ class Plank(Box):
     def make(self):
         pl  = cq.Workplane("XY").box(self.length,self.width,self.height)
         pl = pl.translate((0,0,self.height/2))
+        pl = pl.edges("|Z").fillet(3)
         return pl 
 
 if __name__ == "__main__":

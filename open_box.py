@@ -9,6 +9,7 @@ from cqparts.params import *
 from cqparts.constraint import Fixed, Coincident
 from cqparts.utils.geometry import CoordSystem
 from cqparts.constraint import Mate
+from cqparts.search import register
 
 import box
 
@@ -26,7 +27,7 @@ class Back(box.Back):
     def initialize_parameters(self):
         self.length = self.length + self.thickness
 
-
+@register(export="box")
 class OpenBox(box.Boxen):
     # Pass down subclassed faces
     top = box.PartRef(None)
@@ -45,6 +46,8 @@ class OpenBox(box.Boxen):
     def make_alterations(self):
         super(OpenBox,self).make_alterations()
 
+
+@register(export="box")
 class SmallBox(cqparts.Assembly):
     length =  PositiveFloat(60)
     width  =  PositiveFloat(60)

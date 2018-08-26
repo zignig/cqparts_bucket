@@ -13,6 +13,7 @@ from cqparts.utils.geometry import CoordSystem
 
 from cqparts.search import register
 
+@register(export="linear_bearing")
 class LinearBearing(cqparts.Part):
     length = PositiveFloat(24)
     outer_diam = PositiveFloat(15)

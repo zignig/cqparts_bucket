@@ -13,15 +13,16 @@ class _boss(cqparts.Part):
         return wp
 
 class BeardBoss(cqparts.Part):
+    # Base Plate
     length = PositiveFloat(50)
     width = PositiveFloat(50)
     height = PositiveFloat(6)
-
-
+    # Boss size
     boss_height = PositiveFloat(10)
     boss_diameter = PositiveFloat(15)
-    hole_diameter = PositiveFloat(5)
-
+    # Drill Size
+    hole_diameter = PositiveFloat(8)
+    # Boss spacing
     x_spacing = PositiveFloat(30)
     y_spacing = PositiveFloat(30)
 
@@ -33,12 +34,10 @@ class BeardBoss(cqparts.Part):
                     ,forConstruction=True).vertices()
         return h.objects
 
-
     def make(self):
         # base plate
         pl  = cq.Workplane("XY").box(self.length,self.width,self.height)
         pl = pl.translate((0,0,self.height/2))
-        pl = pl.edges("|Z").fillet(3)
         # add the bosses
         mp = self.mount_points()
         for i in mp:
@@ -54,9 +53,10 @@ class BeardBoss(cqparts.Part):
             h = h.translate((i.X,i.Y,0))
             pl = pl.cut(h)
         pl = pl.faces(">Z[1]").edges("not(<X or >X or <Y or >Y)").fillet(1)
+        pl = pl.edges("|Z").fillet(3)
         return pl 
 
 if __name__ == "__main__":
     from cqparts.display import display
-    bb = BeardBoss()
+    bb = BeardBoss(height=6,boss_height=20,boss_diameter=10,hole_diameter=5)
     display(bb)

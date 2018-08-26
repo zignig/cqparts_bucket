@@ -190,4 +190,23 @@ SVG_TEMPLATE = """<?xml version="1.0" encoding="UTF-8" standalone="no"?>
 </svg>
 """
 
+RECT_TEMPLATE = """<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<svg
+   xmlns:svg="http://www.w3.org/2000/svg"
+   xmlns="http://www.w3.org/2000/svg"
+   width="%(width)smm"
+   height="%(height)smm"
+   viewbox="0 0 %(width)s %(height)s"
+
+>
+    <g transform="scale(%(unitScale)s, -%(unitScale)s) translate(%(xTranslate)s,%(yTranslate)s)" stroke-width="%(strokeWidth)s"  fill="none">
+       <g  stroke="rgb(0, 0, 0)" fill="none" >
+%(hiddenContent)s
+       </g>
+    </g>
+</svg>
+"""
+
+
+
 PATHTEMPLATE="\t\t\t<path d=\"%s\" />\n"

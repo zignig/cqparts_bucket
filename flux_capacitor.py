@@ -9,6 +9,7 @@ from cqparts.display import render_props
 from cqparts.constraint import Fixed, Coincident
 from cqparts.constraint import Mate
 from cqparts.utils.geometry import CoordSystem
+from cqparts.search import register
 
 
 from multi import Arrange
@@ -26,6 +27,7 @@ class cabinet(Printable):
     height = PositiveFloat(35)
     thickness = PositiveFloat(1.5)
     _render = render_props(color=(255,255,205))
+    _material = 'grey_abs'
 
     def make(self):
         cab = cq.Workplane("XY").box(self.depth,self.width,self.height,centered=(True,True,False))
@@ -53,6 +55,7 @@ class cover(cabinet):
     shrinkY = PositiveFloat(0.75)
     offset = PositiveFloat(0)
     corner = PositiveFloat(15)
+    _material = 'grey_abs'
 
     # _render = render_props(template='wood_dark')
 
@@ -102,6 +105,7 @@ class YellowDisc(Printable):
     inner = PositiveFloat(1.5)
 
     _render = render_props(color=(255,255,0))
+    _material = 'yellow_abs'
 
     def make(self):
         disc = cq.Workplane("XY").circle(self.radius).circle(self.inner).extrude(self.height)
@@ -131,6 +135,7 @@ class YellowPipe(Printable):
     turn = PositiveFloat(6)
 
     _render = render_props(color=(255,255,0))
+    _material = 'yellow_abs'
 
     def make(self):
         leg1 = cq.Workplane("XY").circle(self.radius).extrude(self.leg1-self.turn)
@@ -156,6 +161,7 @@ class PlugCover(Printable):
     thickness = PositiveFloat(2)
 
     _render = render_props(color=(255,0,0))
+    _material = 'red_abs'
 
     def make(self):
         plug = cq.Workplane("XY").circle(self.diam1/2).extrude(self.height)
@@ -188,6 +194,8 @@ class Electrode(Printable):
     length = PositiveFloat(30)
     _render = render_props(color=(220,220,220),alpha=0.8)
     thickness = PositiveFloat(0.5)
+    _material = 'clear_pla'
+
     def make(self):
         elec = cq.Workplane("XY").circle(self.diam1/2).circle(self.diam1/2-self.thickness).extrude(self.length)
         return elec
@@ -336,6 +344,7 @@ class FluxCap(cqparts.Assembly):
             )
         return constr
 
+@register(export="showcase")
 class CompleteFlux(cqparts.Assembly):
 
     def make_components(self):
