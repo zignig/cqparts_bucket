@@ -1,0 +1,10 @@
+<!doctype html>
+<html>
+   <body>
+     <ul>
+        {% for n in items%}
+	<li><a href="/list{{n.path}}">{{n.name}}</a></li>
+        {% endfor %}
+      </ul>
+   </body>
+</html>

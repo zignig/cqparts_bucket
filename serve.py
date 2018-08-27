@@ -9,12 +9,36 @@ from cqparts.display import display
 
 from flask import Flask, jsonify, abort , render_template
 
-from anytree import Node , RenderTree 
+from anytree import Node , RenderTree , NodeMixin
 from anytree.search import findall
 from anytree.resolver import Resolver
 
 from collections import OrderedDict
 app = Flask(__name__)
+
+class thing(NodeMixin):
+    def __init__(self,name,parent=None,**kwargs):
+        super(thing,self).__init__()
+        self.name = name
+        self.parent = parent
+        self.__dict__.update(kwargs)
+
+    def get_path(self):
+        args = "%s" % self.separator.join([""] + [str(node.name) for node in self.path])
+        return str(args)
+
+    def info(self):
+        val = {'path':self.get_path(),'name':self.name}
+        return val 
+
+    def dir(self):
+        l = []
+        for i in self.children:
+            l.append(i.info())
+        return l
+
+    def __repr__(self):
+        return self.get_path()
 
 class directory():
     def __init__(self,base,name):
@@ -24,14 +48,14 @@ class directory():
         self.res = Resolver('name')
         self.k = OrderedDict() 
         self.base = base
-        self.root = Node(base)
+        self.root = thing(base)
         self.build()
 
     def build(self):
         for i in self.d:
-            b = Node(i,parent=self.root)
+            b = thing(i,parent=self.root)
             for k in self.d[i]:
-                Node(k.__name__,parent=b,c=k)
+                thing(k.__name__,parent=b,c=k)
                 self.k[self.base+'/'+i+'/'+k.__name__] = k
 
     def children(self,path):
@@ -47,14 +71,8 @@ class directory():
         return False
 
     def prefix(self,key):
-        l = []
-        ch = len(key)
-        for i in self.k:
-            app.logger.error(key,'->',i)
-            if i.startswith(key):
-                tr = i[ch:]
-                l.append(tr)
-        return l
+        v = self.res.get(self.root,'/'+key)
+        return v.dir()
 
     def __getitem__(self,key):
         if self.exists(key) == False:
@@ -84,7 +102,7 @@ print(RenderTree(d.root))
 
 @app.route('/')
 def base():
-    return render_template('list.html',items=d.items())
+    return render_template('list.html',items=d.root.dir())
 
 @app.route('/list')
 def list():

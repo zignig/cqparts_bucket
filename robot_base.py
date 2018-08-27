@@ -10,6 +10,7 @@ from cqparts.display import render_props, display
 from cqparts.constraint import Fixed, Coincident
 from cqparts.constraint import Mate
 from cqparts.utils.geometry import CoordSystem
+from cqparts.search import register
 
 from motor_mount import MountedStepper
 from cqparts_motors.stepper import Stepper
@@ -77,7 +78,7 @@ class ThisStepper(Stepper):
     length = PositiveFloat(30)
     hole_spacing = PositiveFloat(15)
 
-
+@register(export="showcase")
 class Rover(cqparts.Assembly):
     length = PositiveFloat(280)
     width = PositiveFloat(170)

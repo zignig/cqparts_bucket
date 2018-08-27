@@ -7,6 +7,8 @@ from cqparts.constraint import Fixed, Coincident
 from cqparts.constraint import Mate
 from cqparts.utils.geometry import CoordSystem
 
+from cqparts.search import register
+
 from multi import Arrange
 
 class _Boards(Arrange):
@@ -53,6 +55,7 @@ class PCBBoard(cqparts.Part):
         return board
 
 
+@register(export="controller")
 class Arduino(PCBBoard):
     # Parameters
     length = PositiveFloat(68.6)
@@ -85,6 +88,7 @@ class Arduino(PCBBoard):
         board = board.cut(holes)
         return  board 
 
+@register(export="controller")
 class Pizero(PCBBoard):
     length = PositiveFloat(65)
     width = PositiveFloat(30)
@@ -95,6 +99,7 @@ class Pizero(PCBBoard):
     hole_length = PositiveFloat(58)
     hole_width = PositiveFloat(23)
 
+@register(export="controller")
 class BeagleBoneBlack(PCBBoard):
     length = PositiveFloat(86.36)
     width = PositiveFloat(54.61)
