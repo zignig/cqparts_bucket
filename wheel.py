@@ -10,6 +10,7 @@ from cqparts.display import render_props, display
 from cqparts.constraint import Fixed, Coincident
 from cqparts.constraint import Mate
 from cqparts.utils.geometry import CoordSystem
+from cqparts.search import register
 
 
 from manufacture import Printable
@@ -78,6 +79,7 @@ class Tyre(_Wheel):
     pass
 
 
+@register(export="wheel")
 class BuiltWheel(_Wheel):
     hub = PartRef(Hub)
     center_disc= PartRef(CenterDisc)
@@ -101,7 +103,7 @@ class BuiltWheel(_Wheel):
             normal=(0,0,flip)
         ))
 
-
+@register(export="wheel")
 class SimpleWheel(_Wheel):
     _render = render_props(color=(90,90,90))
 

@@ -10,6 +10,7 @@ from cqparts.display import render_props, display
 from cqparts.constraint import Fixed, Coincident
 from cqparts.constraint import Mate
 from cqparts.utils.geometry import CoordSystem
+from cqparts.search import register
 
 from multi import Arrange
 
@@ -69,10 +70,10 @@ class Li18650(CylBattery):
     length = PositiveFloat(65.2)
     diameter = PositiveFloat(18.6)
 
-
+@register(export="battery_pack")
 class Battpack(cqparts.Assembly):
-    countX = Int(1)
-    countY = Int(1)
+    countX = Int(3)
+    countY = Int(2)
     countZ = Int(1)
     batt = PartRef(AA)
 

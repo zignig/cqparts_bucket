@@ -3,11 +3,12 @@ import sys
 # working inside the lib
 sys.path.append('..')
 import cqparts_bucket
+import cqparts
 from cqparts_bucket import * 
 import cqparts.search as cs
 from cqparts.display import display
 
-from flask import Flask, jsonify, abort , render_template
+from flask import Flask, jsonify, abort , render_template, request
 
 from anytree import Node , RenderTree , NodeMixin
 from anytree.search import findall
@@ -20,6 +21,8 @@ class thing(NodeMixin):
     def __init__(self,name,parent=None,**kwargs):
         super(thing,self).__init__()
         self.name = name
+        self.built = False
+        self.classname = None
         self.parent = parent
         self.__dict__.update(kwargs)
 
@@ -28,42 +31,53 @@ class thing(NodeMixin):
         return str(args)
 
     def info(self):
-        val = {'path':self.get_path(),'name':self.name}
+        val = {
+                'path':self.get_path(),
+                'name':self.name,
+                'leaf': self.is_leaf,
+                'built': self.built,
+                'classname' : self.classname,
+            }
         return val 
 
     def dir(self):
         l = []
+        if self.parent != None:
+            up  = self.parent.info()
+            up['name'] = '..'
+            l.append(up)
         for i in self.children:
             l.append(i.info())
         return l
 
     def __repr__(self):
-        return self.get_path()
+        return "<thing: "+self.get_path()+">"
 
 class directory():
     def __init__(self,base,name):
         d = cs.index[name]
-        self.names = d.keys() #top level
         self.d = d
         self.res = Resolver('name')
-        self.k = OrderedDict() 
         self.base = base
+        self.class_dict = {}
+        self.k = {}
         self.root = thing(base)
         self.build()
 
     def build(self):
-        for i in self.d:
-            b = thing(i,parent=self.root)
-            for k in self.d[i]:
-                thing(k.__name__,parent=b,c=k)
-                self.k[self.base+'/'+i+'/'+k.__name__] = k
+        for i in cs.index.keys():
+            p = thing(i,parent=self.root)
+            for j in cs.index[i]:
+                b = thing(j,parent=p)
+                for k in cs.index[i][j]:
+                    cn = type(k()).__module__+'.'+k.__name__
+                    t = thing(k.__name__,parent=b,c=k,classname=cn)
+                    self.class_dict[cn] = t
+                    self.k[self.base+'/'+i+'/'+j+'/'+k.__name__] = t
 
     def children(self,path):
         r = self.res.get(self.root,path)
         print r
-
-    def items(self):
-        return self.k.keys()
 
     def exists(self,key):
         if key in self.k:
@@ -74,30 +88,31 @@ class directory():
         v = self.res.get(self.root,'/'+key)
         return v.dir()
 
-    def __getitem__(self,key):
-        if self.exists(key) == False:
-            abort(404)
-        l = []
-        for i in self.k[key]:
-            l.append(i.__name__)
-        return l
-
     def params(self,key):
         if self.exists(key) == False:
             abort(404)
-        p = self.k[key]()
-        display(p)
-        app.logger.error(p)
+        t = self.k[key]
+        if t.built == False:
+            t.inst = t.c() 
+            display(t.inst)
+            t.built = True
         d = {}
-        pi = p.params().items()
+        pi = t.inst.params().items()
         for i in pi:
+            # only grab the floats for now
             if isinstance(i[1],float):
-                d[i[0]] = i[1]
-        return d
+                d[i] = i[1]
+            if isinstance(i[1],int):
+                d[i] = i[1]
+        info = t.info()
+        info['params'] = d 
+        #if isinstance(t.inst,cqparts.Assembly): 
+        #    info['tree'] = t.inst.tree_str()
+        return info 
 
 
 #d = directory(cqparts_bucket._namespace,'export')
-d = directory('root','export')
+d = directory('cqparts','export')
 print(RenderTree(d.root))
 
 @app.route('/')
@@ -112,11 +127,15 @@ def list():
 def subcat(modelname):
     return render_template('list.html',items=d.prefix(modelname))
 
-@app.route('/params/<path:modelname>')
+@app.route('/show/<path:modelname>')
 def show_model(modelname):
-    app.logger.error(modelname)
     ob = d.params(modelname)
+    return render_template('show.html',item=d.params(modelname))
     return jsonify(ob)
+
+@app.route('/rebuild',methods=['POST'])
+def rebuild():
+    return jsonify(request.form.items())
 
 if __name__ == '__main__':
     app.run(host='0.0.0.0',port=8089)

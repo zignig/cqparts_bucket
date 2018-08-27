@@ -1,0 +1,13 @@
+<!doctype html>
+<html>
+   <body>
+<form action="/rebuild" method="post">
+  <input type="hidden" name="classname" value="{{item.classname}}">
+  {% for key, value in item.params %}
+    {{ key }} <input type="text" name="{{ key }}" value="{{ value}}"><br>
+  {% endfor %}
+    <input type="submit" value="Submit">
+</form>
+<hr>
+{{ item }}
+</html>

@@ -3,8 +3,17 @@
    <body>
      <ul>
         {% for n in items%}
-	<li><a href="/list{{n.path}}">{{n.name}}</a></li>
+	{% if n.leaf %}
+	<li>
+		<a href="/show{{n.path}}">{{n.name}}</a>
+		{% if n.built  == true %}[x]{% endif %}
+	</li>
+	{% else %}
+	<li>
+		<a href="/list{{n.path}}">{{n.name}}</a>
+	</li>
+	{% endif %}
         {% endfor %}
-      </ul>
+     </ul>
    </body>
 </html>
