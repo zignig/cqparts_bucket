@@ -12,7 +12,7 @@ from cqparts_fasteners.male import MaleFastenerPart
 from cqparts_fasteners.fasteners.screw import Screw
 from cqparts_fasteners.params import HeadType, DriveType, ThreadType
 
-from controller import Pizero, BeagleBoneBlack
+from controller import Pizero, BeagleBoneBlack, Arduino
 from plank import Plank
 
 class PartRef(Parameter):
@@ -152,6 +152,19 @@ class ComputerScrew(Screw):
     neck_length = PositiveFloat(0, doc="length of neck")
     length = PositiveFloat(5, doc="screw's length")
     tip_length = PositiveFloat(0, doc="length of taper on a pointed tip")
+
+@register(export="board")
+class PizeroBoard(MountedBoard):
+    board = PartRef(Pizero)
+
+    
+@register(export="board")
+class ArduinoBoard(MountedBoard):
+    board = PartRef(Arduino)
+
+@register(export="board")
+class BeagleBoard(MountedBoard):
+    board = PartRef(BeagleBoneBlack)
 
 # positioned mount for target testing
 class _DemoBoard(cqparts.Assembly):

@@ -68,18 +68,10 @@ class Arduino(PCBBoard):
     # This returns the verts that the screws get aligned to
     def mount_points(self,offset=0):
         wp = cq.Workplane("XY",origin=(-self.length/2,-self.width/2,offset))
-        h = wp.pushPoints(
-            [
-                (14,2.5),
-                (65.5,7),
-                (65.5,35),
-                (15.3,50.5),
-             ])
+        pts =  [ (14,2.5), (65.5,7), (65.5,35), (15.3,50.5) ]
+        wp = cq.Workplane("XY",origin=(-self.length/2,-self.width/2,offset))
+        h = wp.moveTo(*pts[0]).polyline(pts[1:]).vertices()
         return h
-
-    def mount_verts(self,offset):
-        h = self.mount_points(self,offset=offset)
-        return h.objects
 
     def make(self):
         wp = cq.Workplane("XY")

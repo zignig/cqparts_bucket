@@ -173,6 +173,14 @@ from driver import BeltDrive
 from driver import ThreadedDrive
 from multi import Arrange
 
+@register(export="cnc")
+class BeltAxis(Axis):
+    drive = PartRef(BeltDrive)
+
+@register(export="cnc")
+class ThreadAxis(Axis):
+    drive = PartRef(ThreadedDrive)
+
 class CNC_show(Arrange):
     offset = PositiveFloat(100)
 
