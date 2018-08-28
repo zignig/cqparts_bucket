@@ -319,6 +319,7 @@ class FluxCap(cqparts.Assembly):
         comps = {}
         # hack for the 3 phase
         positions = {
+            2:  [ 0 , 0 ],
             3:  [ 90, 360-self.incr , self.incr ]
         }
         rots = []
@@ -346,11 +347,16 @@ class FluxCap(cqparts.Assembly):
 
 @register(export="showcase")
 class CompleteFlux(cqparts.Assembly):
-
+    electrode_count = Int(3)
+    radius = PositiveFloat(31)
+    width = PositiveFloat(100)
+    height = PositiveFloat(25)
+    depth = PositiveFloat(85)
+    thickness = PositiveFloat(3)
     def make_components(self):
         comps = {
-            'box' : BuiltBox(),
-            'fluxcap': FluxCap(),
+            'box' : BuiltBox(width=self.width,height=self.height,depth=self.depth,thickness=self.thickness),
+            'fluxcap': FluxCap(count=self.electrode_count,radius=self.radius),
         }
         return comps
 

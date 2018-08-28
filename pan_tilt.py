@@ -10,6 +10,7 @@ from cqparts.display import render_props, display
 from cqparts.constraint import Fixed, Coincident
 from cqparts.constraint import Mate
 from cqparts.utils.geometry import CoordSystem
+from cqparts.search import register 
 
 from calculations import CalcTangents
 from manufacture import Printable
@@ -130,7 +131,7 @@ class Pitch(Printable):
             normal=(1,0,0)
         ))
 
-
+@register(export="sensor")
 class PanTilt(cqparts.Assembly):
     diameter = PositiveFloat(65)
     width = PositiveFloat(30)

@@ -10,6 +10,7 @@ from cqparts.display import render_props, display
 from cqparts.constraint import Fixed, Coincident
 from cqparts.constraint import Mate
 from cqparts.utils.geometry import CoordSystem
+from cqparts.search import register
 
 from controller import PCBBoard
 
@@ -21,6 +22,7 @@ class Emmitter(cqparts.Part):
         em = cq.Workplane("XY").circle(self.radius).extrude(self.height)
         return em
 
+@register(export="sensor")
 class Sonar(PCBBoard):
     length = PositiveFloat(45)
     width = PositiveFloat(20)
