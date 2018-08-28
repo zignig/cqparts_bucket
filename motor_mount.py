@@ -10,6 +10,7 @@ from cqparts.display import render_props, display
 from cqparts.constraint import Fixed, Coincident
 from cqparts.constraint import Mate
 from cqparts.utils.geometry import CoordSystem
+from cqparts.search import register
 
 # For fasteners
 from cqparts_fasteners.fasteners.screw import Screw
@@ -131,6 +132,7 @@ class ShortScrew(Screw):
     neck_length = PositiveFloat(0)
     tip_length = PositiveFloat(0)
 
+@register(export="motor")
 class MountedStepper(cqparts.Assembly):
     stepper = PartRef(Stepper)
     screw = PartRef(ShortScrew)

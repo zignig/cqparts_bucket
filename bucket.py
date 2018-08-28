@@ -6,7 +6,9 @@ from cqparts.display import render_props, display
 from cqparts.constraint import Fixed, Coincident
 from cqparts.constraint import Mate
 from cqparts.utils.geometry import CoordSystem
+from cqparts.search import register
 
+@register(export="misc")
 class Bucket(cqparts.Part):
     # Parameters
     diambot = PositiveFloat(10)

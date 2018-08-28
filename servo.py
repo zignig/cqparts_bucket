@@ -101,7 +101,7 @@ class ServoBody(cqparts.Part):
             origin=(self.length/2-self.boss_offset,0,self.height+self.boss_height)
         ))
 
-@register(export="servo")
+@register(export="motor")
 class Servo(cqparts.Assembly):
     # TODO
     """
@@ -236,7 +236,7 @@ class Servo(cqparts.Assembly):
     def mate_wing_top(self):
         return Mate(self,CoordSystem(origin=(0,0,self.wing_lift+self.wing_thickness)))
 
-@register(export='servo')
+@register(export='motor')
 class SubMicro(Servo):
     """
     Submicro mini servo

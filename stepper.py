@@ -15,6 +15,7 @@ from cqparts.constraint import Fixed, Coincident
 from cqparts.constraint import Mate
 from cqparts.display import render_props
 from cqparts.utils.geometry import CoordSystem
+from cqparts.search import register
 
 import shaft
 import motor
@@ -133,7 +134,7 @@ class _Back(_EndCap):
             .hole(self.hole_size)
         return obj
 
-
+@register(export="motor")
 class Stepper(motor.Motor):
     " Stepper Motor , simple rendering "
     shaft_type = shaft.Shaft

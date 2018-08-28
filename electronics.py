@@ -6,6 +6,7 @@ import cqparts
 from cqparts.constraint import Fixed, Coincident
 from cqparts.params import *
 from cqparts.utils import CoordSystem
+from cqparts.search import register
 
 import battery
 from battery import Battpack
@@ -38,7 +39,7 @@ class MotorController(MountedBoard):
     board = PartRef(MotorBoard)
     standoff = PositiveFloat(15)
 
-
+@register(export="electronics")
 class Electronics(cqparts.Assembly):
     battpack = PartRef(RoverBatt)
     controller = PartRef(RoverController)

@@ -13,7 +13,7 @@ from cqparts.display import render_props
 from cqparts.constraint import Fixed, Coincident
 from cqparts.constraint import Mate
 from cqparts.utils.geometry import CoordSystem
-
+from cqparts.search import register
 
 from cqparts_motors.shaft import Shaft
 from threaded import Threaded
@@ -134,7 +134,7 @@ class Carriage(_AxisBase):
                 CoordSystem((self.pos,0,0),(1,0,0),(0,0,1)))
         ]
 
-
+@register(export="cnc")
 class Axis(_AxisBase):
     drive_end = PartRef(DriveEnd)
     idle_end = PartRef(IdleEnd)
