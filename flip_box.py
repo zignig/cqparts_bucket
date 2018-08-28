@@ -73,6 +73,8 @@ class FlipBox(box.Boxen):
     top = box.PartRef(Lid)
     front = box.PartRef(Front)
     back = box.PartRef(Back)
+    height = PositiveFloat(50)
+    outset = PositiveFloat(3)
 
 if __name__ == "__main__":
     from cqparts.display import display

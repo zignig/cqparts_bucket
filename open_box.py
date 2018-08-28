@@ -47,7 +47,6 @@ class OpenBox(box.Boxen):
         super(OpenBox,self).make_alterations()
 
 
-@register(export="box")
 class SmallBox(cqparts.Assembly):
     length =  PositiveFloat(60)
     width  =  PositiveFloat(60)

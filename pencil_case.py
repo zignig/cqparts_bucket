@@ -16,7 +16,7 @@ import box
 from open_box import OpenBox
 
 class T2(box._Tab):
-    count = Int(3)
+    count = Int(7)
 
 class Front(box.Front):
     tabs_on = box.BoolList([True,True,True,False])
