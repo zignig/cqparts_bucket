@@ -10,6 +10,7 @@ from cqparts.display import render_props, display
 from cqparts.constraint import Fixed, Coincident
 from cqparts.constraint import Mate
 from cqparts.utils.geometry import CoordSystem
+from cqparts.search import register
 
 from cqparts_motors.shaft import Shaft
 import  math
@@ -156,6 +157,7 @@ class Hub(cqparts.Part):
             mounts.append(m)
         return mounts
 
+@register(export="wheel")
 class MercanumWheel(cqparts.Assembly):
     hub_diam = PositiveFloat(48)
     thickness = PositiveFloat(12)

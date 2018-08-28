@@ -9,9 +9,11 @@ Created on Wed Jun 13 09:44:59 2018
 import cadquery as cq
 import cqparts
 from cqparts.params import PositiveFloat
+from cqparts.search import register
 
 from calculations import CalcTangents
 
+@register(export="handle")
 class Handle(cqparts.Part):
     length = PositiveFloat(100)
     rad1 = PositiveFloat(25)

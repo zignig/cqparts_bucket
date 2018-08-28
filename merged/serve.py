@@ -88,6 +88,19 @@ class directory():
         v = self.res.get(self.root,'/'+key)
         return v.dir()
 
+    def build_part(self,params):
+        key = params.pop('classname',None)
+        if key in self.class_dict:
+            fixes = {}
+            for i in params:
+                try:
+                    fixes[i] = float(params[i])
+                except:
+                    pass
+            item = self.class_dict[key]
+            o = item.c(**fixes)
+            display(o)
+
     def params(self,key):
         if self.exists(key) == False:
             abort(404)
@@ -135,6 +148,8 @@ def show_model(modelname):
 
 @app.route('/rebuild',methods=['POST'])
 def rebuild():
+    v = request.form.copy()
+    d.build_part(v)
     return jsonify(request.form.items())
 
 if __name__ == '__main__':

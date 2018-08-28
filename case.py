@@ -16,6 +16,7 @@ from cqparts.utils import CoordSystem
 from cqparts_fasteners.fasteners.screw import Screw
 from cqparts_fasteners.fasteners.base import Fastener
 from cqparts_fasteners.utils import VectorEvaluator, Selector, Applicator
+from cqparts.search import register
 
 # Make a new one
 # NewCase = Case(explode=0,width=20,length=50,height=30,screw=ThisScrew)
@@ -238,6 +239,7 @@ class _MountedCase(cqparts.Assembly):
             )
         return mates
 
+@register(export="box")
 class Case(cqparts.Assembly):
     """
     This is a three part case that bolts itself together
