@@ -107,7 +107,7 @@ class _Case(cqparts.Part):
     width = PositiveFloat(12.4)
     length = PositiveFloat(22.8)
     thickness = PositiveFloat(0.6)
-    screw = PartRef(Screw)
+    screw = PartRef(ThisScrew)
 
     #_render = render_props(color=(255,255,255),alpha=0.4)
 
@@ -116,7 +116,7 @@ class _Case(cqparts.Part):
         self.sd = s.head.diameter
         self.ofs = (2*self.thickness+2*self.sd)
 
-    def make(self):
+    def make(self): 
         wp = cq.Workplane("XY")
         # the box
         b = wp.box(self.length,self.width,self.height,centered=(True,True,False)).edges("|Z").fillet(1)
@@ -250,7 +250,7 @@ class Case(cqparts.Assembly):
     length = PositiveFloat(50)
     thickness = PositiveFloat(0.8)
     explode= Int(0)
-    screw = PartRef()
+    screw = PartRef(Screw)
     def make_components(self):
         middle = _Case(
                 height=self.height,
