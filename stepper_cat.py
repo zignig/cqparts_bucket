@@ -10,6 +10,7 @@ import cqparts_motors
 import os
 
 from motor_mount import MountedStepper
+from stepper import Stepper
 
 filename = os.path.join(
 os.path.dirname(cqparts_motors.__file__),
@@ -21,8 +22,15 @@ item = catalogue.get_query()
 steppers = catalogue.iter_items()
 stepper_list = []
 for i in steppers:
+    print i
     s = catalogue.deserialize_item(i)
-    stepper_list.append(s)
+    cl = type(str(i['id']),(Stepper,),{})
+    p = cl.class_params(hidden=True)
+    for j,k in p.items():
+        print j,type(k)
+        pr = type(k)
+        setattr(cl,j,pr(i['obj']['params'][j]))
+    stepper_list.append(cl)
 
 class StepperCat(cqparts.Assembly):
 
@@ -60,8 +68,9 @@ class StepperCat(cqparts.Assembly):
 
 
 ar = StepperCat()
+print stepper_list
 for i in stepper_list:
-    #ar.add(MountedStepper(stepper=i))
-    ar.add(i)
+    ar.add(MountedStepper(stepper=i))
+    #ar.add(i())
 
 display(ar)
