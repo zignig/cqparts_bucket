@@ -46,6 +46,7 @@ class CylBattery(cqparts.Part):
         bat = bat.union(pos)
         return bat
 
+
 class AAA(CylBattery):
     length = PositiveFloat(44.5)
     diameter = PositiveFloat(10.5)
@@ -72,6 +73,7 @@ class Li18650(CylBattery):
 
 @register(export="battery_pack")
 class Battpack(cqparts.Assembly):
+    " a 3 dim array of batteries "
     countX = Int(3)
     countY = Int(2)
     countZ = Int(1)
@@ -126,6 +128,7 @@ class Battpack(cqparts.Assembly):
             normal=(1,0,0)
         ))
 
+@register(export="battery_pack")
 class _FlatBatt(cqparts.Assembly):
     countX = Int(5)
     countY = Int(1)

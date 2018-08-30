@@ -4,6 +4,7 @@
 import cadquery as cq
 import cqparts
 from cqparts.params import *
+from cqparts.search import register
 
 class _boss(cqparts.Part):
     boss_height = PositiveFloat(10)
@@ -12,6 +13,7 @@ class _boss(cqparts.Part):
         wp = cq.Workplane("XY").circle(self.boss_diameter/2).extrude(self.boss_height)
         return wp
 
+@register(export='misc')
 class BeardBoss(cqparts.Part):
     # Base Plate
     length = PositiveFloat(50)

@@ -169,3 +169,11 @@ class DCMotor(motor.Motor):
                 self.components['body'].mate_bottom,
             )
         ]
+
+@register(export="motor")
+class Cylindrical(DCMotor):
+    profile = String("circle", doc="profile shape (circle|flat|rect)")
+
+@register(export="motor")
+class Rect(DCMotor):
+    profile = String("rect", doc="profile shape (circle|flat|rect)")

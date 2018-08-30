@@ -22,12 +22,10 @@ item = catalogue.get_query()
 steppers = catalogue.iter_items()
 stepper_list = []
 for i in steppers:
-    print i
     s = catalogue.deserialize_item(i)
     cl = type(str(i['id']),(Stepper,),{})
     p = cl.class_params(hidden=True)
     for j,k in p.items():
-        print j,type(k)
         pr = type(k)
         setattr(cl,j,pr(i['obj']['params'][j]))
     stepper_list.append(cl)
@@ -67,6 +65,7 @@ class StepperCat(cqparts.Assembly):
         return constraints
 
 
+class 
 ar = StepperCat()
 print stepper_list
 for i in stepper_list:
