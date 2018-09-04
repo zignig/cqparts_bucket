@@ -1,4 +1,4 @@
-# INIT ME 
+# INIT ME
 
 _version = "0.1a"
 _namespace = "user/zignig"

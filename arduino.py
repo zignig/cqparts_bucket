@@ -10,5 +10,6 @@ from cqparts.utils.geometry import CoordSystem
 
 if __name__ == "__main__":
     from cqparts.display import display
+
     p = Arduino()
     display(p)

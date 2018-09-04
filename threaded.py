@@ -16,11 +16,11 @@ from cqparts_motors.shaft import Shaft
 
 # this is just a shaft with a different colour
 class Threaded(Shaft):
-    _render = render_props(color=(75,5,50))
+    _render = render_props(color=(75, 5, 50))
 
 
 if __name__ == "__main__":
     from cqparts.display import display
+
     B = Threaded()
     display(B)
-

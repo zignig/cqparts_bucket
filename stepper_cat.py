@@ -13,8 +13,7 @@ from motor_mount import MountedStepper
 from stepper import Stepper
 
 filename = os.path.join(
-os.path.dirname(cqparts_motors.__file__),
-'catalogue', 'stepper-nema.json',
+    os.path.dirname(cqparts_motors.__file__), "catalogue", "stepper-nema.json"
 )
 
 catalogue = JSONCatalogue(filename)
@@ -23,24 +22,24 @@ steppers = catalogue.iter_items()
 stepper_list = []
 for i in steppers:
     s = catalogue.deserialize_item(i)
-    cl = type(str(i['id']),(Stepper,),{})
+    cl = type(str(i["id"]), (Stepper,), {})
     p = cl.class_params(hidden=True)
-    for j,k in p.items():
+    for j, k in p.items():
         pr = type(k)
-        setattr(cl,j,pr(i['obj']['params'][j]))
+        setattr(cl, j, pr(i["obj"]["params"][j]))
     stepper_list.append(cl)
 
-class StepperCat(cqparts.Assembly):
 
+class StepperCat(cqparts.Assembly):
     def initialize_parameters(self):
         self.coll = []
         self.offset = 90
 
-    def add(self,i):
+    def add(self, i):
         self.coll.append(i)
 
     @classmethod
-    def item_name(cls,index):
+    def item_name(cls, index):
         return "item_%03i" % index
 
     def make_components(self):
@@ -52,23 +51,26 @@ class StepperCat(cqparts.Assembly):
     def make_constraints(self):
         constraints = []
         length = len(self.coll)
-        total = length* self.offset
+        total = length * self.offset
         for i in range(len(self.coll)):
-            constraints.append(Fixed(self.coll[i].mate_origin,
-                CoordSystem(
-                    origin=(0,i*self.offset-(total/2),0),
-                    xDir=(0,1,0),
-                    normal=(0,0,1)
+            constraints.append(
+                Fixed(
+                    self.coll[i].mate_origin,
+                    CoordSystem(
+                        origin=(0, i * self.offset - (total / 2), 0),
+                        xDir=(0, 1, 0),
+                        normal=(0, 0, 1),
+                    ),
                 )
-            ))
+            )
 
         return constraints
 
 
 ar = StepperCat()
-print stepper_list
+print(stepper_list)
 for i in stepper_list:
-    ar.add(MountedStepper(clearance=2,thickness=3,stepper=i))
-    #ar.add(i())
+    ar.add(MountedStepper(clearance=2, thickness=3, stepper=i))
+    # ar.add(i())
 
 display(ar)

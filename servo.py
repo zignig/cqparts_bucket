@@ -10,16 +10,18 @@ from cqparts.constraint import Mate
 from cqparts.utils.geometry import CoordSystem
 from cqparts_misc.basic.primatives import Box
 
-from cqparts.search import register 
+from cqparts.search import register
 
 from shaft import Shaft
 from plank import Plank
 
 import servo_horns
 
+
 class PartRef(Parameter):
-    def type(self,value):
+    def type(self, value):
         return value
+
 
 class _wing(cqparts.Part):
     height = PositiveFloat(2.5)
@@ -30,21 +32,24 @@ class _wing(cqparts.Part):
     hole_gap = PositiveFloat()
 
     def make(self):
-        wing  = cq.Workplane("XY").rect(self.length,self.width).extrude(self.height)
+        wing = cq.Workplane("XY").rect(self.length, self.width).extrude(self.height)
         # cut out the holes
-        hole = cq.Workplane("XY").circle(self.hole_size/2).extrude(self.height)
-        slot = cq.Workplane("XY")\
-                .rect(self.length,self.hole_size/2)\
-                .extrude(self.height)\
-                .translate((-self.length/2,0,0))
+        hole = cq.Workplane("XY").circle(self.hole_size / 2).extrude(self.height)
+        slot = (
+            cq.Workplane("XY")
+            .rect(self.length, self.hole_size / 2)
+            .extrude(self.height)
+            .translate((-self.length / 2, 0, 0))
+        )
         # one hole servo check
         hole = hole.union(slot)
         if self.hole_gap is not None:
-            hole = hole.translate((0,self.hole_gap,0))
+            hole = hole.translate((0, self.hole_gap, 0))
             other_hole = hole.mirror(mirrorPlane=("XZ"))
             hole = hole.union(other_hole)
         wing = wing.cut(hole)
-        return wing 
+        return wing
+
 
 class ServoBody(cqparts.Part):
     # main body
@@ -65,12 +70,16 @@ class ServoBody(cqparts.Part):
     boss_offset = PositiveFloat(8.35)
 
     def make(self):
-        body = cq.Workplane("XY").box(self.length,self.width,self.height,centered=(True,True,False))
+        body = cq.Workplane("XY").box(
+            self.length, self.width, self.height, centered=(True, True, False)
+        )
 
-        boss = cq.Workplane("XY")\
-                .circle(self.boss_radius)\
-                .extrude(self.boss_height)\
-                .translate((self.length/2-self.boss_offset,0,self.height))
+        boss = (
+            cq.Workplane("XY")
+            .circle(self.boss_radius)
+            .extrude(self.boss_height)
+            .translate((self.length / 2 - self.boss_offset, 0, self.height))
+        )
 
         body = body.union(boss)
 
@@ -79,10 +88,12 @@ class ServoBody(cqparts.Part):
             width=self.width,
             length=self.wing_width,
             hole_size=self.hole_size,
-            hole_gap=self.hole_gap
-            )
-        left_wing = left_wing.local_obj.rotate((0,0,0),(0,0,1),180)
-        left_wing = left_wing.translate((self.length/2+self.wing_width/2,0,self.wing_lift))
+            hole_gap=self.hole_gap,
+        )
+        left_wing = left_wing.local_obj.rotate((0, 0, 0), (0, 0, 1), 180)
+        left_wing = left_wing.translate(
+            (self.length / 2 + self.wing_width / 2, 0, self.wing_lift)
+        )
         body = body.union(left_wing)
 
         right_wing = _wing(
@@ -90,16 +101,26 @@ class ServoBody(cqparts.Part):
             width=self.width,
             length=self.wing_width,
             hole_size=self.hole_size,
-            hole_gap=self.hole_gap
-            )
-        right_wing = right_wing.local_obj.translate((-self.length/2-self.wing_width/2,0,self.wing_lift))
+            hole_gap=self.hole_gap,
+        )
+        right_wing = right_wing.local_obj.translate(
+            (-self.length / 2 - self.wing_width / 2, 0, self.wing_lift)
+        )
         body = body.union(right_wing)
         return body
 
     def mate_shaft(self):
-        return Mate(self,CoordSystem(
-            origin=(self.length/2-self.boss_offset,0,self.height+self.boss_height)
-        ))
+        return Mate(
+            self,
+            CoordSystem(
+                origin=(
+                    self.length / 2 - self.boss_offset,
+                    0,
+                    self.height + self.boss_height,
+                )
+            ),
+        )
+
 
 @register(export="motor")
 class Servo(cqparts.Assembly):
@@ -124,26 +145,26 @@ class Servo(cqparts.Assembly):
     boss_height = PositiveFloat(3)
     boss_offset = PositiveFloat(8.35)
 
-    #shaft
+    # shaft
     shaft_length = PositiveFloat(4)
     shaft_diameter = PositiveFloat(4)
 
-    #servo horn
+    # servo horn
     horn = PartRef(servo_horns.Circle)
 
     # TODO servo rotation
-    rotate =  PositiveFloat(0)
+    rotate = PositiveFloat(0)
     # space around the cut
-    clearance =  PositiveFloat(2)
+    clearance = PositiveFloat(2)
     # extra cutout on top of the servo
-    overcut =  PositiveFloat(0)
+    overcut = PositiveFloat(0)
     target = PartRef()
 
     # elided variables
-    total_height =  PositiveFloat(2)
+    total_height = PositiveFloat(2)
 
     def initialize_parameters(self):
-        th = self.height+self.boss_height+self.shaft_length
+        th = self.height + self.boss_height + self.shaft_length
         if self.horn is not None:
             h = self.horn()
             th = th + h.thickness
@@ -163,63 +184,59 @@ class Servo(cqparts.Assembly):
             hole_gap=self.hole_gap,
             boss_radius=self.boss_radius,
             boss_height=self.boss_height,
-            boss_offset=self.boss_offset
+            boss_offset=self.boss_offset,
         )
-        shaft = Shaft(
-            length = self.shaft_length,
-            diam = self.shaft_diameter
-        )
-        comps = {
-            'servobody': servobody,
-            'shaft': shaft
-        }
+        shaft = Shaft(length=self.shaft_length, diam=self.shaft_diameter)
+        comps = {"servobody": servobody, "shaft": shaft}
         if self.horn is not None:
-            comps['horn'] = self.horn()
+            comps["horn"] = self.horn()
         return comps
 
     def get_shaft(self):
-        return self.components['shaft']
+        return self.components["shaft"]
 
     def make_constraints(self):
-        servobody = self.components['servobody']
-        shaft = self.components['shaft']
+        servobody = self.components["servobody"]
+        shaft = self.components["shaft"]
 
         constr = [
             Fixed(servobody.mate_origin),
-            Coincident(
-                shaft.mate_origin,
-                servobody.mate_shaft()
-            )
+            Coincident(shaft.mate_origin, servobody.mate_shaft()),
         ]
         if self.horn is not None:
-            horn = self.components['horn']
-            constr.append(
-                Coincident(
-                    horn.mate_origin,
-                    shaft.mate_tip()
-            ))
+            horn = self.components["horn"]
+            constr.append(Coincident(horn.mate_origin, shaft.mate_tip()))
         return constr
 
     def make_alterations(self):
         if self.target is not None:
-            self.make_cutout(self.target,clearance=self.clearance,overcut=self.overcut)
+            self.make_cutout(
+                self.target, clearance=self.clearance, overcut=self.overcut
+            )
 
-    def make_cutout(self,part,clearance=0,overcut=0):
+    def make_cutout(self, part, clearance=0, overcut=0):
         part = part.local_obj.cut(
-            (self.world_coords-part.world_coords)
-            +self.cutout(clearance=clearance,overcut=overcut))
+            (self.world_coords - part.world_coords)
+            + self.cutout(clearance=clearance, overcut=overcut)
+        )
 
-    def cutout(self,clearance=0,overcut=0):
+    def cutout(self, clearance=0, overcut=0):
         body = cq.Workplane("XY").box(
-            self.length+clearance/2,
-            self.width+clearance/2,
-            self.wing_lift,centered=(True,True,False))
-        top = cq.Workplane("XY").box(
-            self.length+clearance/2+self.wing_width*2,
-            self.width+clearance/2,
-            self.height-self.wing_lift+self.boss_height+clearance+overcut,
-            centered=(True,True,False))\
-            .translate((0,0,self.wing_lift))
+            self.length + clearance / 2,
+            self.width + clearance / 2,
+            self.wing_lift,
+            centered=(True, True, False),
+        )
+        top = (
+            cq.Workplane("XY")
+            .box(
+                self.length + clearance / 2 + self.wing_width * 2,
+                self.width + clearance / 2,
+                self.height - self.wing_lift + self.boss_height + clearance + overcut,
+                centered=(True, True, False),
+            )
+            .translate((0, 0, self.wing_lift))
+        )
         body = body.union(top)
         return body
 
@@ -228,20 +245,24 @@ class Servo(cqparts.Assembly):
         pass
 
     def mate_top(self):
-        return Mate(self,CoordSystem(origin=(self.boss_offset,0,self.total_height)))
+        return Mate(self, CoordSystem(origin=(self.boss_offset, 0, self.total_height)))
 
     def mate_wing_bottom(self):
-        return Mate(self,CoordSystem(origin=(self.boss_offset,0,self.wing_lift)))
+        return Mate(self, CoordSystem(origin=(self.boss_offset, 0, self.wing_lift)))
 
     def mate_wing_top(self):
-        return Mate(self,CoordSystem(origin=(0,0,self.wing_lift+self.wing_thickness)))
+        return Mate(
+            self, CoordSystem(origin=(0, 0, self.wing_lift + self.wing_thickness))
+        )
 
-@register(export='motor')
+
+@register(export="motor")
 class SubMicro(Servo):
     """
     Submicro mini servo
     https://www.sparkfun.com/products/9065
     """
+
     # main body
     length = PositiveFloat(23.114)
     width = PositiveFloat(11.735)
@@ -259,7 +280,7 @@ class SubMicro(Servo):
     boss_height = PositiveFloat(3.988)
     boss_offset = PositiveFloat(5.867)
 
-    #shaft
+    # shaft
     shaft_length = PositiveFloat(2.972)
     shaft_diameter = PositiveFloat(4.668)
 
@@ -267,30 +288,25 @@ class SubMicro(Servo):
 # Test assembly for mount points and cutouts
 class _MountedServo(cqparts.Assembly):
     def make_components(self):
-        plank = Plank() 
-        comps = {
-            "servo": Servo(target=plank),
-            "plank": plank 
-        } 
+        plank = Plank()
+        comps = {"servo": Servo(target=plank), "plank": plank}
         return comps
 
     def make_constraints(self):
         return [
-            Fixed(self.components['plank'].mate_bottom),
+            Fixed(self.components["plank"].mate_bottom),
             Coincident(
-                self.components['servo'].mate_wing_bottom(),
-                self.components['plank'].mate_top
-            )
+                self.components["servo"].mate_wing_bottom(),
+                self.components["plank"].mate_top,
+            ),
         ]
-
-
 
 
 if __name__ == "__main__":
     from cqparts.display import display
-    #em = Servo()
-    #em = _wing()
-    #em = SubMicro()
+
+    # em = Servo()
+    # em = _wing()
+    # em = SubMicro()
     em = _MountedServo()
     display(em)
-

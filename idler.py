@@ -10,20 +10,18 @@ from cqparts.utils.geometry import CoordSystem
 from cqparts_bearings.ball import BallBearing
 from cqparts_motors.shaft import Shaft
 
-class Idler(cqparts.Assembly):
 
+class Idler(cqparts.Assembly):
     def make_components(self):
-        comps ={
-            'shaft' : Shaft()
-        }
+        comps = {"shaft": Shaft()}
         return comps
 
     def make_constraints(self):
-        return [
-            Fixed(self.components['shaft'].mate_origin)
-        ]
+        return [Fixed(self.components["shaft"].mate_origin)]
+
 
 if __name__ == "__main__":
     from cqparts.display import display
+
     B = Idler()
     display(B)

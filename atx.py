@@ -12,11 +12,12 @@ from cqparts.constraint import Mate
 from cqparts.utils.geometry import CoordSystem
 
 
-class Threaded(Shaft):
+class Atx(cqparts.Assembly):
+    pass
 
 
 if __name__ == "__main__":
     from cqparts.display import display
+
     B = Atx()
     display(B)
-

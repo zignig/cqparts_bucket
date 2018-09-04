@@ -11,10 +11,12 @@ from cqparts.constraint import Fixed, Coincident
 from cqparts.constraint import Mate
 from cqparts.utils.geometry import CoordSystem
 
+
 class MyBox(cqparts.Part):
     size = PositiveFloat(10)
+
     def make(self):
-        b = cq.Workplane("XY").box(self.size,self.size,self.size)
+        b = cq.Workplane("XY").box(self.size, self.size, self.size)
         return b
 
 
