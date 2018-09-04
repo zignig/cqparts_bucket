@@ -10,3 +10,5 @@ https://github.com/dcowden/cadquery/blob/master/cadquery/freecad_impl/exporters.
 rewrite to just export hiddens.
 
 
+use modulefinder to extract all the needed modules
+

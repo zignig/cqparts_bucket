@@ -21,21 +21,24 @@ from cqparts_motors import shaft, motor
 def _profile(shape, diam, thickness):
     work_plane = cq.Workplane("XY")
     if shape == "circle":
-        profile = work_plane.circle(diam/2)
+        profile = work_plane.circle(diam / 2)
 
     if shape == "flat":
         radius = diam / 2
         half_thickness = thickness / 2
-        intersect = math.sqrt(radius*radius-half_thickness*half_thickness)
-        profile = work_plane.moveTo(0, half_thickness)\
-           .lineTo(intersect, half_thickness)\
-           .threePointArc((radius, 0), (intersect, -half_thickness))\
-           .lineTo(0, -half_thickness)\
-           .mirrorY()
+        intersect = math.sqrt(radius * radius - half_thickness * half_thickness)
+        profile = (
+            work_plane.moveTo(0, half_thickness)
+            .lineTo(intersect, half_thickness)
+            .threePointArc((radius, 0), (intersect, -half_thickness))
+            .lineTo(0, -half_thickness)
+            .mirrorY()
+        )
 
     if shape == "rect":
-        profile = work_plane.rect(thickness/2, diam/2)
+        profile = work_plane.rect(thickness / 2, diam / 2)
     return profile
+
 
 # the motor cup
 class _Cup(cqparts.Part):
@@ -54,31 +57,33 @@ class _Cup(cqparts.Part):
     def make(self):
         # grab the correct profile
         work_plane = cq.Workplane("XY")
-        cup = _profile(self.profile, self.diam, self.thickness)\
-            .extrude(-self.height)
+        cup = _profile(self.profile, self.diam, self.thickness).extrude(-self.height)
         if self.step_height > 0:
-            step = work_plane.circle(self.step_diam/2).extrude(self.step_height)
+            step = work_plane.circle(self.step_diam / 2).extrude(self.step_height)
             cup = cup.union(step)
-        bush = work_plane.workplane(
-            offset=self.step_height)\
-            .circle(self.bush_diam/2)\
+        bush = (
+            work_plane.workplane(offset=self.step_height)
+            .circle(self.bush_diam / 2)
             .extrude(self.bush_height)
+        )
         cup = cup.union(bush)
         return cup
 
     def get_cutout(self, clearance=0):
         " get the cutout for the shaft"
-        return cq.Workplane('XY', origin=(0, 0, 0)) \
-            .circle((self.diam / 2) + clearance) \
+        return (
+            cq.Workplane("XY", origin=(0, 0, 0))
+            .circle((self.diam / 2) + clearance)
             .extrude(10)
+        )
 
     @property
     def mate_bottom(self):
         " connect to the bottom of the cup"
-        return Mate(self, CoordSystem(\
-            origin=(0, 0, -self.height),\
-            xDir=(1, 0, 0),\
-            normal=(0, 0, 1)))
+        return Mate(
+            self,
+            CoordSystem(origin=(0, 0, -self.height), xDir=(1, 0, 0), normal=(0, 0, 1)),
+        )
 
 
 class _BackCover(cqparts.Part):
@@ -94,14 +99,18 @@ class _BackCover(cqparts.Part):
     def make(self):
         # grab the correct profile
         work_plane = cq.Workplane("XY")
-        back = work_plane.workplane(offset=-self.height)\
-            .circle(self.bush_diam/2)\
+        back = (
+            work_plane.workplane(offset=-self.height)
+            .circle(self.bush_diam / 2)
             .extrude(-self.bush_height)
+        )
         if self.height > 0:
-            back = _profile(self.profile, self.diam, self.thickness)\
-            .extrude(-self.height)
+            back = _profile(self.profile, self.diam, self.thickness).extrude(
+                -self.height
+            )
             back = back.union(back)
         return back
+
 
 @register(export="motor")
 class DCMotor(motor.Motor):
@@ -110,6 +119,7 @@ class DCMotor(motor.Motor):
 
     .. image:: /_static/img/motors/DCMotor.png
     """
+
     height = PositiveFloat(25.1, doc="motor length")
     diam = PositiveFloat(20.4, doc="motor diameter")
     thickness = PositiveFloat(15.4, doc="back thickness for flat profile")
@@ -118,7 +128,7 @@ class DCMotor(motor.Motor):
     bush_diam = PositiveFloat(6.15, doc="diameter of the bush")
     bush_height = PositiveFloat(1.6, doc="height of the bush")
 
-    shaft_type = shaft.Shaft #replace with other shaft
+    shaft_type = shaft.Shaft  # replace with other shaft
     shaft_length = PositiveFloat(11.55, doc="length of the shaft")
     shaft_diam = PositiveFloat(2, doc="diameter of the shaft")
 
@@ -137,42 +147,43 @@ class DCMotor(motor.Motor):
 
     def make_components(self):
         return {
-            'body': _Cup(
+            "body": _Cup(
                 height=self.height,
                 thickness=self.thickness,
                 diam=self.diam,
                 profile=self.profile,
                 bush_diam=self.bush_diam,
                 bush_height=self.bush_height,
-                step_height=self.step_height
+                step_height=self.step_height,
             ),
-            'shaft': self.shaft_type(length=self.shaft_length, diam=self.shaft_diam),
-            'back': _BackCover(
+            "shaft": self.shaft_type(length=self.shaft_length, diam=self.shaft_diam),
+            "back": _BackCover(
                 height=self.cover_height,
                 thickness=self.thickness,
                 diam=self.diam,
                 profile=self.profile,
                 bush_diam=self.bush_diam,
-                bush_height=self.bush_height
-            )
+                bush_height=self.bush_height,
+            ),
         }
 
     def make_constraints(self):
         return [
-            Fixed(self.components['body'].mate_origin),
+            Fixed(self.components["body"].mate_origin),
             Coincident(
-                self.components['shaft'].mate_origin,
-                self.components['body'].mate_origin,
+                self.components["shaft"].mate_origin,
+                self.components["body"].mate_origin,
             ),
             Coincident(
-                self.components['back'].mate_origin,
-                self.components['body'].mate_bottom,
-            )
+                self.components["back"].mate_origin, self.components["body"].mate_bottom
+            ),
         ]
+
 
 @register(export="motor")
 class Cylindrical(DCMotor):
     profile = String("circle", doc="profile shape (circle|flat|rect)")
+
 
 @register(export="motor")
 class Rect(DCMotor):

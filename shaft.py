@@ -18,8 +18,10 @@ from cqparts.params import PositiveFloat
 from cqparts.display import render_props
 from cqparts.constraint import Mate
 from cqparts.utils.geometry import CoordSystem
+from cqparts.search import register 
 
 # base shaft type
+@register(export="shaft")
 class Shaft(cqparts.Part):
     " base shaft , override ME"
     length = PositiveFloat(24, doc="shaft length")

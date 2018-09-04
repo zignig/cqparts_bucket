@@ -39,34 +39,38 @@ class CylBattery(cqparts.Part):
         bat = cq.Workplane("XY")\
             .circle(self.diameter/2)\
             .extrude(self.length-self.pos_height)
-        bat = bat.fillet(self.pos_height/2)
+        #bat = bat.fillet(self.pos_height/2)
         pos = cq.Workplane("XY").workplane(offset=self.length-self.pos_height)\
             .circle(self.pos_diam/2).extrude(self.pos_height)
-        pos = pos.faces(">Z").fillet(self.pos_height/2)
+        #pos = pos.faces(">Z").fillet(self.pos_height/2)
         bat = bat.union(pos)
         return bat
 
-
+@register(export="battery")
 class AAA(CylBattery):
     length = PositiveFloat(44.5)
     diameter = PositiveFloat(10.5)
 
 
+@register(export="battery")
 class AA(CylBattery):
     length = PositiveFloat(50.5)
     diameter = PositiveFloat(14.5)
 
 
+@register(export="battery")
 class C(CylBattery):
     length = PositiveFloat(50.5)
     diameter = PositiveFloat(26.2)
 
 
+@register(export="battery")
 class D(CylBattery):
     length = PositiveFloat(50.5)
     diameter = PositiveFloat(34.2)
 
 
+@register(export="battery")
 class Li18650(CylBattery):
     length = PositiveFloat(65.2)
     diameter = PositiveFloat(18.6)
