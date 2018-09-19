@@ -26,5 +26,10 @@ __all__ = [
     "pencil_case",
     "open_box",
     "servo",
+    "servo_horns",
     "car",
+    "train",
+    "rocket_drone",
+    "peg",
+    "threaded",
 ]

@@ -10,6 +10,7 @@ from cqparts.params import *
 from cqparts.display import render_props
 from cqparts import constraint
 from cqparts.utils import CoordSystem
+from cqparts.search import register
 
 
 class _PegSide(cqparts.Part):
@@ -140,6 +141,7 @@ class _Spring(cqparts.Part):
         return spring
 
 
+@register(export="misc")
 class ClothesPeg(cqparts.Assembly):
     """
     A common household clothes-peg

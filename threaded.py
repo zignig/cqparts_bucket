@@ -10,11 +10,12 @@ from cqparts.display import render_props, display
 from cqparts.constraint import Fixed, Coincident
 from cqparts.constraint import Mate
 from cqparts.utils.geometry import CoordSystem
-
 from cqparts_motors.shaft import Shaft
+from cqparts.search import register
 
 
 # this is just a shaft with a different colour
+@register(export="shaft")
 class Threaded(Shaft):
     _render = render_props(color=(75, 5, 50))
 

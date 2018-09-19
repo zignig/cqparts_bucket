@@ -259,11 +259,11 @@ class Case(cqparts.Assembly):
     This is a three part case that bolts itself together
     """
 
-    height = PositiveFloat(20)
-    base_height = PositiveFloat(1)
+    height = PositiveFloat(50)
+    base_height = PositiveFloat(2.4)
     width = PositiveFloat(100)
     length = PositiveFloat(50)
-    thickness = PositiveFloat(0.8)
+    thickness = PositiveFloat(1.8)
     explode = Int(0)
     screw = PartRef(Screw)
 

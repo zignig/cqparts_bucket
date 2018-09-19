@@ -22,6 +22,7 @@ from cqparts.utils.geometry import CoordSystem
 
 from cqparts_toys.train.track import StraightTrack
 
+from cqparts.search import register
 
 # a parameter for passing object down
 class PartRef(Parameter):
@@ -446,6 +447,30 @@ class Diorama(cqparts.Assembly):
         if self.train is not None:
             constr.append(Fixed(self.components["rail1"].mate_origin))
         return constr
+
+
+@register(export="train")
+class FullLoco(Bogie):
+    wagon = PartRef(Loco)
+
+
+@register(export="train")
+class FullWagon(Bogie):
+    wagon = PartRef(Wagon)
+
+
+@register(export="train")
+class FullTank(Bogie):
+    wagon = PartRef(Tank)
+
+
+class Demo(Diorama):
+    def initialize_parameters(self):
+        t = Train(axle=2)
+        t.add_car(FullWagon())
+        t.add_car(FullWagon())
+        t.add_car(FullTank())
+        self.train = t
 
 
 if __name__ == "__main__":

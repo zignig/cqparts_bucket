@@ -30,7 +30,7 @@ class _BattView(Arrange):
 
 # cylindrical battery
 
-
+@register(export="battery")
 class CylBattery(cqparts.Part):
     length = PositiveFloat(50.5)
     diameter = PositiveFloat(14.5)
@@ -150,7 +150,7 @@ class Battpack(cqparts.Assembly):
 
 
 @register(export="battery_pack")
-class _FlatBatt(cqparts.Assembly):
+class FlatBatt(cqparts.Assembly):
     countX = Int(5)
     countY = Int(1)
     countZ = Int(1)

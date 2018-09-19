@@ -40,7 +40,6 @@ class _PlaceHolder(cqparts.Part):
 
 
 # this is a base object to pass all the variables down
-@register(export="cnc")
 class _AxisBase(cqparts.Assembly):
     length = PositiveFloat(10)
     width = PositiveFloat(10)

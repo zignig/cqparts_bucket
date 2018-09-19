@@ -408,7 +408,7 @@ class FluxCap(cqparts.Assembly):
         return constr
 
 
-@register(export="showcase")
+@register(export="showcase", showcase="complete")
 class CompleteFlux(cqparts.Assembly):
     electrode_count = Int(3)
     radius = PositiveFloat(31)
