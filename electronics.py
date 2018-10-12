@@ -47,6 +47,7 @@ class MotorController(MountedBoard):
 
 
 @register(export="electronics")
+@register(export="showcase")
 class Electronics(cqparts.Assembly):
     battpack = PartRef(RoverBatt)
     controller = PartRef(RoverController)

@@ -93,7 +93,7 @@ class ThisStepper(Stepper):
     hole_spacing = PositiveFloat(15)
 
 
-@register(export="showcase", showcase="rover")
+@register(export="showcase", showcase="showcase")
 class Rover(cqparts.Assembly):
     length = PositiveFloat(280)
     width = PositiveFloat(170)

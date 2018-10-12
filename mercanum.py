@@ -188,6 +188,7 @@ class Hub(cqparts.Part):
 
 
 @register(export="wheel")
+@register(export="showcase")
 class MercanumWheel(cqparts.Assembly):
     " really broken , these params dont work"
     hub_diam = PositiveFloat(48)

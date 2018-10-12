@@ -1,6 +1,7 @@
 # INIT ME
 
 _version = "0.1a"
+_export = True
 _namespace = "user/zignig"
 __all__ = [
     "controller",

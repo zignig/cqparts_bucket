@@ -18,12 +18,12 @@ from cqparts_fasteners.bolts import Bolt
 from cqparts_fasteners.fasteners.base import Fastener
 from cqparts_fasteners.utils import VectorEvaluator, Selector, Applicator
 
-from cqparts_motors.shaft import Shaft
 from cqparts_motors.stepper import Stepper
 from cqparts_motors.dc import DCMotor
 
 # from mercanum import MercanumWheel
 from wheel import SimpleWheel, BuiltWheel
+from shaft import Shaft
 
 from robot_base_mount import FlushFastener, MountScrew
 from manufacture import Printable
@@ -159,6 +159,7 @@ class ShortScrew(Screw):
 
 
 @register(export="motor")
+@register(export="showcase")
 class MountedStepper(cqparts.Assembly):
     stepper = PartRef(Stepper)
     screw = PartRef(ShortScrew)

@@ -77,6 +77,7 @@ class HingeR(box.Right):
 
 
 @register(export="box")
+@register(export="showcase")
 class FlipBox(box.Boxen):
     # Pass down subclassed faces
     left = box.PartRef(HingeL)

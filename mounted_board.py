@@ -149,6 +149,7 @@ class ComputerScrew(Screw):
 
 
 @register(export="board")
+@register(export="showcase")
 class PizeroBoard(MountedBoard):
     board = PartRef(Pizero)
 

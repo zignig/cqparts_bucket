@@ -118,7 +118,6 @@ class SingleArm(_ServoHorn):
         return b
 
 
-@register(export="horns")
 class _MultiArm(_ServoHorn):
     arms = Int(2)
 

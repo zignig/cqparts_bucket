@@ -149,6 +149,7 @@ class Cowl(cqparts.Part):
 
 
 @register(export="rocket")
+@register(export="showcase")
 class TurbineAssembly(cqparts.Assembly):
     motor_diameter = PositiveFloat()
     motor_clearance = PositiveFloat(1)
