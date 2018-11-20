@@ -87,6 +87,7 @@ class MountedBoard(cqparts.Assembly):
 
     def make_alterations(self):
         board = self.components["board"]
+        print(self)
         if self.target is not None:
             for i, j in enumerate(board.mount_verts()):
                 self.components[self.standoff_name(i)].make_cutout(part=self.target)
