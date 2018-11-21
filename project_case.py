@@ -18,7 +18,7 @@ from lcd import Lcd
 @register(export="showcase")
 class ProjectBox(cqparts.Assembly):
     height = PositiveFloat(60)
-    width = PositiveFloat(100)
+    width = PositiveFloat(85)
     length = PositiveFloat(50)
     thickness = PositiveFloat(3)
     outset = PositiveFloat(3)
