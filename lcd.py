@@ -26,7 +26,6 @@ class Screen(cqparts.Part):
         sc = cq.Workplane("XY").rect(self.length,self.width).extrude(self.thickness)
         return sc
         
-@register(export="sensor")
 class Lcd(PCBBoard):
     length = PositiveFloat(80)
     width = PositiveFloat(36)
