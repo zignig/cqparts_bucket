@@ -18,9 +18,9 @@ from button import Button
 
 @register(export="showcase")
 class ProjectBox(cqparts.Assembly):
-    height = PositiveFloat(60)
+    height = PositiveFloat(70)
     width = PositiveFloat(85)
-    length = PositiveFloat(50)
+    length = PositiveFloat(60)
     thickness = PositiveFloat(3)
     outset = PositiveFloat(3)
 
@@ -56,8 +56,8 @@ class ProjectBox(cqparts.Assembly):
         const.append(Coincident(c.mate_transverse(),bot.mate_top_pos(x=0,y=0)))
         # make a control panel object
         const.append(Coincident(screen.mate_transverse(),front.mate_bottom_pos(x=8,y=0)))
-        const.append(Coincident(butA.mate_origin,front.mate_top_pos(x=-14,y=15)))
-        const.append(Coincident(butB.mate_origin,front.mate_top_pos(x=-14,y=-15)))
+        const.append(Coincident(butA.mate_origin,front.mate_top_pos(x=-19,y=15)))
+        const.append(Coincident(butB.mate_origin,front.mate_top_pos(x=-19,y=-15)))
         return const
 
     def make_alterations(self):
