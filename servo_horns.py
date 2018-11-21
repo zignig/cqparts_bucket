@@ -9,7 +9,7 @@ from cqparts.display import render_props, display
 from cqparts.constraint import Fixed, Coincident
 from cqparts.constraint import Mate
 from cqparts.utils.geometry import CoordSystem
-from cqparts.search import register 
+from cqparts.search import register
 
 from multi import Arrange
 from cqparts_motors.shaft import Shaft
@@ -109,6 +109,7 @@ class _ServoHorn(cqparts.Part):
             ),
         )
 
+
 @register(export="horns")
 class SingleArm(_ServoHorn):
     def make(self):
@@ -129,17 +130,21 @@ class _MultiArm(_ServoHorn):
         b = b.cut(self.mount())
         return b
 
+
 @register(export="horns")
 class TwoArm(_MultiArm):
     arms = Int(2)
+
 
 @register(export="horns")
 class FourArm(_MultiArm):
     arms = Int(4)
 
+
 @register(export="horns")
 class ServoArm(_MultiArm):
     arms = Int(6)
+
 
 @register(export="horns")
 class Circle(_ServoHorn):

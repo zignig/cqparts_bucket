@@ -116,24 +116,17 @@ class _Sheet(cqparts.Part):
 
     # TODO some mates for binding boards
 
-    def mate_top_pos(self,x=0,y=0):
+    def mate_top_pos(self, x=0, y=0):
         return Mate(
             self,
             CoordSystem(
-                origin=(x,y,self.thickness),
-                xDir=(1, 0, 0),
-                normal=(0, 0,1),
+                origin=(x, y, self.thickness), xDir=(1, 0, 0), normal=(0, 0, 1)
             ),
         )
 
-    def mate_bottom_pos(self,x=0,y=0):
+    def mate_bottom_pos(self, x=0, y=0):
         return Mate(
-            self,
-            CoordSystem(
-                origin=(x,y,0),
-                xDir=(1, 0, 0),
-                normal=(0, 0,1),
-            ),
+            self, CoordSystem(origin=(x, y, 0), xDir=(1, 0, 0), normal=(0, 0, 1))
         )
 
     def mate_left_edge(self):

@@ -11,11 +11,13 @@ from cqparts.utils.geometry import CoordSystem
 
 from dc import Cylindrical
 
+
 @register(export="rocket")
 class AeroMotor(Cylindrical):
     diam = PositiveFloat(15)
     length = PositiveFloat(40)
     pass
+
 
 @register(export="rocket")
 class MotorMount(cqparts.Part):
@@ -27,11 +29,15 @@ class MotorMount(cqparts.Part):
         mm = (
             cq.Workplane("XY")
             .circle(self.diameter / 2 + self.thickness)
-            .circle(self.diameter / 2 )
+            .circle(self.diameter / 2)
             .extrude(self.length)
         )
-        top = cq.Workplane("XY").circle(self.thickness  +self.diameter/2).extrude(self.thickness)
-        top = top.translate((0,0,self.length))
+        top = (
+            cq.Workplane("XY")
+            .circle(self.thickness + self.diameter / 2)
+            .extrude(self.thickness)
+        )
+        top = top.translate((0, 0, self.length))
         mm = mm.union(top)
         return mm
 
@@ -44,7 +50,7 @@ class Spinner(cqparts.Part):
     def make(self):
         sp = (
             cq.Workplane("XZ")
-            .lineTo(self.diameter/2, 0)
+            .lineTo(self.diameter / 2, 0)
             .lineTo(0, self.length)
             .close()
         )
@@ -60,8 +66,12 @@ class Blade(cqparts.Part):
     thickness = PositiveFloat(0.3)
 
     def make(self):
-        bl = cq.Workplane("XY").rect(self.length+self.extra, self.thickness).extrude(self.height)
-        bl = bl.translate((self.length/2,0,-self.height/2))
+        bl = (
+            cq.Workplane("XY")
+            .rect(self.length + self.extra, self.thickness)
+            .extrude(self.height)
+        )
+        bl = bl.translate((self.length / 2, 0, -self.height / 2))
         return bl
 
 
@@ -85,7 +95,7 @@ class Turbine(cqparts.Part):
             bla = bla.union(bl)
         mm = (
             cq.Workplane("XY")
-            .circle(self.outer*2)
+            .circle(self.outer * 2)
             .circle(self.outer)
             .extrude(self.length)
         )
@@ -94,14 +104,7 @@ class Turbine(cqparts.Part):
         return tb
 
     def mate_top(self):
-        return Mate(
-            self,
-            CoordSystem(
-                origin=(
-                    0,0,self.length
-                )
-            ),
-        )
+        return Mate(self, CoordSystem(origin=(0, 0, self.length)))
 
 
 @register(export="rocket")
@@ -131,21 +134,14 @@ class Cowl(cqparts.Part):
         mm = MotorMount(
             diameter=self.motor_diameter,
             length=self.vane_height,
-            thickness=self.thickness,        
+            thickness=self.thickness,
         )
-        mm = mm.local_obj.translate((0,0,0))
+        mm = mm.local_obj.translate((0, 0, 0))
         pl = pl.union(mm)
         return pl
 
     def mate_mount(self):
-        return Mate(
-            self,
-            CoordSystem(
-                origin=(
-                    0,0,self.vane_height
-                )
-            ),
-        )
+        return Mate(self, CoordSystem(origin=(0, 0, self.vane_height)))
 
 
 @register(export="rocket")
@@ -155,21 +151,18 @@ class TurbineAssembly(cqparts.Assembly):
     motor_clearance = PositiveFloat(1)
     blade_clearance = PositiveFloat(1)
     diameter = PositiveFloat(50)
+
     def initialize_parameters(self):
         m = AeroMotor()
-        self.motor_diameter = m.diam+ self.motor_clearance
+        self.motor_diameter = m.diam + self.motor_clearance
         pass
+
     def make_components(self):
         comps = {
-            "cowl" : Cowl(
-                motor_diameter = self.motor_diameter,
-                diameter = self.diameter,
-            ),
-            "motor" : AeroMotor(),
-            "turbine" : Turbine(
-                outer = self.diameter/2-self.blade_clearance,
-            ),
-            "spinner" : Spinner(),
+            "cowl": Cowl(motor_diameter=self.motor_diameter, diameter=self.diameter),
+            "motor": AeroMotor(),
+            "turbine": Turbine(outer=self.diameter / 2 - self.blade_clearance),
+            "spinner": Spinner(),
         }
         return comps
 
@@ -189,12 +182,14 @@ class TurbineAssembly(cqparts.Assembly):
                 self.components["turbine"].mate_top(),
             ),
         ]
+
+
 if __name__ == "__main__":
     from cqparts.display import display
 
     # display(Spinner())
-    #display(Cowl())
-    #display(Turbine())
-    #display(Blade())
-    #display(AeroMotor())
+    # display(Cowl())
+    # display(Turbine())
+    # display(Blade())
+    # display(AeroMotor())
     display(TurbineAssembly())

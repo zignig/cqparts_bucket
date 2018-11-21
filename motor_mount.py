@@ -158,8 +158,8 @@ class ShortScrew(Screw):
     tip_length = PositiveFloat(0)
 
 
-@register(export="motor",showcase="showcase")
-#@register(export="showcase")
+@register(export="motor", showcase="showcase")
+# @register(export="showcase")
 class MountedStepper(cqparts.Assembly):
     stepper = PartRef(Stepper)
     screw = PartRef(ShortScrew)

@@ -65,7 +65,7 @@ class PencilCaseTop(box.Boxen):
         super(PencilCaseTop, self).make_alterations()
 
 
-@register(export="box",showcase="showcase")
+@register(export="box", showcase="showcase")
 class PencilCase(cqparts.Assembly):
     length = PositiveFloat(200)
     width = PositiveFloat(65)

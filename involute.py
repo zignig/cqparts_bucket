@@ -11,10 +11,12 @@ from cqparts.utils.geometry import CoordSystem
 class Tooth(cqparts.Part):
     thickness = PositiveFloat(3)
     size = PositiveFloat(2)
+
     def make(self):
         wp = cq.Workplane("XY")
-        t = wp.rect(self.size,self.size).extrude(self.thickness)
+        t = wp.rect(self.size, self.size).extrude(self.thickness)
         return t
+
 
 class Involute(cqparts.Part):
     module = PositiveFloat(0.4)
@@ -29,10 +31,10 @@ class Involute(cqparts.Part):
         post = wp.circle(self.rad).extrude(self.thickness)
         inc = 360.0 / self.teeth
         for i in range(self.teeth):
-            print(inc*i)
+            print(inc * i)
             t = Tooth(thickness=self.thickness).local_obj
-            t = t.translate((self.rad,0,0))
-            t = t.rotate((0,0,0),(0,0,1),i*inc)
+            t = t.translate((self.rad, 0, 0))
+            t = t.rotate((0, 0, 0), (0, 0, 1), i * inc)
             post = post.union(t)
         return post
 
