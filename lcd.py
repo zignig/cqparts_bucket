@@ -21,11 +21,11 @@ class Screen(cqparts.Part):
     length = PositiveFloat(64.5)
     width = PositiveFloat(26)
     thickness = PositiveFloat(4.6)
-    
+
     def make(self):
         sc = cq.Workplane("XY").rect(self.length,self.width).extrude(self.thickness)
         return sc
-        
+
 class Lcd(PCBBoard):
     length = PositiveFloat(80)
     width = PositiveFloat(36)
@@ -53,7 +53,7 @@ class Lcd(PCBBoard):
             thickness=self.screen_thickness,
         ).local_obj
         obj = obj.union(scr)
-        return obj 
+        return obj
 
     def make_alterations(self):
         if self.target is not None:

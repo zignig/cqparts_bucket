@@ -23,5 +23,4 @@ class Plank(Box):
 
 if __name__ == "__main__":
     from cqparts.display import display
-
     display(Plank())
