@@ -10,7 +10,7 @@ from cqparts.utils.geometry import CoordSystem
 
 from .pulley import Pulley
 from .belt import Belt
-from .cqparts_motors.stepper import Stepper
+from cqparts_motors.stepper import Stepper
 from .idler import Idler
 from .coupling import Coupling
 from .threaded import Threaded

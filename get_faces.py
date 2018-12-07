@@ -5,10 +5,10 @@ from collections import OrderedDict
 from xml.etree import ElementTree as et
 
 import FreeCAD
-import flip_box
-import box
-import plank
-import robot_base
+from . import flip_box
+from . import box
+from . import plank
+from . import robot_base
 
 fb = flip_box.FlipBox(outset=4)
 # fb = plank.Plank()

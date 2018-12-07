@@ -15,7 +15,7 @@ from cqparts.search import register
 from .shaft import Shaft
 from .plank import Plank
 
-import servo_horns
+from . import servo_horns
 
 
 class PartRef(Parameter):

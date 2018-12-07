@@ -15,7 +15,7 @@ from cqparts.search import register
 from .calculations import CalcTangents
 from .manufacture import Printable
 
-from .cqparts_motors.shaft import Shaft
+from cqparts_motors.shaft import Shaft
 
 from .servo import SubMicro, Servo
 

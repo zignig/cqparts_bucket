@@ -12,7 +12,7 @@ from cqparts.constraint import Mate
 
 from cqparts.search import register
 
-import box
+from . import box
 from .open_box import OpenBox
 
 

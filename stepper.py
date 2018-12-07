@@ -17,8 +17,8 @@ from cqparts.display import render_props
 from cqparts.utils.geometry import CoordSystem
 from cqparts.search import register
 
-import shaft
-import motor
+from . import shaft
+from . import motor
 
 
 class _EndCap(cqparts.Part):

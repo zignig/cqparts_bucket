@@ -3,10 +3,10 @@ import cadquery as cq
 import cqparts
 from collections import OrderedDict
 
-import flip_box
-import box
-import pencil_case
-import plank
+from . import flip_box
+from . import box
+from . import pencil_case
+from . import plank
 from rectpack import newPacker, float2dec
 
 fb = flip_box.FlipBox(outset=3, height=50)
