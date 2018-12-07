@@ -10,7 +10,7 @@ from cqparts.search import register
 
 from .partref import PartRef
 
-import .box
+from . import box
 from .mounted_board import MountedBoard
 from .controller import Pizero, BeagleBoneBlack, Arduino
 from .lcd import Lcd
