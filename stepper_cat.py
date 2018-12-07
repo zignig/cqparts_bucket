@@ -9,8 +9,8 @@ from cqparts.catalogue import JSONCatalogue
 import cqparts_motors
 import os
 
-from motor_mount import MountedStepper
-from stepper import Stepper
+from .motor_mount import MountedStepper
+from .stepper import Stepper
 
 filename = os.path.join(
     os.path.dirname(cqparts_motors.__file__), "catalogue", "stepper-nema.json"

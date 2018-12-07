@@ -13,16 +13,16 @@ from cqparts.constraint import Mate
 from cqparts.utils.geometry import CoordSystem
 from cqparts.search import register
 
-from partref import PartRef
+from .partref import PartRef
 
-from button import Button
-from lcd import Lcd
-from led import LED
+from .button import Button
+from .lcd import Lcd
+from .led import LED
 
 class ControlRow(cqparts.Assembly):
     length = PositiveFloat(100)
     width = PositiveFloat(100)
-    
+
     def initialize_parameters(self):
         self.controls = []
 

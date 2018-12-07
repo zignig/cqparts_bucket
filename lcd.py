@@ -12,10 +12,10 @@ from cqparts.constraint import Mate
 from cqparts.utils.geometry import CoordSystem
 from cqparts.search import register
 
-from controller import PCBBoard
-from partref import PartRef
+from .controller import PCBBoard
+from .partref import PartRef
 
-from plank import Plank
+from .plank import Plank
 
 
 class Screen(cqparts.Part):

@@ -13,7 +13,7 @@ from cqparts.constraint import Mate
 from cqparts.search import register
 
 import box
-from open_box import OpenBox
+from .open_box import OpenBox
 
 
 class T2(box._Tab):

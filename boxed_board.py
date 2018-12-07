@@ -6,10 +6,10 @@ from cqparts.constraint import Fixed, Coincident
 from cqparts.constraint import Mate
 from cqparts.utils import CoordSystem
 from cqparts_fasteners.screws import Screw
-from pizero import Pizero
-from arduino import Arduino
-import case
-from case import Case
+from .pizero import Pizero
+from .arduino import Arduino
+import .case
+from .case import Case
 import os
 
 

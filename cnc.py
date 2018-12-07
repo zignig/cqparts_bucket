@@ -16,7 +16,7 @@ from cqparts.utils.geometry import CoordSystem
 from cqparts.search import register
 
 from cqparts_motors.shaft import Shaft
-from threaded import Threaded
+from .threaded import Threaded
 
 # a parameter for passing object down
 # from drive import Drive
@@ -181,9 +181,9 @@ class Axis(_AxisBase):
         return constr
 
 
-from driver import BeltDrive
-from driver import ThreadedDrive
-from multi import Arrange
+from .driver import BeltDrive
+from .driver import ThreadedDrive
+from .multi import Arrange
 
 
 @register(export="cnc")

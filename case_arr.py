@@ -5,7 +5,7 @@ from cqparts.constraint import Fixed, Coincident
 from cqparts.constraint import Mate
 from cqparts.utils import CoordSystem
 
-from case import Case
+from .case import Case
 from cqparts_fasteners.screws import Screw
 
 

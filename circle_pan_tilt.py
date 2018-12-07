@@ -13,7 +13,7 @@ from cqparts.utils.geometry import CoordSystem
 
 from cqparts_motors.shaft import Shaft
 
-from servo import SubMicro
+from .servo import SubMicro
 
 
 class MountTab(cqparts.Part):

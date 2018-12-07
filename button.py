@@ -12,7 +12,7 @@ from cqparts.constraint import Mate
 from cqparts.utils.geometry import CoordSystem
 from cqparts.search import register
 
-from partref import PartRef
+from .partref import PartRef
 
 
 class _Stem(cqparts.Part):
@@ -75,7 +75,7 @@ class Button(cqparts.Assembly):
 
 
 # Test assembly for mount points and cutouts
-from plank import Plank
+from .plank import Plank
 
 
 class _MountedButton(cqparts.Assembly):

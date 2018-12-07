@@ -8,13 +8,13 @@ from cqparts.params import *
 from cqparts.constraint import Coincident
 from cqparts.search import register
 
-from partref import PartRef
+from .partref import PartRef
 
-import box
-from mounted_board import MountedBoard
-from controller import Pizero, BeagleBoneBlack, Arduino
-from lcd import Lcd
-from button import Button
+import .box
+from .mounted_board import MountedBoard
+from .controller import Pizero, BeagleBoneBlack, Arduino
+from .lcd import Lcd
+from .button import Button
 
 
 class ControlPanel(cqparts.Assembly):

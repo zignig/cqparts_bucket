@@ -12,12 +12,12 @@ from cqparts.constraint import Mate
 from cqparts.utils.geometry import CoordSystem
 from cqparts.search import register
 
-from motor_mount import MountedStepper
+from .motor_mount import MountedStepper
 from cqparts_motors.stepper import Stepper
-from mercanum import MercanumWheel
-from wheel import SimpleWheel, BuiltWheel
-from electronics import Electronics
-from pan_tilt import PanTilt
+from .mercanum import MercanumWheel
+from .wheel import SimpleWheel, BuiltWheel
+from .electronics import Electronics
+from .pan_tilt import PanTilt
 
 
 class PartRef(Parameter):

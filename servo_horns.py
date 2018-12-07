@@ -11,10 +11,10 @@ from cqparts.constraint import Mate
 from cqparts.utils.geometry import CoordSystem
 from cqparts.search import register
 
-from multi import Arrange
+from .multi import Arrange
 from cqparts_motors.shaft import Shaft
 
-from calculations import CalcTangents
+from .calculations import CalcTangents
 
 
 class ShowHorns(Arrange):
