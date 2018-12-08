@@ -8,7 +8,7 @@ from cqparts.utils import CoordSystem
 from cqparts_fasteners.screws import Screw
 from .pizero import Pizero
 from .arduino import Arduino
-import .case
+from . import case
 from .case import Case
 import os
 
