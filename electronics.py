@@ -8,10 +8,10 @@ from cqparts.params import *
 from cqparts.utils import CoordSystem
 from cqparts.search import register
 
-import battery
-from battery import Battpack
-from controller import Pizero, PCBBoard, BeagleBoneBlack
-from mounted_board import MountedBoard
+from . import battery
+from .battery import Battpack
+from .controller import Pizero, PCBBoard, BeagleBoneBlack
+from .mounted_board import MountedBoard
 
 
 class PartRef(Parameter):

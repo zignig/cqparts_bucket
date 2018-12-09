@@ -22,11 +22,11 @@ from cqparts_motors.stepper import Stepper
 from cqparts_motors.dc import DCMotor
 
 # from mercanum import MercanumWheel
-from wheel import SimpleWheel, BuiltWheel
-from shaft import Shaft
+from .wheel import SimpleWheel, BuiltWheel
+from .shaft import Shaft
 
-from robot_base_mount import FlushFastener, MountScrew
-from manufacture import Printable
+from .robot_base_mount import FlushFastener, MountScrew
+from .manufacture import Printable
 
 # https://github.com/zignig/cqparts/blob/master/src/cqparts_fasteners/fasteners/nutbolt.py
 

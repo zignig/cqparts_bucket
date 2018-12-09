@@ -11,7 +11,7 @@ import cqparts
 from cqparts.params import PositiveFloat
 from cqparts.search import register
 
-from calculations import CalcTangents
+from .calculations import CalcTangents
 
 
 @register(export="handle")

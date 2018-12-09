@@ -12,7 +12,7 @@ from cqparts.constraint import Mate
 from cqparts.utils.geometry import CoordSystem
 from cqparts.search import register
 
-from multi import Arrange
+from .multi import Arrange
 
 # A parameter class for passing around objects
 # keep on using this , perhaps fold into cqparts.params

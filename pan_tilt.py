@@ -12,12 +12,12 @@ from cqparts.constraint import Mate
 from cqparts.utils.geometry import CoordSystem
 from cqparts.search import register
 
-from calculations import CalcTangents
-from manufacture import Printable
+from .calculations import CalcTangents
+from .manufacture import Printable
 
 from cqparts_motors.shaft import Shaft
 
-from servo import SubMicro, Servo
+from .servo import SubMicro, Servo
 
 
 class PartRef(Parameter):

@@ -9,7 +9,7 @@ from cqparts.search import register
 from cqparts.utils.geometry import CoordSystem
 
 
-from dc import Cylindrical
+from .dc import Cylindrical
 
 
 @register(export="rocket")

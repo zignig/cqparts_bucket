@@ -12,8 +12,8 @@ from cqparts.utils.geometry import CoordSystem
 from cqparts.search import register
 
 
-from multi import Arrange
-from manufacture import Printable
+from .multi import Arrange
+from .manufacture import Printable
 
 
 class _flux_bits(Arrange):

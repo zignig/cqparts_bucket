@@ -1,15 +1,15 @@
 """
-Test for part extraction on assemblies 
+Test for part extraction on assemblies
 """
 
 # TODO printable parts should have a mate_print for the correct orientation
 
 import cqparts
 
-from manufacture import Printable, Lasercut
-from robot_base import Rover
+from .manufacture import Printable, Lasercut
+from .robot_base import Rover
 
-from flux_capacitor import CompleteFlux
+from .flux_capacitor import CompleteFlux
 
 
 class Extractor(cqparts.Assembly):
@@ -50,7 +50,7 @@ e.scan(m)
 e.show()
 p = e.get_printable()
 
-from multi import Arrange
+from .multi import Arrange
 
 if __name__ == "__main__":
     from cqparts.display import display

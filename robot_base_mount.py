@@ -93,7 +93,7 @@ class FlushFastener(Fastener):
 
 import cqparts
 from cqparts_misc.basic.primatives import Box
-from robot_base_mount import FlushFastener
+from .robot_base_mount import FlushFastener
 from cqparts.constraint import Fixed, Coincident
 from cqparts.constraint import Mate
 

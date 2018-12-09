@@ -13,7 +13,7 @@ from cqparts.utils.geometry import CoordSystem
 from cqparts.search import register
 
 
-from manufacture import Printable
+from .manufacture import Printable
 
 # Again ... need to move into lib
 class PartRef(Parameter):

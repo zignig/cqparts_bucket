@@ -12,8 +12,8 @@ from cqparts_fasteners.male import MaleFastenerPart
 from cqparts_fasteners.fasteners.screw import Screw
 from cqparts_fasteners.params import HeadType, DriveType, ThreadType
 
-from controller import Pizero, BeagleBoneBlack, Arduino
-from plank import Plank
+from .controller import Pizero, BeagleBoneBlack, Arduino
+from .plank import Plank
 
 
 class PartRef(Parameter):

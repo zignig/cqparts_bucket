@@ -1,5 +1,5 @@
 """
-Sonar sensor model 
+Sonar sensor model
 """
 
 import cadquery as cq
@@ -12,7 +12,7 @@ from cqparts.constraint import Mate
 from cqparts.utils.geometry import CoordSystem
 from cqparts.search import register
 
-from controller import PCBBoard
+from .controller import PCBBoard
 
 
 class Emmitter(cqparts.Part):

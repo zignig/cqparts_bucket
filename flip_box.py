@@ -8,7 +8,7 @@ import cqparts
 from cqparts.params import *
 from cqparts.search import register
 
-import box
+from . import box
 
 
 class Front(box.Front):
