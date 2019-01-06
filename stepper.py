@@ -225,8 +225,12 @@ class Stepper(motor.Motor):
 
     def mate_tip(self):
         return Mate(
-            self, CoordSystem(origin=(0, 0,self.shaft_length), xDir=(1, 0, 0), normal=(0, 0, 1))
+            self,
+            CoordSystem(
+                origin=(0, 0, self.shaft_length), xDir=(1, 0, 0), normal=(0, 0, 1)
+            ),
         )
+
 
 if __name__ == "__main__":
     from cqparts.display import display

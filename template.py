@@ -13,6 +13,7 @@ from cqparts.constraint import Mate
 from cqparts.utils.geometry import CoordSystem
 from cqparts.search import register
 
+
 class Template(cqparts.Part):
     length = PositiveFloat(24)
     diam = PositiveFloat(5)
@@ -20,11 +21,7 @@ class Template(cqparts.Part):
     _render = render_props(color=(50, 255, 255))
 
     def make(self):
-        shft = (
-            cq.Workplane("XY")
-            .circle(self.diam / 2)
-            .extrude(self.length)
-        )
+        shft = cq.Workplane("XY").circle(self.diam / 2).extrude(self.length)
         return shft
 
     def cut_out(self):

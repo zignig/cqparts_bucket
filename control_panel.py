@@ -19,6 +19,7 @@ from .button import Button
 from .lcd import Lcd
 from .led import LED
 
+
 class ControlRow(cqparts.Assembly):
     length = PositiveFloat(100)
     width = PositiveFloat(100)
@@ -50,16 +51,17 @@ class ControlRow(cqparts.Assembly):
         return []
 
 
-
 class TestCR(ControlRow):
     def populate(self):
         self.add(Button())
         self.add(Button())
-        #self.add(LED())
-        #self.add(Lcd())
+        # self.add(LED())
+        # self.add(Lcd())
+
 
 if __name__ == "__main__":
     from cqparts.display import display
-    #cp = ControlPanel()
+
+    # cp = ControlPanel()
     cp = TestCR()
     display(cp)

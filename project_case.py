@@ -20,6 +20,7 @@ from .button import Button
 class ControlPanel(cqparts.Assembly):
     pass
 
+
 @register(export="showcase")
 class ProjectBox(cqparts.Assembly):
     height = PositiveFloat(70)

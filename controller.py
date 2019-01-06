@@ -28,7 +28,7 @@ class PCBBoard(cqparts.Part):
     hole_width = PositiveFloat()
 
     # default appearance
-    _render = render_props(color=(10,100,10))
+    _render = render_props(color=(10, 100, 10))
 
     def initialize_parameters(self):
         if self.hole_length is None:

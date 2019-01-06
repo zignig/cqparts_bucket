@@ -15,6 +15,7 @@ from .mounted_board import MountedBoard
 
 from partref import PartRef
 
+
 class RoverBatt(Battpack):
     countX = Int(5)
     countY = Int(1)
@@ -93,8 +94,10 @@ class OtherBatt(Battpack):
     countZ = Int(1)
     batt = PartRef(battery.AA)
 
+
 class OtherController(MountedBoard):
     board = PartRef(BeagleBoneBlack)
+
 
 @register(export="electronics")
 class type1(Electronics):
@@ -102,6 +105,7 @@ class type1(Electronics):
     controller = PartRef(OtherController)
     motorcontroller = PartRef(MotorController)
     target = PartRef()  # what the electronics are bound to
+
 
 if __name__ == "__main__":
     from cqparts.display import display

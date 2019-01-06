@@ -19,7 +19,6 @@ from .plank import Plank
 from . import servo_horns
 
 
-
 class _wing(cqparts.Part):
     height = PositiveFloat(2.5)
     width = PositiveFloat(16.77)
