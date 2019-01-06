@@ -12,15 +12,12 @@ from cqparts_misc.basic.primatives import Box
 
 from cqparts.search import register
 
+from partref import PartRef
 from .shaft import Shaft
 from .plank import Plank
 
 from . import servo_horns
 
-
-class PartRef(Parameter):
-    def type(self, value):
-        return value
 
 
 class _wing(cqparts.Part):

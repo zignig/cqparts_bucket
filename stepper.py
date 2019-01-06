@@ -223,6 +223,10 @@ class Stepper(motor.Motor):
         co = self.boss_cutout(clearance=clearance)
         lo = part.local_obj.cut((self.world_coords - part.world_coords) + co)
 
+    def mate_tip(self):
+        return Mate(
+            self, CoordSystem(origin=(0, 0,self.shaft_length), xDir=(1, 0, 0), normal=(0, 0, 1))
+        )
 
 if __name__ == "__main__":
     from cqparts.display import display

@@ -7,11 +7,9 @@ from . import flip_box
 from . import box
 from . import pencil_case
 from . import plank
+from turntable import TurnTable
 from rectpack import newPacker, float2dec
 
-fb = flip_box.FlipBox(outset=3, height=50)
-bo = box.Boxen()
-pc = pencil_case.PencilCase(length=200, height=100, width=60, thickness=2.6)
 # fb = plank.Plank()
 
 # makes an array of local objects
@@ -86,9 +84,8 @@ def genSVG(binsize, partDict, rectList, filename):
     SVGexport.exportSVG(wp, filename)
 
 
+fb = TurnTable()
 ex = Extractor(fb)
-ex.scan(fb, "")
-ex.scan(pc, "")
 ex.scan(fb, "")
 parts = ex.get_parts()
 rects = getRects(parts, gap=3)

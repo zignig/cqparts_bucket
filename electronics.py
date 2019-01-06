@@ -13,11 +13,7 @@ from .battery import Battpack
 from .controller import Pizero, PCBBoard, BeagleBoneBlack
 from .mounted_board import MountedBoard
 
-
-class PartRef(Parameter):
-    def type(self, value):
-        return value
-
+from partref import PartRef
 
 class RoverBatt(Battpack):
     countX = Int(5)
@@ -90,6 +86,22 @@ class Electronics(cqparts.Assembly):
             pass
         pass
 
+
+class OtherBatt(Battpack):
+    countX = Int(5)
+    countY = Int(2)
+    countZ = Int(1)
+    batt = PartRef(battery.AA)
+
+class OtherController(MountedBoard):
+    board = PartRef(BeagleBoneBlack)
+
+@register(export="electronics")
+class type1(Electronics):
+    battpack = PartRef(OtherBatt)
+    controller = PartRef(OtherController)
+    motorcontroller = PartRef(MotorController)
+    target = PartRef()  # what the electronics are bound to
 
 if __name__ == "__main__":
     from cqparts.display import display

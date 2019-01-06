@@ -11,3 +11,8 @@ from cqparts.params import Parameter
 class PartRef(Parameter):
     def type(self, value):
         return value
+    
+    @classmethod
+    def serialize(cls,value):
+        return cls.__name__
+        
