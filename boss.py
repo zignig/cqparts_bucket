@@ -24,6 +24,7 @@ class Boss(cqparts.Part):
     shaft_diam = PositiveFloat(5, doc="shaft diameter")
 
     holes = Int(4)
+    hole_radius = PositiveFloat(14, doc="distance from center to hole center")
 
     _render = render_props(color=(50, 50, 50))
 
@@ -37,13 +38,27 @@ class Boss(cqparts.Part):
         )
 
         boss = boss.union(stem)
+        shaft = (
+            cq.Workplane("XY")
+            .circle(self.shaft_diam / 2)
+            .extrude(self.boss_length + self.stem_length)
+            .translate((0, 0, -self.stem_length))
+        )
+        boss = boss.cut(shaft)
         return boss
+
+    def mount_verts(self):
+        holes = (
+            cq.Workplane("XY")
+            .workplane(offset=self.boss_length + 1)
+            .polygon(self.holes, self.hole_radius, forConstruction=True)
+            .vertices()
+        )
+        return holes.objects
 
     def cut_out(self):
         cutout = cq.Workplane("XY").circle(self.diam / 2).extrude(self.length)
         return cutout
-
-    # TODO , mate for shafts
 
     def get_cutout(self, clearance=0):
         " clearance cut out for shaft "

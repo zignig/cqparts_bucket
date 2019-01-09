@@ -161,7 +161,7 @@ class Stepper(motor.Motor):
     def get_shaft(self):
         return self.components["shaft"]
 
-    def mount_points(self):
+    def mount_verts(self):
         " return mount points"
         wp = cq.Workplane("XY")
         h = wp.rect(

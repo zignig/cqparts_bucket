@@ -121,7 +121,10 @@ class TurnTable(box.Boxen):
     def make_components(self):
         comps = super(TurnTable, self).make_components()
         mid = Mid(
-            tab=self.tab, width=self.width, thickness=self.thickness, length=self.length - 2 * self.thickness
+            tab=self.tab,
+            width=self.width,
+            thickness=self.thickness,
+            length=self.length - 2 * self.thickness,
         )
         comps["mid"] = mid
         comps["top"].diameter = self.width * self.coverage

@@ -15,10 +15,7 @@ from cqparts_fasteners.params import HeadType, DriveType, ThreadType
 from .controller import Pizero, BeagleBoneBlack, Arduino
 from .plank import Plank
 
-
-class PartRef(Parameter):
-    def type(self, value):
-        return value
+from partref import PartRef
 
 
 @register(export="board")
