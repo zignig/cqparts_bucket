@@ -219,6 +219,9 @@ class Stepper(motor.Motor):
         bc = cq.Workplane("XY").circle(self.boss_size / 2).extrude(self.shaft_length)
         return bc
 
+    def cutout(self, part):
+        self.boss_cutout(part)
+
     def cut_boss(self, part, clearance=0):
         co = self.boss_cutout(clearance=clearance)
         lo = part.local_obj.cut((self.world_coords - part.world_coords) + co)

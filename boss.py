@@ -56,17 +56,9 @@ class Boss(cqparts.Part):
         )
         return holes.objects
 
-    def cut_out(self):
+    def cutout(self):
         cutout = cq.Workplane("XY").circle(self.diam / 2).extrude(self.length)
         return cutout
-
-    def get_cutout(self, clearance=0):
-        " clearance cut out for shaft "
-        return (
-            cq.Workplane("XY", origin=(0, 0, 0))
-            .circle((self.diam / 2) + clearance)
-            .extrude(self.length * 2)
-        )
 
     def mate_top(self, offset=0):
         return Mate(

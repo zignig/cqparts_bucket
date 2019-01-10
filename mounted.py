@@ -90,6 +90,7 @@ class Mounted(cqparts.Assembly):
         base = self.components["base"]
         # for i, j in enumerate(base.mount_verts()):
         #    self.components[self.screw_name(i)].cutout(part=self.base)
+        self.base.cutout(self.target)
         if self.target is not None:
             for i, j in enumerate(base.mount_verts()):
                 p = self.components[self.screw_name(i)]
@@ -106,7 +107,7 @@ class Mounted(cqparts.Assembly):
 class _DemoMount(cqparts.Assembly):
     def make_components(self):
         p = Plank(height=2.5)
-        return {"m": Mounted(target=p), "p": p}
+        return {"m": Mounted(base=Stepper(), target=p), "p": p}
 
     def make_constraints(self):
         return [
