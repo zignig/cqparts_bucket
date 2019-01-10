@@ -16,6 +16,7 @@ from partref import PartRef
 
 from boss import Boss
 from stepper import Stepper
+from plank import Plank
 
 
 class SmallScrew(Screw):
@@ -32,7 +33,7 @@ class SmallScrew(Screw):
         doc="thread type and parameters",
     )
     neck_length = PositiveFloat(0, doc="length of neck")
-    length = PositiveFloat(5, doc="screw's length")
+    length = PositiveFloat(10, doc="screw's length")
     tip_length = PositiveFloat(0, doc="length of taper on a pointed tip")
 
 
@@ -68,14 +69,32 @@ class Mounted(cqparts.Assembly):
             ),
         return constr
 
+    def target_cut_out(self, X, Y,Z, part, target):
+        coord = CoordSystem(
+            origin=(X, Y, Z), xDir=(1, 0, 0), normal=(0, 0, 1)
+        )
+        # cut the screw from the mount
+        try:
+            this = self.components['base'].local_obj
+            this.cut((coord) + part.make_cutter())
+        except:
+            pass
+        # cut the screw from the target
+        wc = target.world_obj
+        target.local_obj.cut(
+            (self.world_coords + coord - target.world_coords) + part.make_cutter()
+        )
+
     def make_alterations(self):
         base = self.components["base"]
-        print(self)
         # for i, j in enumerate(base.mount_verts()):
         #    self.components[self.screw_name(i)].cutout(part=self.base)
         if self.target is not None:
             for i, j in enumerate(base.mount_verts()):
-                self.components[self.screw_name(i)].make_cutout(part=self.target)
+                p = self.components[self.screw_name(i)]
+                self.target_cut_out(j.X,j.Y,j.Z,p,self.target)
+
+
 
     # put the board across
     def mate_transverse(self):
@@ -84,10 +103,22 @@ class Mounted(cqparts.Assembly):
         )
 
 
+# positioned mount for target testing
+class _DemoMount(cqparts.Assembly):
+    def make_components(self):
+        p = Plank(height=2.5)
+        return {"m": Mounted(target=p), "p": p}
+
+    def make_constraints(self):
+        return [
+            Fixed(self.components["p"].mate_origin),
+            Coincident(self.components["m"].mate_origin, self.components["p"].mate_bottom),
+        ]
 if __name__ == "__main__":
     from cqparts.display import display
 
     # p = MountedBoard(board=Pizero)
     # p = MountedBoard(board=BeagleBoneBlack)
-    p = Mounted()
+    #p = Mounted()
+    p = _DemoMount()
     display(p)

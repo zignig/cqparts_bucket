@@ -50,7 +50,7 @@ class Boss(cqparts.Part):
     def mount_verts(self):
         holes = (
             cq.Workplane("XY")
-            .workplane(offset=self.boss_length + 1)
+            .workplane(offset=self.boss_length)
             .polygon(self.holes, self.hole_radius, forConstruction=True)
             .vertices()
         )

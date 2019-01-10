@@ -16,6 +16,8 @@ from .boss import Boss
 from .stepper import Stepper
 from .mounted import Mounted
 
+from plank import Plank
+
 
 class T2(box._Tab):
     count = Int(5)
@@ -24,6 +26,7 @@ class T2(box._Tab):
 class Disc(box.Top):
     clearance = PositiveFloat(1.5)
     diameter = PositiveFloat(20)
+    thickness = PositiveFloat(4)
 
     _render = render_props(color=(100, 100, 70))
 
@@ -51,9 +54,9 @@ class DiscDrive(cqparts.Assembly):
 
     def make_components(self):
         disc  = self.disc(diameter=self.diameter)
-        boss_mount = Mounted(base=self.boss)
-        #motor_mount = Mounted(base=self.motor)
-        motor_mount = self.motor()
+        boss_mount = Mounted(base=self.boss,target=disc)
+        motor_mount = Mounted(base=self.motor,target=self.mount)
+        #motor_mount = self.motor()
         comps = {
             "disc": disc,
             "boss": boss_mount,
@@ -160,8 +163,8 @@ class TurnTable(box.Boxen):
 if __name__ == "__main__":
     from cqparts.display import display
 
-    FB = TurnTable()
+    #FB = TurnTable()
     # FB = Mid(thickness=3)
     # FB = Disc()
-    #FB = DiscDrive(diameter=100)
+    FB = DiscDrive(diameter=60)
     display(FB)
