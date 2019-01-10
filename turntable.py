@@ -1,5 +1,5 @@
 """
-Turntable for scanning 
+Turntable for scanning
 """
 
 import cadquery as cq
@@ -14,6 +14,7 @@ from . import box
 from .partref import PartRef
 from .boss import Boss
 from .stepper import Stepper
+from .mounted import Mounted
 
 
 class T2(box._Tab):
@@ -49,11 +50,14 @@ class DiscDrive(cqparts.Assembly):
     offset = PositiveFloat()
 
     def make_components(self):
-        boss = self.boss()
+        disc  = self.disc(diameter=self.diameter)
+        boss_mount = Mounted(base=self.boss)
+        #motor_mount = Mounted(base=self.motor)
+        motor_mount = self.motor()
         comps = {
-            "disc": self.disc(diameter=self.diameter),
-            "boss": boss,
-            "motor": self.motor(),
+            "disc": disc,
+            "boss": boss_mount,
+            "motor": motor_mount
         }
         self.offset = 10
         return comps
@@ -63,8 +67,8 @@ class DiscDrive(cqparts.Assembly):
         disc = self.components["disc"]
         boss = self.components["boss"]
         motor = self.components["motor"]
-        const.append(Coincident(boss.mate_top(), disc.mate_origin))
-        const.append(Coincident(motor.mate_tip(), boss.mate_top()))
+        const.append(Coincident(boss.mate_origin, disc.mate_origin))
+        const.append(Coincident(motor.mate_origin, boss.mate_origin))
         const.append(Fixed(disc.mate_top()))
         if self.mount is not None:
             const.append(Coincident(self.mount.mate_origin, motor.mate_origin))
@@ -159,5 +163,5 @@ if __name__ == "__main__":
     FB = TurnTable()
     # FB = Mid(thickness=3)
     # FB = Disc()
-    # FB = DiscDrive(diameter=100)
+    #FB = DiscDrive(diameter=100)
     display(FB)

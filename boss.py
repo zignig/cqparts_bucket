@@ -29,12 +29,12 @@ class Boss(cqparts.Part):
     _render = render_props(color=(50, 50, 50))
 
     def make(self):
-        boss = cq.Workplane("XY").circle(self.boss_diam / 2).extrude(self.boss_length)
+        boss = cq.Workplane("XY").circle(self.boss_diam / 2).extrude(-self.boss_length)
         stem = (
             cq.Workplane("XY")
             .circle(self.stem_diam / 2)
             .extrude(self.stem_length)
-            .translate((0, 0, -self.stem_length))
+            .translate((0, 0, -(self.boss_length+self.stem_length)))
         )
 
         boss = boss.union(stem)
@@ -42,7 +42,7 @@ class Boss(cqparts.Part):
             cq.Workplane("XY")
             .circle(self.shaft_diam / 2)
             .extrude(self.boss_length + self.stem_length)
-            .translate((0, 0, -self.stem_length))
+            .translate((0, 0, -(self.boss_length+self.stem_length)))
         )
         boss = boss.cut(shaft)
         return boss
