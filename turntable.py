@@ -43,26 +43,23 @@ class Disc(box.Top):
         )
 
 
+@register(export="showcase")
 class DiscDrive(cqparts.Assembly):
     disc = PartRef(Disc)
     boss = PartRef(Boss)
     motor = PartRef(Stepper)
     mount = PartRef()
-    diameter = PositiveFloat(400)
-
-    offset = PositiveFloat()
+    diameter = PositiveFloat(40)
+    thickness = PositiveFloat(3)
 
     def make_components(self):
-        disc  = self.disc(diameter=self.diameter)
-        boss_mount = Mounted(base=self.boss,target=disc)
-        motor_mount = Mounted(base=self.motor,target=self.mount)
-        #motor_mount = self.motor()
-        comps = {
-            "disc": disc,
-            "boss": boss_mount,
-            "motor": motor_mount
-        }
-        self.offset = 10
+        motor = self.motor()
+        disc = self.disc(diameter=self.diameter, thickness=self.thickness)
+        self.sl = motor.shaft_length + disc.thickness
+        boss_mount = Mounted(base=self.boss(), target=disc)
+        motor_mount = Mounted(base=motor)  # , target=self.mount)
+        # motor_mount = self.motor()
+        comps = {"disc": disc, "boss": boss_mount, "motor": motor_mount}
         return comps
 
     def make_constraints(self):
@@ -70,14 +67,19 @@ class DiscDrive(cqparts.Assembly):
         disc = self.components["disc"]
         boss = self.components["boss"]
         motor = self.components["motor"]
-        const.append(Coincident(boss.mate_origin, disc.mate_origin))
-        const.append(Coincident(motor.mate_origin, boss.mate_origin))
+
         const.append(Fixed(disc.mate_top()))
-        if self.mount is not None:
-            const.append(Coincident(self.mount.mate_origin, motor.mate_origin))
+        const.append(Coincident(boss.mate_origin, disc.mate_origin))
+        # const.append(Coincident(motor.mate_origin, boss.mate_origin))
+        const.append(Fixed(motor.mate_origin, CoordSystem(origin=(0, 0, -self.sl))))
+        # const.append(Fixed(boss.mate_origin))
+
+        # if self.mount is not None:
+        const.append(Coincident(self.mount.mate_origin, motor.mate_origin))
         return const
 
     def make_alterations(self):
+        return
         if self.mount is not None:
             stepper = self.components["motor"]
             mount = self.mount
@@ -136,7 +138,9 @@ class TurnTable(box.Boxen):
         comps["mid"] = mid
         comps["top"].diameter = self.width * self.coverage
         comps["drive"] = self.drive(
-            mount=mid, diameter=self.width * self.coverage - self.clearance
+            mount=mid,
+            thickness=self.thickness,
+            diameter=self.width * self.coverage - self.clearance,
         )
         return comps
 
@@ -144,6 +148,7 @@ class TurnTable(box.Boxen):
         const = super(TurnTable, self).make_constraints()
         top = self.components["top"]
         drive = self.components["drive"]
+        mid = self.components["mid"]
         const.append(Coincident(drive.mate_origin, top.mate_top()))
         return const
 
@@ -160,11 +165,27 @@ class TurnTable(box.Boxen):
         right.cutter(mid)
 
 
+# positioned mount for target testing
+class _DemoDrive(cqparts.Assembly):
+    def make_components(self):
+        p = Plank(height=2.5)
+        return {"m": DiscDrive(mount=p), "p": p}
+
+    def make_constraints(self):
+        return [
+            Fixed(self.components["p"].mate_origin),
+            Coincident(
+                self.components["m"].mate_origin, self.components["p"].mate_bottom
+            ),
+        ]
+
+
 if __name__ == "__main__":
     from cqparts.display import display
 
-    #FB = TurnTable()
-    # FB = Mid(thickness=3)
     # FB = Disc()
-    FB = DiscDrive(diameter=60)
+    # FB = Mid(thickness=3)
+    # FB = DiscDrive(diameter=60)
+    FB = TurnTable()
+    # FB = _DemoDrive()
     display(FB)

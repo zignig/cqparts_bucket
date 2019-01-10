@@ -23,8 +23,8 @@ class Boss(cqparts.Part):
 
     shaft_diam = PositiveFloat(5, doc="shaft diameter")
 
-    holes = Int(4)
     hole_radius = PositiveFloat(14, doc="distance from center to hole center")
+    holes = Int(4, doc="number of holes in circle")
 
     _render = render_props(color=(50, 50, 50))
 
@@ -34,7 +34,7 @@ class Boss(cqparts.Part):
             cq.Workplane("XY")
             .circle(self.stem_diam / 2)
             .extrude(self.stem_length)
-            .translate((0, 0, -(self.boss_length+self.stem_length)))
+            .translate((0, 0, -(self.boss_length + self.stem_length)))
         )
 
         boss = boss.union(stem)
@@ -42,7 +42,7 @@ class Boss(cqparts.Part):
             cq.Workplane("XY")
             .circle(self.shaft_diam / 2)
             .extrude(self.boss_length + self.stem_length)
-            .translate((0, 0, -(self.boss_length+self.stem_length)))
+            .translate((0, 0, -(self.boss_length + self.stem_length)))
         )
         boss = boss.cut(shaft)
         return boss
