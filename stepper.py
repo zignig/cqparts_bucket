@@ -220,7 +220,7 @@ class Stepper(motor.Motor):
         return bc
 
     def cutout(self, part):
-        self.boss_cutout(part)
+        self.cut_boss(part)
 
     def cut_boss(self, part, clearance=0):
         co = self.boss_cutout(clearance=clearance)

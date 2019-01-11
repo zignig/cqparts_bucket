@@ -57,8 +57,7 @@ class DiscDrive(cqparts.Assembly):
         disc = self.disc(diameter=self.diameter, thickness=self.thickness)
         self.sl = motor.shaft_length + disc.thickness
         boss_mount = Mounted(base=self.boss(), target=disc)
-        motor_mount = Mounted(base=motor)  # , target=self.mount)
-        # motor_mount = self.motor()
+        motor_mount = Mounted(base=motor, target=self.mount)
         comps = {"disc": disc, "boss": boss_mount, "motor": motor_mount}
         return comps
 
@@ -75,7 +74,7 @@ class DiscDrive(cqparts.Assembly):
         # const.append(Fixed(boss.mate_origin))
 
         # if self.mount is not None:
-        const.append(Coincident(self.mount.mate_origin, motor.mate_origin))
+        const.append(Coincident(self.mount.mate_origin,motor.mate_origin))
         return const
 
     def make_alterations(self):
@@ -174,9 +173,6 @@ class _DemoDrive(cqparts.Assembly):
     def make_constraints(self):
         return [
             Fixed(self.components["p"].mate_origin),
-            Coincident(
-                self.components["m"].mate_origin, self.components["p"].mate_bottom
-            ),
         ]
 
 
@@ -186,6 +182,6 @@ if __name__ == "__main__":
     # FB = Disc()
     # FB = Mid(thickness=3)
     # FB = DiscDrive(diameter=60)
-    FB = TurnTable()
-    # FB = _DemoDrive()
+    #FB = TurnTable()
+    FB = _DemoDrive()
     display(FB)

@@ -56,9 +56,8 @@ class Boss(cqparts.Part):
         )
         return holes.objects
 
-    def cutout(self):
-        cutout = cq.Workplane("XY").circle(self.diam / 2).extrude(self.length)
-        return cutout
+    def cutout(self,part):
+        return None
 
     def mate_top(self, offset=0):
         return Mate(

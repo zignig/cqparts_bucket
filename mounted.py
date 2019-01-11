@@ -86,12 +86,16 @@ class Mounted(cqparts.Assembly):
             (self.world_coords + coord - target.world_coords) + part.make_cutter()
         )
 
+    def mate_base(self):
+        return self.base.mate_origin
+
+
     def make_alterations(self):
         base = self.components["base"]
         # for i, j in enumerate(base.mount_verts()):
         #    self.components[self.screw_name(i)].cutout(part=self.base)
-        self.base.cutout(self.target)
         if self.target is not None:
+            self.base.cutout(self.target)
             for i, j in enumerate(base.mount_verts()):
                 p = self.components[self.screw_name(i)]
                 self.target_cut_out(j.X, j.Y, j.Z, p, self.target)
