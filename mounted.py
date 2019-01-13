@@ -8,6 +8,7 @@ from cqparts.display import render_props, display
 
 from cqparts.search import register
 from cqparts_fasteners.male import MaleFastenerPart
+from cqparts_fasteners.utils import VectorEvaluator
 
 from cqparts_fasteners.fasteners.screw import Screw
 from cqparts_fasteners.params import HeadType, DriveType, ThreadType
@@ -64,6 +65,9 @@ class Mounted(cqparts.Assembly):
         base = self.components["base"]
         constr = [Fixed(base.mate_origin)]
         for i, j in enumerate(base.mount_verts()):
+            # TODO covert to a Vector Evealuator
+            # v = VectorEvaluator([self.target],j).perform_evaluation()
+            # print(v)
             m = Mate(
                 self,
                 CoordSystem(origin=(j.X, j.Y, j.Z), xDir=(1, 0, 0), normal=(0, 0, 1)),
@@ -71,9 +75,7 @@ class Mounted(cqparts.Assembly):
             constr.append(
                 Coincident(self.components[self.screw_name(i)].mate_origin, m)
             ),
-        constr.append(
-            Coincident(self.target.mate_origin,base.mate_origin)
-        ),
+        constr.append(Coincident(self.target.mate_origin, base.mate_origin)),
         return constr
 
     def target_cut_out(self, X, Y, Z, part, target):
@@ -91,7 +93,6 @@ class Mounted(cqparts.Assembly):
 
     def mate_base(self):
         return self.base.mate_origin
-
 
     def make_alterations(self):
         base = self.components["base"]
@@ -114,12 +115,10 @@ class Mounted(cqparts.Assembly):
 class _DemoMount(cqparts.Assembly):
     def make_components(self):
         p = Plank(height=2.5)
-        return {"m": Mounted(base=Stepper(), target=p), "p": p}
+        return {"m": Mounted(base=Boss(), target=p), "p": p}
 
     def make_constraints(self):
-        return [
-            Fixed(self.components["m"].mate_origin),
-        ]
+        return [Fixed(self.components["m"].mate_origin)]
 
 
 if __name__ == "__main__":

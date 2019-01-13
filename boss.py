@@ -50,13 +50,12 @@ class Boss(cqparts.Part):
     def mount_verts(self):
         holes = (
             cq.Workplane("XY")
-            .workplane(offset=self.boss_length)
             .polygon(self.holes, self.hole_radius, forConstruction=True)
             .vertices()
         )
         return holes.objects
 
-    def cutout(self,part):
+    def cutout(self, part):
         return None
 
     def mate_top(self, offset=0):
