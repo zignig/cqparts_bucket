@@ -52,10 +52,13 @@ class DiscDrive(cqparts.Assembly):
     diameter = PositiveFloat(40)
     thickness = PositiveFloat(3)
 
+    def initialze_parameters(self):
+        pass
+
     def make_components(self):
         motor = self.motor()
+        self.sl = motor.shaft_length + self.thickness
         disc = self.disc(diameter=self.diameter, thickness=self.thickness)
-        self.sl = motor.shaft_length + disc.thickness
         boss_mount = Mounted(base=self.boss(), target=disc)
         motor_mount = Mounted(base=motor, target=self.mount)
         comps = {"disc": disc, "boss": boss_mount, "motor": motor_mount}
@@ -66,7 +69,6 @@ class DiscDrive(cqparts.Assembly):
         disc = self.components["disc"]
         boss = self.components["boss"]
         motor = self.components["motor"]
-
         const.append(Fixed(disc.mate_top()))
         const.append(Coincident(boss.mate_origin, disc.mate_origin))
         # const.append(Coincident(motor.mate_origin, boss.mate_origin))
@@ -82,12 +84,20 @@ class DiscDrive(cqparts.Assembly):
         if self.mount is not None:
             stepper = self.components["motor"]
             mount = self.mount
-            stepper.cut_boss(mount, clearance=0.1)
 
     def motor_offset(self):
         a = self.components["disc"].mate_origin.world_coords
         return a
 
+    def mate_motor(self):
+        motor = self.components["motor"]
+        sl = motor.shaft_length + self.thickness
+        return Mate(
+            self,
+            CoordSystem(
+                origin=(0, 0,sl), xDir=(1, 0, 0), normal=(0, 0, 1)
+            ),
+        )
 
 class Top(box.Top):
     clearance = PositiveFloat(1.5)
@@ -148,6 +158,8 @@ class TurnTable(box.Boxen):
         top = self.components["top"]
         drive = self.components["drive"]
         mid = self.components["mid"]
+        #const.append(Fixed(mid.mate_origin))
+        #const.append(Coincident(mid.mate_origin, drive.mate_motor()))
         const.append(Coincident(drive.mate_origin, top.mate_top()))
         return const
 
@@ -172,7 +184,7 @@ class _DemoDrive(cqparts.Assembly):
 
     def make_constraints(self):
         return [
-            Fixed(self.components["p"].mate_origin),
+            Fixed(self.components["m"].mate_origin),
         ]
 
 
@@ -182,6 +194,6 @@ if __name__ == "__main__":
     # FB = Disc()
     # FB = Mid(thickness=3)
     # FB = DiscDrive(diameter=60)
-    #FB = TurnTable()
-    FB = _DemoDrive()
+    FB = TurnTable()
+    #FB = _DemoDrive()
     display(FB)

@@ -71,6 +71,9 @@ class Mounted(cqparts.Assembly):
             constr.append(
                 Coincident(self.components[self.screw_name(i)].mate_origin, m)
             ),
+        constr.append(
+            Coincident(self.target.mate_origin,base.mate_origin)
+        ),
         return constr
 
     def target_cut_out(self, X, Y, Z, part, target):
@@ -115,10 +118,7 @@ class _DemoMount(cqparts.Assembly):
 
     def make_constraints(self):
         return [
-            Fixed(self.components["p"].mate_origin),
-            Coincident(
-                self.components["m"].mate_origin, self.components["p"].mate_bottom
-            ),
+            Fixed(self.components["m"].mate_origin),
         ]
 
 
