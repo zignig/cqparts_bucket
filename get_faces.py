@@ -1,5 +1,6 @@
 import cadquery as cq
 import cqparts
+import math
 from collections import OrderedDict
 
 from xml.etree import ElementTree as et
@@ -7,21 +8,26 @@ from xml.etree import ElementTree as et
 import FreeCAD
 from . import flip_box
 from . import box
-from . import plank
+from .plank  import Plank
 from . import robot_base
+from . import servo
+from manufacture import Lasercut
+from turntable import TurnTable
+from flip_box import FlipBox
 
-fb = flip_box.FlipBox(outset=4)
+#fb = flip_box.FlipBox(outset=4)
+fb = TurnTable()
 # fb = plank.Plank()
 # fb = box.Boxen(outset=4)
 # makes an array of local objects
 class Extractor(cqparts.Assembly):
-    def __init__(self, obj):
+    def __init__(self):
         # for duplicate names
         self.track = {}
         self.parts = OrderedDict()
 
     def scan(self, obj, name):
-        if isinstance(obj, cqparts.Part):
+        if isinstance(obj, Lasercut):
             if name in self.track:
                 actual_name = name + "_%03i" % self.track[name]
                 self.track[name] += 1
@@ -44,31 +50,83 @@ class Extractor(cqparts.Assembly):
         return self.parts
 
 
-ex = Extractor(fb)
-ex.scan(fb, "")
-parts = ex.get_parts()
+#fb = Plank(width=200,fillet=2)
+#fb = servo._MountedServo()
+fb = FlipBox(outset=4).components['right']
 
+ex = Extractor()
+ex.scan(fb, "")
+ex.show()
+parts = ex.get_parts()
+paths = []
+print(dir(paths))
 for i in parts:
     print(i)
     face = parts[i].local_obj.faces("<Z")
-    edges = face.val().Edges()
     w = face.val().wrapped.Wires
+    path = ""
     for q in w:
         # corrects the ordering
         q.fixWire()
         e = q.Edges
         print(q, q.isClosed())
+        start = True
+        fx = 0
+        fy = 0
         for j in e:
+            print("-----")
             the_edge = j
             edge_type = type(the_edge.Curve).__name__
             c = the_edge.Curve
             if edge_type == "GeomLineSegment":
-                print("LINE", c.StartPoint, c.EndPoint)
+                print("LINE", c.EndPoint, c.StartPoint)
+                ex = c.StartPoint.x
+                ey = c.StartPoint.y
+                sx = c.EndPoint.x
+                sy = c.EndPoint.y
+                if start:
+                    start = False
+                    path = path + "M "+str(sx)+" "+str(sy)+"\n"
+                    path = path + "L "+str(ex)+" "+str(ey)+"\n"
+                    fx = sx
+                    fy = sy
+                else:
+                    path = path + "L "+str(ex)+" "+str(ey)+"\n"
+
             elif edge_type == "GeomCircle":
-                print("CIRCLE", c.Radius, c.Center, the_edge.ParameterRange)
+                print("svg arc are hard")
+                print("CIRCLE", c.Radius, c.Center, the_edge.ParameterRange) 
+                print(dir(c))
+                x = c.Center.x
+                y = c.Center.y
+                sa = the_edge.ParameterRange[0]
+                ea = the_edge.ParameterRange[1]
+                r = c.Radius
+                print(x,y,sa,ea)
+                sx = x - math.sin(sa)*r 
+                sy = y - math.cos(sa)*r
+                ex = x - math.sin(ea)*r 
+                ey = y - math.cos(ea)*r 
+                print(sx,sy,ex,ey)
+                laf = 0 # large arc flag
+                sw = 0 
+                if start:
+                    start = False
+                    path = path + "M "+str(ex)+" "+str(ey)+"\n"
+                    #path = path + "L "+ str(sx) + " " + str(sy)+"\n"
+                    fx = sx
+                    fy = sy
+                #else:
+                #    path = path + "L "+ str(sx) + " " + str(sy)+"\n"
+                
+                path = path + "A " +str(r) + " "+str(r)+" 0 " + "  "+ str(laf) + " " + str(sw) + " " + str(sx) + " " + str(sy)+ "\n" 
+        
+        path = path + "L "+ str(fx) + " " + str(fy)+"\n"
+        #path = path + 'Z\n '
+    print(path)
+    paths.append(path)
 
-
-def gen_svg():
+def gen_svg(paths):
     doc = et.Element(
         "svg",
         width="480mm",
@@ -77,11 +135,15 @@ def gen_svg():
         xmlns="http://www.w3.org/2000/svg",
     )
     # ElementTree 1.2 doesn't write the SVG file header errata, so do that manually
-    et.SubElement(doc, "circle", cx="240", cy="180", r="160", fill="rgb(255, 192, 192)")
-    f = open("/var/www/html/sample.svg", "w")
+    g = et.SubElement(doc,"g",id="bob",transform="translate(150 150)")
+    for i in paths:
+        a = et.SubElement(g, "path", d=i, fill="rgb(128,128,128)",stroke="black")#, fill="rgb(20,20,20)")
+        a.set("stroke-width","0.2")
+    f = open("/opt/cqparts.github.io/box.svg", "w")
     f.write('<?xml version="1.0" standalone="no"?>\n')
     f.write(et.tostring(doc))
     f.close()
+    print(et.tostring(doc))
 
 
-gen_svg()
+gen_svg(paths)

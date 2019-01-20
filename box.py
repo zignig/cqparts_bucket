@@ -12,6 +12,7 @@ from cqparts.constraint import Mate
 from cqparts.utils.geometry import CoordSystem
 
 from cqparts.search import register
+from .manufacture import Lasercut
 
 # TODO
 # mounting for bolts and nuts
@@ -48,7 +49,7 @@ class _Tab(cqparts.Part):
         pass
 
 
-class _Sheet(cqparts.Part):
+class _Sheet(Lasercut):
     length = PositiveFloat(50)
     width = PositiveFloat(70)
     thickness = PositiveFloat(3)

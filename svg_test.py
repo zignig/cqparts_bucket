@@ -9,6 +9,7 @@ from . import pencil_case
 from . import plank
 from turntable import TurnTable
 from rectpack import newPacker, float2dec
+from .manufacture import Lasercut
 
 # fb = plank.Plank()
 
@@ -20,7 +21,8 @@ class Extractor(cqparts.Assembly):
         self.parts = OrderedDict()
 
     def scan(self, obj, name):
-        if isinstance(obj, cqparts.Part):
+        if isinstance(obj, Lasercut):
+            print(obj)
             if name in self.track:
                 actual_name = name + "_%03i" % self.track[name]
                 self.track[name] += 1
@@ -84,7 +86,7 @@ def genSVG(binsize, partDict, rectList, filename):
     SVGexport.exportSVG(wp, filename)
 
 
-fb = TurnTable()
+fb = TurnTable(width=90,length=90)
 ex = Extractor(fb)
 ex.scan(fb, "")
 parts = ex.get_parts()
@@ -94,10 +96,11 @@ print("RECTS")
 for r in rects:
     print(r)
     p.add_rect(*r)
-bins = [(500, 600)]
+bins = [(1024,1024)]
 for b in bins:
     p.add_bin(*b, count=10)
 p.pack()
 rects = p.rect_list()
+print(rects)
 print("LAYOUT")
 genSVG(bins[0], parts, rects, "box.svg")
