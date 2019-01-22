@@ -8,13 +8,16 @@ from manufacture import Lasercut, Printable
 
 # makes an array of local objects
 class Extractor:
-    def __init__(self,manufacture=[Lasercut,Printable]):
+    def __init__(self,breakout=[Lasercut,Printable]):
         # for duplicate names
         self.track = {}
         self.parts = OrderedDict()
         self.breakout = OrderedDict()
-        for i in manufacture:
-            self.breakout[i.__name__] = i
+        for i in breakout:
+            section = i.__name__
+            self.breakout[section] = i
+            self.parts[section] = OrderedDict()
+        self.parts['default'] = OrderedDict()
 
     def scan(self, obj, name):
         if isinstance(obj, cqparts.Part):
@@ -24,7 +27,11 @@ class Extractor:
             else:
                 self.track[name] = 1
                 actual_name = name
-            self.parts[actual_name] = obj
+            for i,j in self.breakout.items():
+                if isinstance(obj,j):
+                    self.parts[i][actual_name] = obj
+                    return
+                self.parts['default'][actual_name] = obj
 
         if isinstance(obj, cqparts.Assembly):
             for i in obj.components:
