@@ -12,6 +12,7 @@ from cqparts.constraint import Mate
 from cqparts.utils.geometry import CoordSystem
 from cqparts.search import register
 
+from .manufacture import Lasercut
 from .motor_mount import MountedStepper
 from cqparts_motors.stepper import Stepper
 from .mercanum import MercanumWheel
@@ -25,7 +26,7 @@ class PartRef(Parameter):
         return value
 
 
-class RobotBase(cqparts.Part):
+class RobotBase(Lasercut):
     length = PositiveFloat(250)
     width = PositiveFloat(240)
     thickness = PositiveFloat(6)

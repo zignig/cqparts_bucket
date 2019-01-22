@@ -16,7 +16,9 @@ from cqparts.utils import CoordSystem
 from cqparts_fasteners.fasteners.screw import Screw
 from cqparts_fasteners.fasteners.base import Fastener
 from cqparts_fasteners.utils import VectorEvaluator, Selector, Applicator
+from .manufacture import Printable
 from cqparts.search import register
+from .partref import PartRef
 
 # Make a new one
 # NewCase = Case(explode=0,width=20,length=50,height=30,screw=ThisScrew)
@@ -94,14 +96,9 @@ class ThisFastener(Fastener):
                 effect.part.local_obj = effect.part.local_obj.cut(local_cutter)
 
 
-# A parameter class for passing around the screw
-class PartRef(Parameter):
-    def type(self, value):
-        return value
-
 
 # The Base part for building the case
-class _Case(cqparts.Part):
+class _Case(Printable):
     height = PositiveFloat(10)
     width = PositiveFloat(12.4)
     length = PositiveFloat(22.8)
