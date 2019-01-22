@@ -190,6 +190,6 @@ if __name__ == "__main__":
     # FB = Disc()
     # FB = Mid(thickness=3)
     # FB = DiscDrive(diameter=60)
-    # FB = TurnTable()
-    FB = _DemoDrive()
+    FB = TurnTable()
+    #FB = _DemoDrive()
     display(FB)

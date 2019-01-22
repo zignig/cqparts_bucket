@@ -13,13 +13,13 @@ from manufacture import Lasercut
 class Plank(Box,Lasercut):
     length = PositiveFloat(90)
     width = PositiveFloat(90)
-    height = PositiveFloat(6)
+    thickness = PositiveFloat(6)
     _render = render_props(template="wood")
     fillet = PositiveFloat(0)
 
     def make(self):
-        pl = cq.Workplane("XY").box(self.length, self.width, self.height)
-        pl = pl.translate((0, 0, self.height / 2))
+        pl = cq.Workplane("XY").box(self.length, self.width, self.thickness)
+        pl = pl.translate((0, 0, self.thickness / 2))
         if self.fillet > 0:
             pl = pl.edges("|Z").fillet(self.fillet)
         return pl

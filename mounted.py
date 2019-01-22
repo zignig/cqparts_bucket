@@ -64,18 +64,16 @@ class Mounted(cqparts.Assembly):
     def make_constraints(self):
         base = self.components["base"]
         constr = [Fixed(base.mate_origin)]
+        constr.append(Coincident(self.target.mate_origin, base.mate_origin)),
         for i, j in enumerate(base.mount_verts()):
             # TODO covert to a Vector Evealuator
-            # v = VectorEvaluator([self.target],j).perform_evaluation()
-            # print(v)
             m = Mate(
                 self,
-                CoordSystem(origin=(j.X, j.Y, j.Z), xDir=(1, 0, 0), normal=(0, 0, 1)),
+                CoordSystem(origin=(j.X, j.Y, j.Z+self.target.thickness), xDir=(1, 0, 0), normal=(0, 0, 1)),
             )
             constr.append(
                 Coincident(self.components[self.screw_name(i)].mate_origin, m)
             ),
-        constr.append(Coincident(self.target.mate_origin, base.mate_origin)),
         return constr
 
     def target_cut_out(self, X, Y, Z, part, target):
