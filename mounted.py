@@ -100,7 +100,7 @@ class Mounted(cqparts.Assembly):
             self.base.cutout(self.target)
             for i, j in enumerate(base.mount_verts()):
                 p = self.components[self.screw_name(i)]
-                self.target_cut_out(j.X, j.Y, j.Z, p, self.target)
+                self.target_cut_out(j.X, j.Y, j.Z+self.target.thickness, p, self.target)
 
     # put the board across
     def mate_transverse(self):
