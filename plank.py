@@ -10,7 +10,7 @@ from cqparts.display import render_props
 from manufacture import Lasercut
 
 
-class Plank(Box,Lasercut):
+class Plank(Box, Lasercut):
     length = PositiveFloat(90)
     width = PositiveFloat(90)
     thickness = PositiveFloat(6)

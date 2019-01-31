@@ -96,7 +96,6 @@ class ThisFastener(Fastener):
                 effect.part.local_obj = effect.part.local_obj.cut(local_cutter)
 
 
-
 # The Base part for building the case
 class _Case(Printable):
     height = PositiveFloat(10)

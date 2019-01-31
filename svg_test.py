@@ -86,7 +86,7 @@ def genSVG(binsize, partDict, rectList, filename):
     SVGexport.exportSVG(wp, filename)
 
 
-fb = TurnTable(width=90,length=90)
+fb = TurnTable(width=90, length=90)
 ex = Extractor(fb)
 ex.scan(fb, "")
 parts = ex.get_parts()
@@ -96,7 +96,7 @@ print("RECTS")
 for r in rects:
     print(r)
     p.add_rect(*r)
-bins = [(1024,1024)]
+bins = [(1024, 1024)]
 for b in bins:
     p.add_bin(*b, count=10)
 p.pack()

@@ -10,7 +10,7 @@ from cqparts.constraint import Fixed, Coincident, Mate
 from cqparts.utils.geometry import CoordSystem
 from cqparts.display import render_props, display
 
-from cqparts_fasteners.bolts import Bolt 
+from cqparts_fasteners.bolts import Bolt
 from cqparts_fasteners.params import HeadType, DriveType, ThreadType
 
 from . import box
@@ -23,6 +23,7 @@ from .plank import Plank
 
 class StepperBolt(Bolt):
     length = PositiveFloat(15)
+
 
 class T2(box._Tab):
     count = Int(5)
@@ -65,7 +66,7 @@ class DiscDrive(cqparts.Assembly):
         self.sl = motor.shaft_length + self.thickness
         disc = self.disc(diameter=self.diameter, thickness=self.thickness)
         boss_mount = Mounted(base=self.boss(), target=disc)
-        motor_mount = Mounted(base=motor,screw=StepperBolt, target=self.mount)
+        motor_mount = Mounted(base=motor, screw=StepperBolt, target=self.mount)
         comps = {"disc": disc, "boss": boss_mount, "motor": motor_mount}
         return comps
 
@@ -196,5 +197,5 @@ if __name__ == "__main__":
     # FB = Mid(thickness=3)
     # FB = DiscDrive(diameter=60)
     FB = TurnTable()
-    #FB = _DemoDrive()
+    # FB = _DemoDrive()
     display(FB)

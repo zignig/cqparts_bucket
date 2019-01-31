@@ -29,12 +29,17 @@ class SimpleBearing(cqparts.Part):
         outer = cq.Workplane("XY").circle(self.outer_diam / 2).extrude(self.thickness)
         rim = (
             cq.Workplane("XY")
-            .circle(self.inner_diam/2 + self.lip_width )
-            .extrude(self.thickness + 2*self.lip_thickness)
-            .translate((0,0,-self.lip_thickness))
+            .circle(self.inner_diam / 2 + self.lip_width)
+            .extrude(self.thickness + 2 * self.lip_thickness)
+            .translate((0, 0, -self.lip_thickness))
         )
-        #outer = outer.union(rim)
-        inner = cq.Workplane("XY").circle(self.inner_diam / 2).extrude(self.thickness+2*self.lip_thickness).translate((0,0,-self.lip_thickness))
+        # outer = outer.union(rim)
+        inner = (
+            cq.Workplane("XY")
+            .circle(self.inner_diam / 2)
+            .extrude(self.thickness + 2 * self.lip_thickness)
+            .translate((0, 0, -self.lip_thickness))
+        )
 
         outer = outer.cut(inner)
         return outer
@@ -60,8 +65,13 @@ class SimpleBearing(cqparts.Part):
         )
 
 
+class BearingMount(cqparts.Assembly):
+    pass
+
+
 if __name__ == "__main__":
     from cqparts.display import display
 
-    sb = SimpleBearing()
-    display(sb)
+    # sb = SimpleBearing()
+    t = BearingMount()
+    display(t)

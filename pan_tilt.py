@@ -118,8 +118,6 @@ class Pitch(Printable):
     _render = render_props(color=(160, 150, 100))
 
     def make(self):
-        p = cq.Workplane("XY").box(1, 1, 1)
-        return p
         pitch = (
             cq.Workplane("XY")
             .circle(self.diameter / 2 + self.thickness)

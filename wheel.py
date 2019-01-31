@@ -12,14 +12,9 @@ from cqparts.constraint import Mate
 from cqparts.utils.geometry import CoordSystem
 from cqparts.search import register
 
+from partref import PartRef
 
 from .manufacture import Printable
-
-# Again ... need to move into lib
-class PartRef(Parameter):
-    def type(self, value):
-        return value
-
 
 # TODO Break into hub , spokes , rim and tyre
 # parametric constructavism for the win
@@ -72,11 +67,16 @@ class Spokes(_Wheel):
         inc = 360.0 / float(self.count)
         cd = cq.Workplane("XY")
         for i in range(self.count):
-            h = cq.Workplane("XY").rect(self.diameter / 2,self.thickness).extrude(2 * self.thickness)
-            h = h.translate((self.diameter/4, 0, -self.thickness))
+            h = (
+                cq.Workplane("XY")
+                .rect(self.diameter / 2, self.thickness)
+                .extrude(2 * self.thickness)
+            )
+            h = h.translate((self.diameter / 4, 0, -self.thickness))
             h = h.rotate((0, 0, 0), (0, 0, 1), float(i * inc))
             cd = cd.add(h)
         return cd
+
 
 class Rim(_Wheel):
 
@@ -113,8 +113,7 @@ class BuiltWheel(_Wheel):
     def make(self):
         hub = self.hub(thickness=self.thickness, outset=self.outset)
         center_disc = self.center_disc(
-            thickness=self.thickness / 5, diameter=self.diameter,
-            count=self.count
+            thickness=self.thickness / 5, diameter=self.diameter, count=self.count
         )
         rim = self.rim(thickness=self.thickness, diameter=self.diameter)
         w = hub.local_obj
@@ -131,6 +130,7 @@ class BuiltWheel(_Wheel):
 @register(export="wheel")
 class SpokeWheel(BuiltWheel):
     center_disc = PartRef(Spokes)
+
 
 @register(export="wheel")
 class SimpleWheel(_Wheel):
@@ -154,6 +154,6 @@ if __name__ == "__main__":
     # B = Hub(diameter=10,thickness=20)
     # B = Rim(diameter=200,thickness=40)
     # B = CenterDisc(thickness=3)
-    #B = BuiltWheel(diameter=50)
-    B = SpokeWheel(diameter=100,count=4)
+    # B = BuiltWheel(diameter=50)
+    B = SpokeWheel(diameter=100, count=5)
     display(B)
