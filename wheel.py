@@ -64,6 +64,20 @@ class CenterDisc(_Wheel):
         return cd
 
 
+class Spokes(_Wheel):
+    thickness = PositiveFloat(2)
+    count = Int(5)
+
+    def make(self):
+        inc = 360.0 / float(self.count)
+        cd = cq.Workplane("XY")
+        for i in range(self.count):
+            h = cq.Workplane("XY").rect(self.diameter / 2,self.thickness).extrude(2 * self.thickness)
+            h = h.translate((self.diameter/4, 0, -self.thickness))
+            h = h.rotate((0, 0, 0), (0, 0, 1), float(i * inc))
+            cd = cd.add(h)
+        return cd
+
 class Rim(_Wheel):
 
     # The rim profile / override for other wheels
@@ -112,6 +126,9 @@ class BuiltWheel(_Wheel):
         )
 
 
+class SpokeWheel(BuiltWheel):
+    center_disc = PartRef(Spokes)
+
 @register(export="wheel")
 class SimpleWheel(_Wheel):
     _render = render_props(color=(90, 90, 90))
@@ -134,5 +151,6 @@ if __name__ == "__main__":
     # B = Hub(diameter=10,thickness=20)
     # B = Rim(diameter=200,thickness=40)
     # B = CenterDisc(thickness=3)
-    B = BuiltWheel(diameter=50)
+    #B = BuiltWheel(diameter=50)
+    B = SpokeWheel(diameter=100)
     display(B)
