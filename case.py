@@ -292,7 +292,10 @@ class Case(cqparts.Assembly):
 
     def make_constraints(self):
         return [
-            Fixed(self.components["middle"].mate_origin),
+            Fixed(
+                self.components["middle"].mate_origin,
+                CoordSystem(origin=(0, 0, self.base_height + self.thickness)),
+            ),
             Coincident(
                 self.components["lower"].mate_origin,
                 self.components["middle"].mate_bottom(explode=self.explode),
