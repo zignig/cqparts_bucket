@@ -18,8 +18,8 @@ from .manufacture import Lasercut
 from .motor_mount import MountedStepper
 from cqparts_motors.stepper import Stepper
 from .mercanum import MercanumWheel
-from .wheel import SimpleWheel, BuiltWheel
-from .electronics import Electronics
+from .wheel import SimpleWheel, BuiltWheel, SpokeWheel
+from .electronics import Electronics, type1
 from .pan_tilt import PanTilt
 
 
@@ -78,7 +78,7 @@ class RobotBase(Lasercut):
         )
 
 
-class ThisWheel(BuiltWheel):
+class ThisWheel(SpokeWheel):
     diameter = PositiveFloat(90)
     thickness = PositiveFloat(15)
     outset = PositiveFloat(10)
@@ -99,7 +99,7 @@ class Rover(cqparts.Assembly):
     thickness = PositiveFloat(6)
     wheel = PartRef(ThisWheel)
     stepper = PartRef(Stepper)
-    electronics = PartRef(Electronics)
+    electronics = PartRef(type1)
     sensors = PartRef(PanTilt)
 
     def make_components(self):
