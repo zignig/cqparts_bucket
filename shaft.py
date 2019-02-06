@@ -53,8 +53,24 @@ class Shaft(cqparts.Part):
             .extrude(self.length * 2)
         )
 
+    def make_cutout(self, part, clearance=0):
+        part = part.local_obj.cut(
+            (self.world_coords - part.world_coords) + self.cutout(clearance=clearance)
+        )
+
+    def cutout(self, clearance=0):
+        so = cq.Workplane("XY").circle(clearance + self.diam / 2).extrude(self.length)
+        return so
+
     def mate_tip(self, offset=0):
         return Mate(
             self,
             CoordSystem(origin=(0, 0, self.length), xDir=(1, 0, 0), normal=(0, 0, 1)),
         )
+
+
+if __name__ == "__main__":
+    from cqparts.display import display
+
+    a = Shaft()
+    display(a)

@@ -290,7 +290,7 @@ class _MountedServo(cqparts.Assembly):
 
     def make_constraints(self):
         return [
-            Fixed(self.components["plank"].mate_bottom),
+            Fixed(self.components["plank"].mate_top),
             Coincident(
                 self.components["servo"].mate_wing_bottom(),
                 self.components["plank"].mate_top,

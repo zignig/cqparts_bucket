@@ -15,3 +15,13 @@ class PartRef(Parameter):
     @classmethod
     def serialize(cls, value):
         return cls.__name__
+
+
+# TODO check if it is an instance
+class PartInst(Parameter):
+    def type(self, value):
+        return value
+
+    @classmethod
+    def serialize(cls, value):
+        return cls.__name__

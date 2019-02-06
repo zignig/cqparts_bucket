@@ -69,11 +69,12 @@ class Spokes(_Wheel):
         for i in range(self.count):
             h = (
                 cq.Workplane("XY")
-                .rect(self.diameter / 2, self.thickness)
-                .extrude(2 * self.thickness)
+                .rect(self.diameter / 2, self.thickness * 2)
+                .extrude(4 * self.thickness)
             )
-            h = h.translate((self.diameter / 4, 0, -self.thickness))
+            h = h.translate((self.diameter / 4, 0, -2 * self.thickness))
             h = h.rotate((0, 0, 0), (0, 0, 1), float(i * inc))
+            h = h.chamfer(0.5)
             cd = cd.add(h)
         return cd
 
@@ -155,5 +156,5 @@ if __name__ == "__main__":
     # B = Rim(diameter=200,thickness=40)
     # B = CenterDisc(thickness=3)
     # B = BuiltWheel(diameter=50)
-    B = SpokeWheel(diameter=100, count=5)
+    B = SpokeWheel(diameter=100, count=12)
     display(B)

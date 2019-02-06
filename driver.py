@@ -15,11 +15,7 @@ from .idler import Idler
 from .coupling import Coupling
 from .threaded import Threaded
 
-
-# a parameter for passing object down
-class PartRef(Parameter):
-    def type(self, value):
-        return value
+from .partref import PartRef
 
 
 class BeltAssembly(cqparts.Assembly):
@@ -69,7 +65,7 @@ class ThreadedDrive(cqparts.Assembly):
     coupling = PartRef(Coupling)
     stepper = PartRef(Stepper)
     threaded = PartRef(Threaded)
-
+    lift = PositiveFloat(0)
     length = PositiveFloat(100)
 
     def make_components(self):
@@ -103,7 +99,7 @@ class ThreadedDrive(cqparts.Assembly):
 
     def mate_mount(self, offset=0):
         return Mate(
-            self, CoordSystem(origin=(0, 0, 50), xDir=(0, 0, 1), normal=(1, 0, 0))
+            self, CoordSystem(origin=(0, 0, 0), xDir=(0, 0, 1), normal=(1, 0, 0))
         )
 
 
@@ -115,6 +111,7 @@ class BeltDrive(cqparts.Assembly):
     height = PositiveFloat(300)
     width = PositiveFloat(300)
     length = PositiveFloat(100)
+    lift = PositiveFloat(0)
 
     def make_components(self):
         comp = {
@@ -140,7 +137,7 @@ class BeltDrive(cqparts.Assembly):
 
     def mate_mount(self, offset=0):
         return Mate(
-            self, CoordSystem(origin=(0, 0, 30), xDir=(1, 0, 0), normal=(0, 0, 1))
+            self, CoordSystem(origin=(0, 0, 0), xDir=(1, 0, 0), normal=(0, 1, 0))
         )
 
 
@@ -152,6 +149,6 @@ class MyPulley(Pulley):
 if __name__ == "__main__":
     from cqparts.display import display
 
-    p = BeltDrive(pulley=MyPulley, length=100)
+    # p = BeltDrive(pulley=MyPulley, length=100)
     p = ThreadedDrive(length=50)
     display(p)

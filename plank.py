@@ -7,15 +7,15 @@ from cqparts.constraint import Fixed, Coincident
 from cqparts_misc.basic.primatives import Box
 from cqparts.display import render_props
 
-from manufacture import Lasercut
+from .manufacture import Lasercut
 
 
 class Plank(Box, Lasercut):
     length = PositiveFloat(90)
     width = PositiveFloat(90)
-    thickness = PositiveFloat(6)
+    thickness = PositiveFloat(3)
     _render = render_props(template="wood")
-    fillet = PositiveFloat(0)
+    fillet = PositiveFloat(3)
 
     def make(self):
         pl = cq.Workplane("XY").box(self.length, self.width, self.thickness)

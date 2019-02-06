@@ -67,10 +67,11 @@ class StepperCat(cqparts.Assembly):
         return constraints
 
 
-ar = StepperCat()
-print(stepper_list)
-for i in stepper_list:
-    ar.add(MountedStepper(clearance=2, thickness=3, stepper=i))
+if __name__ == "__main__":
+    ar = StepperCat()
+    print(stepper_list)
+    for i in stepper_list:
+        ar.add(MountedStepper(clearance=2, thickness=3, stepper=i))
     # ar.add(i())
-
-display(ar)
+    print(ar.tree_str())
+    display(ar)

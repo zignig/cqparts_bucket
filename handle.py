@@ -20,7 +20,7 @@ class Handle(cqparts.Part):
     rad1 = PositiveFloat(25)
     rad2 = PositiveFloat(15)
     thickness = PositiveFloat(15)
-    hole = PositiveFloat(8)
+    hole = PositiveFloat(12)
     handle_height = PositiveFloat(30)
 
     def make(self):

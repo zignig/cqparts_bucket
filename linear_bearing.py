@@ -45,6 +45,19 @@ class LinearBearing(cqparts.Part):
         lm = lm.cut(self._ring(offset=self.length - self.slot_inset - self.slot_width))
         return lm
 
+    def make_cutout(self, part, clearance=0):
+        part = part.local_obj.cut(
+            (self.world_coords - part.world_coords) + self.cutout(clearance=clearance)
+        )
+
+    def cutout(self, clearance=0):
+        so = (
+            cq.Workplane("XY")
+            .circle(clearance + self.outer_diam / 2)
+            .extrude(self.length)
+        )
+        return so
+
 
 @register(export="linear_bearing")
 class lm8uu(LinearBearing):
