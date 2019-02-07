@@ -17,16 +17,16 @@ from cqparts.search import register
 
 from .shaft import Shaft
 from .threaded import Threaded
+from .linear_bearing import lm8uu
 
 from partref import PartRef, PartInst
 
-# don't like it going to rebuild from scratch
-
-
+# creates block base for testiung
 class _PlaceHolder(cqparts.Part):
     length = PositiveFloat(10)
     width = PositiveFloat(10)
     height = PositiveFloat(10)
+    _render = render_props(template="steel")
 
     def make(self):
         return cq.Workplane("XY").box(
@@ -122,6 +122,7 @@ class Rails(_AxisBase):
         return const
 
 
+# replacable bearing
 class Bearing(cqparts.Part):
     length = PositiveFloat(12)
     diameter = PositiveFloat(8)
@@ -156,15 +157,19 @@ class IdleEnd(EndBlock):
 class Carriage(_AxisBase):
     pos = PositiveFloat(0)
     rails = PartInst(Rails)
-    bearing = PartRef(Bearing)
+    bearing = PartRef(lm8uu)
     driven = PartRef(Bearing)  # thie driver , depends on the type
     lift = PositiveFloat(0)
+    clearance = PositiveFloat(10)
 
     def initialize_parameters(self):
         self.length = self.bearing().length
 
+    # Override me
     def make_block(self):
-        return _PlaceHolder(height=self.height, width=self.width, length=self.length)
+        return _PlaceHolder(
+            height=self.height - self.clearance, width=self.width, length=self.length
+        )
 
     def make_components(self):
         comps = {"block": self.make_block(), "driven": self.driven()}
@@ -176,7 +181,7 @@ class Carriage(_AxisBase):
         constr = [
             Fixed(
                 self.components["block"].mate_origin,
-                CoordSystem((self.pos, 0, 0), (1, 0, 0), (0, 0, 1)),
+                CoordSystem((self.pos, 0, self.clearance), (1, 0, 0), (0, 0, 1)),
             ),
             Fixed(
                 self.components["driven"].mate_origin,
@@ -252,7 +257,7 @@ class Axis(_AxisBase):
             ),
             Fixed(
                 self.components["idle_end"].mate_origin,
-                CoordSystem((self.length, 0, 0), (1, 0, 0), (0, 0, 1)),
+                CoordSystem((self.length, 0, 0), (-1, 0, 0), (0, 0, 1)),
             ),
             Fixed(
                 self.components["drive"].mate_mount(),
@@ -304,6 +309,6 @@ if __name__ == "__main__":
     ar = CNC_show()
     # ar.add(Axis(width=90, length=200, pos=100))
     # ar.add(Axis(drive=BeltDrive, width=60, length=250, pos=50))
-    ar.add(Axis(drive=ThreadedDrive, width=100, pos=50))
+    ar.add(Axis(drive=ThreadedDrive, length=200, width=100, pos=70))
     # e = Axis()
     display(ar)

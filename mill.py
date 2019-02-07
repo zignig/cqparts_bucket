@@ -34,11 +34,11 @@ class XDrive(DriveEnd):
 
 
 class XAxis(Axis):
-    height = PositiveFloat(80)
+    height = PositiveFloat(65)
     width = PositiveFloat(50)
-    # rails = PartRef(SingleRail)
+    rails = PartRef(SingleRail)
     drive_lift = Float(30)
-    rail_lift = Float(60)
+    rail_lift = Float(50)
     carriage = PartRef(XSlide)
     # drive_end = PartRef(XDrive)
     pos = PositiveFloat(100)
@@ -65,6 +65,7 @@ class Mill(cqparts.Assembly):
         comps = {
             "XL": self.xaxis(length=self.length),
             "XR": self.xaxis(length=self.length),
+            #            "YA": self.yaxis(length=self.width),
         }
         return comps
 
@@ -78,6 +79,10 @@ class Mill(cqparts.Assembly):
                 self.components["XR"].mate_origin,
                 CoordSystem((0, self.width / 2.0, 0), (1, 0, 0), (0, 0, 1)),
             ),
+            #            Fixed(
+            #                self.components["YA"].mate_origin,
+            #                CoordSystem((0,self.length/2 , 0), (0, -1, 0), (0, 0, 1)),
+            #            ),
         ]
         return constr
 

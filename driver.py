@@ -149,6 +149,6 @@ class MyPulley(Pulley):
 if __name__ == "__main__":
     from cqparts.display import display
 
-    # p = BeltDrive(pulley=MyPulley, length=100)
-    p = ThreadedDrive(length=50)
+    p = BeltDrive(pulley=MyPulley, length=100)
+    # p = ThreadedDrive(length=50)
     display(p)
