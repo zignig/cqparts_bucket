@@ -4,6 +4,7 @@ _version = "0.1a"
 _export = True
 _namespace = "user/zignig"
 __all__ = [
+    "mill",
     "shell_test",
     "turntable",
     "project_case",

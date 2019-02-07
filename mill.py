@@ -7,6 +7,7 @@ from cqparts.constraint import Mate
 from cqparts.utils.geometry import CoordSystem
 
 from cqparts.params import PositiveFloat, Float
+from cqparts.search import register
 
 from .partref import PartRef
 from .cnc import Axis, Rails, Carriage, DriveEnd
@@ -49,7 +50,7 @@ class XAxis(Axis):
 class TAxis(Axis):
     pass
 
-
+@register(export="showcase")
 class Mill(cqparts.Assembly):
     length = PositiveFloat(250)
     width = PositiveFloat(300)
