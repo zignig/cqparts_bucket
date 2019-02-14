@@ -13,7 +13,8 @@ from .partref import PartRef
 from .cnc import Axis, Rails, Carriage, DriveEnd
 from .driver import BeltDrive, ThreadedDrive
 
-from linear_bearing import lm8uu
+from .linear_bearing import lm8uu
+from .plank import Plank
 
 
 class SingleRail(Rails):
@@ -59,11 +60,15 @@ class Mill(cqparts.Assembly):
     yaxis = PartRef(Axis)
     zaxis = PartRef(Axis)
 
+    padding = PositiveFloat(20)
+    base_thickness = PositiveFloat(6)
+
     def initialize_paramters(self):
         pass
 
     def make_components(self):
         comps = {
+            "base" : Plank(thickness=self.base_thickness,length=self.length+self.padding*4.0,width=self.width+self.padding*3.0),
             "XL": self.xaxis(length=self.length),
             "XR": self.xaxis(length=self.length),
             #            "YA": self.yaxis(length=self.width),
@@ -71,14 +76,18 @@ class Mill(cqparts.Assembly):
         return comps
 
     def make_constraints(self):
+        base = self.components["base"]
         constr = [
             Fixed(
+                base.mate_origin
+            ),
+            Fixed(
                 self.components["XL"].mate_origin,
-                CoordSystem((0, -self.width / 2.0, 0), (1, 0, 0), (0, 0, 1)),
+                CoordSystem((-self.length/2.0, -self.width / 2.0, base.thickness), (1, 0, 0), (0, 0, 1)),
             ),
             Fixed(
                 self.components["XR"].mate_origin,
-                CoordSystem((0, self.width / 2.0, 0), (1, 0, 0), (0, 0, 1)),
+                CoordSystem((-self.length/2.0, self.width / 2.0, base.thickness), (1, 0, 0), (0, 0, 1)),
             ),
             #            Fixed(
             #                self.components["YA"].mate_origin,
