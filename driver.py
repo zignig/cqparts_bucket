@@ -18,7 +18,33 @@ from .threaded import Threaded
 from .partref import PartRef
 
 
-class BeltAssembly(cqparts.Assembly):
+class Drive(cqparts.Assembly):
+    threaded = PartRef(Threaded)
+    lift = PositiveFloat(10)
+    length  = PositiveFloat(100)
+
+    def make_components(self):
+        comps = {"drive": self.threaded(length=self.length)}
+        return comps
+
+    def make_constraints(self):
+        constr = [
+            Fixed(
+                self.components["drive"].mate_origin,
+                CoordSystem((0, 0, 0), (0, 1, 0), (1, 0, 0)),
+            )
+        ]
+        return constr
+
+    def mate_mount(self, offset=0):
+        return Mate(
+            self, CoordSystem(origin=(0, 0, 0), xDir=(1, 0, 0), normal=(0, 0, 1))
+        )
+
+    def make_alterations(self):
+        pass
+
+class BeltAssembly(Drive):
     spacing = PositiveFloat(20)
     pulley = PartRef(Pulley)
 
@@ -61,7 +87,7 @@ class BeltAssembly(cqparts.Assembly):
         )
 
 
-class ThreadedDrive(cqparts.Assembly):
+class ThreadedDrive(Drive):
     coupling = PartRef(Coupling)
     stepper = PartRef(Stepper)
     threaded = PartRef(Threaded)
@@ -103,7 +129,7 @@ class ThreadedDrive(cqparts.Assembly):
         )
 
 
-class BeltDrive(cqparts.Assembly):
+class BeltDrive(Drive):
     stepper = PartRef(Stepper)
     idler = PartRef(Idler)
     pulley = PartRef(Pulley)
