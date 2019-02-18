@@ -16,10 +16,14 @@ from cqparts.utils.geometry import CoordSystem
 from cqparts.search import register
 
 from .shaft import Shaft
-from .threaded import Threaded
 from .linear_bearing import lm8uu
+from .driver import Drive
 
-from partref import PartRef, PartInst
+from .driver import BeltDrive
+from .driver import ThreadedDrive
+from .multi import Arrange
+
+from .partref import PartRef, PartInst
 
 # creates block base for testiung
 class _PlaceHolder(cqparts.Part):
@@ -51,31 +55,6 @@ class _AxisBase(cqparts.Assembly):
     def make_constraints(self):
         return [Fixed(self.components["block"].mate_origin)]
 
-
-class Drive(_AxisBase):
-    threaded = PartRef(Threaded)
-    lift = PositiveFloat(10)
-
-    def make_components(self):
-        comps = {"drive": self.threaded(length=self.length)}
-        return comps
-
-    def make_constraints(self):
-        constr = [
-            Fixed(
-                self.components["drive"].mate_origin,
-                CoordSystem((0, 0, 0), (0, 1, 0), (1, 0, 0)),
-            )
-        ]
-        return constr
-
-    def mate_mount(self, offset=0):
-        return Mate(
-            self, CoordSystem(origin=(0, 0, 0), xDir=(1, 0, 0), normal=(0, 0, 1))
-        )
-
-    def make_alterations(self):
-        pass
 
 
 class Rails(_AxisBase):
@@ -284,9 +263,6 @@ class Axis(_AxisBase):
             item.make_cutout(part=ie.components["block"])
 
 
-from .driver import BeltDrive
-from .driver import ThreadedDrive
-from .multi import Arrange
 
 
 @register(export="cnc")

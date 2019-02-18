@@ -7,8 +7,9 @@ from cqparts.constraint import Mate
 from cqparts.utils import CoordSystem
 
 
-class BBArrange(cqparts.Assembly):
-    gap = PositiveFloat(10)
+=======
+class Gallery(cqparts.Assembly):
+    offset = PositiveFloat(60)
 
     def initialize_parameters(self):
         self.coll = []
@@ -42,7 +43,7 @@ class BBArrange(cqparts.Assembly):
             #    )
             #)
         return constraints
-    
+
 class Arrange(cqparts.Assembly):
     offset = PositiveFloat(60)
 
