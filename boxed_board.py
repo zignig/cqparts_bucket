@@ -6,28 +6,28 @@ from cqparts.constraint import Fixed, Coincident
 from cqparts.constraint import Mate
 from cqparts.utils import CoordSystem
 from cqparts_fasteners.screws import Screw
-from .pizero import Pizero
-from .arduino import Arduino
-from . import case
+from .mounted_board import ArduinoBoard,PizeroBoard
 from .case import Case
-import os
 
+from .partref import PartRef
 
 class BoxedBoard(cqparts.Assembly):
     clearance = PositiveFloat(12)
     case = Case(thickness=3, height=30, screw=Screw)
     # board = Pizero()
-    board = Arduino()
+    board = PartRef(PizeroBoard)
 
     def initialize_parameters(self):
         self.coll = []
 
     def make_components(self):
-        items = {"case": self.case, "board": self.board}
+        board = self.board()
+        bb = board.bounding_box
+        items = {"case": self.case, "board": board}
         # modify the box to fit the board
 
-        self.case.length = self.board.length + 2 * self.clearance
-        self.case.width = self.board.width + 2 * self.clearance
+        self.case.length = board.length + 2 * self.clearance
+        self.case.width = board.width + 2 * self.clearance
         self.case.explode = 0.0
         self.case.screw.length = PositiveFloat(15.0)
         return items
@@ -40,5 +40,7 @@ class BoxedBoard(cqparts.Assembly):
         return constraints
 
 
-bb = BoxedBoard()
-display(bb)
+if __name__ == "__main__":
+    from cqparts.display import display
+    bb = BoxedBoard()
+    display(bb)

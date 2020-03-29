@@ -40,8 +40,8 @@ class MountedBoard(cqparts.Assembly):
     def make_components(self):
         board = self.board()
         comps = {"board": board}
-        self.length = board.length
-        self.width = board.width
+        self.length = PositiveFloat(board.length)
+        self.width = PositiveFloat(board.width)
         for i, j in enumerate(board.mount_verts()):
             comps[self.screw_name(i)] = ComputerScrew()
             comps[self.standoff_name(i)] = Standoff(length=self.standoff)
