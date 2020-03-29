@@ -37,4 +37,5 @@ __all__ = [
     "rocket_drone",
     "peg",
     "threaded",
+    "partref",
 ]

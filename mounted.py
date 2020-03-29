@@ -13,11 +13,11 @@ from cqparts_fasteners.utils import VectorEvaluator
 from cqparts_fasteners.fasteners.screw import Screw
 from cqparts_fasteners.params import HeadType, DriveType, ThreadType
 
-from partref import PartRef
+from .partref import PartRef
 
-from boss import Boss
-from stepper import Stepper
-from plank import Plank
+from .boss import Boss
+from .stepper import Stepper
+from .plank import Plank
 
 
 class SmallScrew(Screw):

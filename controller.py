@@ -9,10 +9,10 @@ from cqparts.utils.geometry import CoordSystem
 
 from cqparts.search import register
 
-from .multi import Arrange
+from .multi import Arrange, Gallery 
 
 
-class _Boards(Arrange):
+class _Boards(Gallery):
     pass
 
 
@@ -135,11 +135,27 @@ class BeagleBoneBlack(PCBBoard):
         return board
 
 
+@register(export="controller")
+class GlasgowRevC(PCBBoard):
+    length = PositiveFloat(80.0)
+    width = PositiveFloat(49)
+    thickness = PositiveFloat(1)
+    hole_size = PositiveFloat(3.2)
+    corner_radius = PositiveFloat(4)
+    
+    hole_length = PositiveFloat(72.0)
+    hole_width = PositiveFloat(41.0)
+
+    def make(self):
+        board = super(GlasgowRevC,self).make()
+        return board
+
 if __name__ == "__main__":
     from cqparts.display import display
 
     db = _Boards()
     db.add(Arduino())
+    db.add(GlasgowRevC())
     db.add(Pizero())
     db.add(BeagleBoneBlack())
     db.add(PCBBoard(length=100, width=30))

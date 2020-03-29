@@ -12,7 +12,7 @@ from cqparts.constraint import Mate
 from cqparts.utils.geometry import CoordSystem
 from cqparts.search import register
 
-from partref import PartRef
+from .partref import PartRef
 
 from .manufacture import Printable
 

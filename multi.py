@@ -6,8 +6,6 @@ from cqparts.constraint import Fixed, Coincident
 from cqparts.constraint import Mate
 from cqparts.utils import CoordSystem
 
-
-=======
 class Gallery(cqparts.Assembly):
     offset = PositiveFloat(60)
 
